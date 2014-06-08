@@ -24,10 +24,13 @@ vows.describe('Reductio avg').addBatch({
                     .avg(true)
                     .count(true);
 
+            // This doesn't work because no .sum(accessor) has been defined.
+            // The resulting group only tracks counts.
             reducer(groupNoAvg);
 
             reducer.sum(function(d) { return d.bar; });
 
+            // Now it should track count, sum, and avg.
             reducer(group);
 
             return {
