@@ -44,6 +44,6 @@ reducer(group);
 
 group.top(Infinity);
 // [ { key: 'one', value: { count: 3, sum: 10, avg: 3.3333333 },
-//   { key: 'one', value: { count: 2, sum: 8, avg: 4 },
-//   { key: 'one', value: { count: 1, sum: 3, avg: 3 } ]
+//   { key: 'two', value: { count: 2, sum: 8, avg: 4 },
+//   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
