@@ -4,15 +4,16 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
+var streamify = require('gulp-streamify');
 
 gulp.task('scripts', function () {
 	return browserify('./src/reductio.js')
 		.bundle({ standalone: 'reductio' })
 		.pipe(source('reductio.js'))
+        .pipe(gulp.dest('./'))
+        .pipe(rename('reductio.min.js'))
+        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./'));
-        // .pipe(rename('reductio.min.js'))
-        // .pipe(uglify())
-        // .pipe(gulp.dest('./'));
 });
 
 // Watch Files For Changes
