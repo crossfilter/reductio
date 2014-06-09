@@ -1,11 +1,12 @@
 reductio_count = require('./count.js');
 reductio_sum = require('./sum.js');
 reductio_avg = require('./avg.js');
+reductio_value_count = require('./value-count.js');
 
 function reductio() {
-	var order, avg, count, sum, reduceAdd, reduceRemove, reduceInitial;
+	var order, avg, count, sum, unique_accessor, reduceAdd, reduceRemove, reduceInitial;
 
-	avg = count = sum = false;
+	avg = count = sum = unique_accessor = false;
 
 	reduceAdd = function(p, v) { return p; };
 	reduceAdd = function(p, v) { return p; };
@@ -45,6 +46,12 @@ function reductio() {
 				reduceInitial = reductio_avg.initial(reduceInitial);
 			}
 		}
+
+		if(unique_accessor) {
+			reduceAdd = reductio_value_count.add(unique_accessor, reduceAdd);
+			reduceRemove = reductio_value_count.remove(unique_accessor, reduceRemove);
+			reduceInitial = reductio_value_count.initial(reduceInitial);
+		}
 	}
 
 	my.order = function(value) {
@@ -68,6 +75,12 @@ function reductio() {
 	my.avg = function(value) {
 		if (!arguments.length) return avg;
 		avg = value;
+		return my;
+	};
+
+	my.uniques = function(value) {
+		if (!arguments.length) return unique_accessor;
+		unique_accessor = value;
 		return my;
 	};
 
