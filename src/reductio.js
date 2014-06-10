@@ -3,9 +3,11 @@ reductio_sum = require('./sum.js');
 reductio_avg = require('./avg.js');
 reductio_value_count = require('./value-count.js');
 reductio_exception_count = require('./exception-count.js');
+reductio_exception_sum = require('./exception-sum.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
+		exceptionSum,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	avg = count = sum = unique_accessor = countUniques = false;
@@ -62,6 +64,16 @@ function reductio() {
 			}
 		}
 
+		if(exceptionSum) {
+			if(!exceptionAccessor) {
+				console.error("You must define an .exception(accessor) to use .exceptionSum(accessor).");
+			} else {
+				reduceAdd = reductio_exception_sum.add(exceptionAccessor, exceptionSum, reduceAdd);
+				reduceRemove = reductio_exception_sum.remove(exceptionAccessor, exceptionSum, reduceRemove);
+				reduceInitial = reductio_exception_sum.initial(reduceInitial);
+			}
+		}
+
 		// Maintain the values array.
 		if(exceptionAccessor) {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
@@ -103,6 +115,12 @@ function reductio() {
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
 		exceptionCount = value;
+		return my;
+	};
+
+	my.exceptionSum = function(value) {
+		if (!arguments.length) return exceptionSum;
+		exceptionSum = value;
 		return my;
 	};
 

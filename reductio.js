@@ -89,14 +89,54 @@ var reductio_exception_count = {
 
 module.exports = reductio_exception_count;
 },{}],4:[function(_dereq_,module,exports){
+var reductio_exception_sum = {
+	add: function (a, sum, prior) {
+		var i, curr;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			// Only sum if the p.values array doesn't contain a(v) or if it's 0.
+			i = p.bisect(p.values, a(v), 0, p.values.length);
+			curr = p.values[i];
+			if((!curr || curr[0] !== a(v)) || curr[1] === 0) {
+				p.exceptionSum = p.exceptionSum + sum(v);
+			}
+			return p;
+		};
+	},
+	remove: function (a, sum, prior) {
+		var i, curr;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			// Only sum if the p.values array contains a(v) value of 1.
+			i = p.bisect(p.values, a(v), 0, p.values.length);
+			curr = p.values[i];
+			if(curr && curr[0] === a(v) && curr[1] === 1) {
+				p.exceptionSum = p.exceptionSum - sum(v);
+			}
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.exceptionSum = 0;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_exception_sum;
+},{}],5:[function(_dereq_,module,exports){
 reductio_count = _dereq_('./count.js');
 reductio_sum = _dereq_('./sum.js');
 reductio_avg = _dereq_('./avg.js');
 reductio_value_count = _dereq_('./value-count.js');
 reductio_exception_count = _dereq_('./exception-count.js');
+reductio_exception_sum = _dereq_('./exception-sum.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
+		exceptionSum,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	avg = count = sum = unique_accessor = countUniques = false;
@@ -153,6 +193,16 @@ function reductio() {
 			}
 		}
 
+		if(exceptionSum) {
+			if(!exceptionAccessor) {
+				console.error("You must define an .exception(accessor) to use .exceptionSum(accessor).");
+			} else {
+				reduceAdd = reductio_exception_sum.add(exceptionAccessor, exceptionSum, reduceAdd);
+				reduceRemove = reductio_exception_sum.remove(exceptionAccessor, exceptionSum, reduceRemove);
+				reduceInitial = reductio_exception_sum.initial(reduceInitial);
+			}
+		}
+
 		// Maintain the values array.
 		if(exceptionAccessor) {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
@@ -197,11 +247,17 @@ function reductio() {
 		return my;
 	};
 
+	my.exceptionSum = function(value) {
+		if (!arguments.length) return exceptionSum;
+		exceptionSum = value;
+		return my;
+	};
+
 	return my;
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./sum.js":5,"./value-count.js":6}],5:[function(_dereq_,module,exports){
+},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./sum.js":6,"./value-count.js":7}],6:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior) {
 		return function (p, v) {
@@ -227,7 +283,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 // TODO: Figure out how to use a global crossfilter object. We need to
 // import here because the testing framework doesn't provide global
 // objects. We shouldn't need to require this for use in browser.
@@ -272,6 +328,6 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
-},{}]},{},[4])
-(4)
+},{}]},{},[5])
+(5)
 });
