@@ -52,12 +52,12 @@ We also support exception aggregation. For our purposes, this means only aggrega
 
 ```
 var data = crossfilter([
-  { foo: 'one', bar: 'A' },
-  { foo: 'two', bar: 'B' },
-  { foo: 'three', bar: 'A' },
-  { foo: 'one', bar: 'B' },
-  { foo: 'one', bar: 'A' },
-  { foo: 'two', bar: 'B' },
+  { foo: 'one', bar: 'A', num: 1 },
+  { foo: 'two', bar: 'B', num: 2 },
+  { foo: 'three', bar: 'A', num: 3 },
+  { foo: 'one', bar: 'B', num: 2 },
+  { foo: 'one', bar: 'A', num: 1 },
+  { foo: 'two', bar: 'B', num: 2 },
 ]);
 
 var dim = data.dimension(function(d) { return d.foo; });
@@ -65,14 +65,15 @@ var group = dim.group();
 
 var reducer = reductio()
     .exception(function(d) { return d.bar; })
-    .exceptionCount(true);
+    .exceptionCount(true)
+    .exceptionSum(function(d) { return d.num; });
 
 reducer(group);
 
 group.top(Infinity);
-// [ { key: 'one', value: { exceptionCount: 2 },    // 'bar' dimension has 2 values: 'A' and 'B'.
-//   { key: 'two', value: { exceptionCount: 1 },    // 'bar' dimension has 1 value: 'B'.
-//   { key: 'three', value: { exceptionCount: 1 } ] // 'bar' dimension has 1 value: 'A'.
+// [ { key: 'one', value: { exceptionCount: 2, exceptionSum: 3 },    // 'bar' dimension has 2 values: 'A' and 'B'.
+//   { key: 'two', value: { exceptionCount: 1, exceptionSum: 2 },    // 'bar' dimension has 1 value: 'B'.
+//   { key: 'three', value: { exceptionCount: 1 , exceptionSum: 3} ] // 'bar' dimension has 1 value: 'A'.
 ```
 
-Right now we only support exceptionCount, but it might also make sense to support other types of dependent aggregation.
+Right now we support exceptionCount and exceptionSum, but it might also make sense to support other types of dependent aggregation. When using exceptionSum, make sure that for each value within a group that the exception accessor returns, the exceptionSum accessor returns an identical value, or results will be unpredictable.
