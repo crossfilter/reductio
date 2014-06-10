@@ -47,3 +47,32 @@ group.top(Infinity);
 //   { key: 'two', value: { count: 2, sum: 8, avg: 4 },
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
+
+We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
+
+```
+var data = crossfilter([
+  { foo: 'one', bar: 'A' },
+  { foo: 'two', bar: 'B' },
+  { foo: 'three', bar: 'A' },
+  { foo: 'one', bar: 'B' },
+  { foo: 'one', bar: 'A' },
+  { foo: 'two', bar: 'B' },
+]);
+
+var dim = data.dimension(function(d) { return d.foo; });
+var group = dim.group();
+
+var reducer = reductio()
+    .exception(function(d) { return d.bar; })
+    .exceptionCount(true);
+
+reducer(group);
+
+group.top(Infinity);
+// [ { key: 'one', value: { exceptionCount: 2 },    // 'bar' dimension has 2 values: 'A' and 'B'.
+//   { key: 'two', value: { exceptionCount: 1 },    // 'bar' dimension has 1 value: 'B'.
+//   { key: 'three', value: { exceptionCount: 1 } ] // 'bar' dimension has 1 value: 'A'.
+```
+
+Right now we only support exceptionCount, but it might also make sense to support other types of dependent aggregation.
