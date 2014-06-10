@@ -18,7 +18,7 @@ describe('Reductio value count', function () {
         var reducer = reductio()
                 .sum(function (d) { return d.bar; })
                 .count(true)
-                .uniques(function (d) { return d.bar; });
+                .exception(function (d) { return d.bar; });
 
         reducer(group);
     });

@@ -2,11 +2,13 @@ reductio_count = require('./count.js');
 reductio_sum = require('./sum.js');
 reductio_avg = require('./avg.js');
 reductio_value_count = require('./value-count.js');
+reductio_exception_count = require('./exception-count.js');
 
 function reductio() {
-	var order, avg, count, sum, unique_accessor, reduceAdd, reduceRemove, reduceInitial;
+	var order, avg, count, sum, exceptionAccessor, exceptionCount,
+		reduceAdd, reduceRemove, reduceInitial;
 
-	avg = count = sum = unique_accessor = false;
+	avg = count = sum = unique_accessor = countUniques = false;
 
 	reduceAdd = function(p, v) { return p; };
 	reduceAdd = function(p, v) { return p; };
@@ -47,9 +49,23 @@ function reductio() {
 			}
 		}
 
-		if(unique_accessor) {
-			reduceAdd = reductio_value_count.add(unique_accessor, reduceAdd);
-			reduceRemove = reductio_value_count.remove(unique_accessor, reduceRemove);
+		// The unique-only reducers come before the value_count reducers. They need to check if
+		// the value is already in the values array on the group. They should only increment/decrement
+		// counts if the value not in the array or the count on the value is 0.
+		if(exceptionCount) {
+			if(!exceptionAccessor) {
+				console.error("You must define an .exception(accessor) to use .exceptionCount(true).");
+			} else {
+				reduceAdd = reductio_exception_count.add(exceptionAccessor, reduceAdd);
+				reduceRemove = reductio_exception_count.remove(exceptionAccessor, reduceRemove);
+				reduceInitial = reductio_exception_count.initial(reduceInitial);
+			}
+		}
+
+		// Maintain the values array.
+		if(exceptionAccessor) {
+			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
+			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
 			reduceInitial = reductio_value_count.initial(reduceInitial);
 		}
 	}
@@ -78,9 +94,15 @@ function reductio() {
 		return my;
 	};
 
-	my.uniques = function(value) {
-		if (!arguments.length) return unique_accessor;
-		unique_accessor = value;
+	my.exception = function(value) {
+		if (!arguments.length) return exceptionAccessor;
+		exceptionAccessor = value;
+		return my;
+	};
+
+	my.exceptionCount = function(value) {
+		if (!arguments.length) return exceptionCount;
+		exceptionCount = value;
 		return my;
 	};
 

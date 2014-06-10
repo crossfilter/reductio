@@ -21,6 +21,8 @@ module.exports = function(config) {
 		'karma-chrome-launcher'
 	],
 
+	reporters: ['dots'],
+
 	singleRun: true,
 
 	captureTimeout: 60000

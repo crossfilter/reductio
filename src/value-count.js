@@ -21,6 +21,7 @@ var reductio_value_count = {
 		};
 	},
 	remove: function (a, prior) {
+		var i;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			i = p.bisect(p.values, a(v), 0, p.values.length);
