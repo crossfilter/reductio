@@ -1,73 +1,69 @@
-var vows = require('vows'),
-    assert = require('assert'),
-    crossfilter = require('crossfilter'),
-    reductio = require('../reductio.js');
-
 // Counting tests
-vows.describe('Reductio avg').addBatch({
-    'import': {
-        topic: function () {
-            var data = crossfilter([
-                { foo: 'one', bar: 1 },
-                { foo: 'two', bar: 2 },
-                { foo: 'three', bar: 3 },
-                { foo: 'one', bar: 4 },
-                { foo: 'one', bar: 5 },
-                { foo: 'two', bar: 6 },
-            ]);
+describe('Reductio avg', function () {
 
-            var dim = data.dimension(function(d) { return d.foo; });
-            var group = dim.group();
-            var groupNoAvg = dim.group();
+    var avg = {}, noAvg = {};
 
-            var reducer = reductio()
-                    .avg(true)
-                    .count(true);
+    beforeEach(function () {
+        var data = crossfilter([
+            { foo: 'one', bar: 1 },
+            { foo: 'two', bar: 2 },
+            { foo: 'three', bar: 3 },
+            { foo: 'one', bar: 4 },
+            { foo: 'one', bar: 5 },
+            { foo: 'two', bar: 6 },
+        ]);
 
-            // This doesn't work because no .sum(accessor) has been defined.
-            // The resulting group only tracks counts.
-            reducer(groupNoAvg);
+        var dim = data.dimension(function(d) { return d.foo; });
+        var group = dim.group();
+        var groupNoAvg = dim.group();
 
-            reducer.sum(function(d) { return d.bar; });
+        var reducer = reductio()
+                .avg(true)
+                .count(true);
 
-            // Now it should track count, sum, and avg.
-            reducer(group);
+        // This doesn't work because no .sum(accessor) has been defined.
+        // The resulting group only tracks counts.
+        reducer(groupNoAvg);
 
-            return {
-                avg: group,
-                noAvg: groupNoAvg
-            };
-        },
+        reducer.sum(function(d) { return d.bar; });
 
-        'has three groups': function (topic) {
-            assert.equal (topic.avg.top(Infinity).length, 3);
-        },
-        'grouping have the right averages': function (topic) {
-            var values = {};
-            topic.avg.top(Infinity).forEach(function (d) {
-                values[d.key] = d.value;
-            });
+        // Now it should track count, sum, and avg.
+        reducer(group);
 
-            assert.equal (Math.round(values['one'].avg), Math.round(10/3));
-            assert.equal (Math.round(values['two'].avg), Math.round(8/2));
-            assert.equal (Math.round(values['three'].avg), Math.round(3/1));
-        },
-        'grouping with .avg() but no .sum() doesn\'t work': function (topic) {
-            var values = {};
-            topic.noAvg.top(Infinity).forEach(function (d) {
-                values[d.key] = d.value;
-            });
+        avg = group;
+        noAvg = groupNoAvg;
+    });
 
-            // It has a count, as defined.
-            assert.equal (values['one'].count, 3);
+    it('has three groups', function (topic) {
+        expect(avg.top(Infinity).length).toEqual(3);
+    });
 
-            // But no sum.
-            assert.isUndefined(values['one'].sum);
+    it('grouping have the right averages', function (topic) {
+        var values = {};
+        avg.top(Infinity).forEach(function (d) {
+            values[d.key] = d.value;
+        });
 
-            // And no avg.
-            assert.isUndefined(values['one'].avg);
+        expect(Math.round(values['one'].avg)).toEqual(Math.round(10/3));
+        expect(Math.round(values['two'].avg)).toEqual(Math.round(8/2));
+        expect(Math.round(values['three'].avg)).toEqual(Math.round(3/1));
+    });
 
-            // Also throws an error on the console, but that's more difficult to test.
-        }
-    }
-}).export(module); // Run it
+    it('grouping with .avg() but no .sum() doesn\'t work', function (topic) {
+        var values = {};
+        noAvg.top(Infinity).forEach(function (d) {
+            values[d.key] = d.value;
+        });
+
+        // It has a count, as defined.
+        expect(values['one'].count).toEqual(3);
+
+        // But no sum.
+        expect(values['one'].sum).toBeUndefined();
+
+        // And no avg.
+        expect(values['one'].avg).toBeUndefined();
+
+        // Also throws an error on the console, but that's more difficult to test.
+    });
+});

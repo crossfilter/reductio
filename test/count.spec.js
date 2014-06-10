@@ -1,44 +1,38 @@
-var vows = require('vows'),
-    assert = require('assert'),
-    crossfilter = require('crossfilter'),
-    reductio = require('../reductio.js');
-
 // Counting tests
-vows.describe('Reductio count').addBatch({
-    'import': {
-        topic: function () {
-            var data = crossfilter([
-                { foo: 'one' },
-                { foo: 'two' },
-                { foo: 'three' },
-                { foo: 'one' },
-                { foo: 'one' },
-                { foo: 'two' },
-            ]);
+describe('Reductio count', function () {
+    var group;
 
-            var dim = data.dimension(function(d) { return d.foo; });
-            var group = dim.group();
+    beforeEach(function () {
+        var data = crossfilter([
+            { foo: 'one' },
+            { foo: 'two' },
+            { foo: 'three' },
+            { foo: 'one' },
+            { foo: 'one' },
+            { foo: 'two' },
+        ]);
 
-            var reducer = reductio()
-                    .count(true);
+        var dim = data.dimension(function(d) { return d.foo; });
+        group = dim.group();
 
-            reducer(group);
+        var reducer = reductio()
+                .count(true);
 
-            return group;
-        },
+        reducer(group);
+    });
 
-        'has three groups': function (topic) {
-            assert.equal (topic.top(Infinity).length, 3);
-        },
-        'grouping have the right counts': function (topic) {
-            var values = {};
-            topic.top(Infinity).forEach(function (d) {
-                values[d.key] = d.value;
-            });
+    it('has three groups', function () {
+        expect(group.top(Infinity).length).toEqual(3);
+    });
 
-            assert.equal (values['one'].count, 3);
-            assert.equal (values['two'].count, 2);
-            assert.equal (values['three'].count, 1);
-        }
-    }
-}).export(module); // Run it
+    it('grouping have the right counts', function () {
+        var values = {};
+        group.top(Infinity).forEach(function (d) {
+            values[d.key] = d.value;
+        });
+
+        expect(values['one'].count).toEqual(3);
+        expect(values['two'].count).toEqual(2);
+        expect(values['three'].count).toEqual(1);
+    });
+});
