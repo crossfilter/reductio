@@ -26,6 +26,7 @@ describe('Reductio avg', function () {
         // The resulting group only tracks counts.
         reducer(groupNoAvg);
 
+        reducer.count(false).sum(false);
         reducer.avg(function(d) { return d.bar; });
 
         reducer(groupAccAvg);

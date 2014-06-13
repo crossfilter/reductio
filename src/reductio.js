@@ -122,6 +122,7 @@ function reductio() {
 			if(sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			sum = value;
 			avg = true;
+			count = true;
 		} else {
 			avg = value;
 		}
