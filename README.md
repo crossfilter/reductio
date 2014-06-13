@@ -6,9 +6,18 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 Current aggregations supported are:
 
 ```
+// Same as group.reduceCount()
 reductio().count(true);
-reductio().sum(accessorFunction); // accessorFunction must return a number
-reductio().avg(true);             // .count(true) and .sum(...) must both be specified
+
+// accessorFunction must return a number
+// Same as group.reduceSum(accessor)
+reductio().sum(accessorFunction);
+
+// .count(true) and .sum(...) must both be specified
+reductio().avg(true);
+
+// Median value returned by accessor function within each group 
+reductio().median(accessorFunction);
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
