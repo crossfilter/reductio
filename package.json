@@ -20,7 +20,7 @@
     "vinyl-source-stream": "^0.1.1"
   },
   "scripts": {
-    "test": "vows test/*"
+    "test": "karma start"
   },
   "repository": {
     "type": "git",
