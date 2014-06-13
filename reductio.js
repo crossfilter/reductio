@@ -231,7 +231,14 @@ function reductio() {
 
 	my.avg = function(value) {
 		if (!arguments.length) return avg;
-		avg = value;
+		// We can take either an accessor function or a boolean
+		if( typeof value === 'function' ) {
+			if(sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
+			sum = value;
+			avg = true;
+		} else {
+			avg = value;
+		}
 		return my;
 	};
 
@@ -243,7 +250,13 @@ function reductio() {
 
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
-		exceptionCount = value;
+		if( typeof value === 'function' ) {
+			if(sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
+			exceptionAccessor = value;
+			exceptionCount = true;
+		} else {
+			exceptionCount = value;
+		}
 		return my;
 	};
 
