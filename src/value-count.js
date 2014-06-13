@@ -1,7 +1,3 @@
-// TODO: Figure out how to use a global crossfilter object. We need to
-// import here because the testing framework doesn't provide global
-// objects. We shouldn't need to require this for use in browser.
-
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;

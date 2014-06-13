@@ -127,16 +127,68 @@ var reductio_exception_sum = {
 
 module.exports = reductio_exception_sum;
 },{}],5:[function(_dereq_,module,exports){
+var reductio_median = {
+	add: function (prior) {
+		var half;
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			half = Math.floor(p.valueList.length/2);
+ 
+			if(p.valueList.length % 2) {
+				p.median = p.valueList[half];
+			} else {
+				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+			}
+
+			return p;
+		};
+	},
+	remove: function (prior) {
+		var half;
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			half = Math.floor(p.valueList.length/2);
+
+			// Check for undefined.
+			if(p.valueList.length === 0) {
+				p.median = undefined;
+				return p;
+			}
+ 
+			if(p.valueList.length === 1 || p.valueList.length % 2) {
+				p.median = p.valueList[half];
+			} else {
+				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+			}
+
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.median = undefined;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_median;
+},{}],6:[function(_dereq_,module,exports){
 reductio_count = _dereq_('./count.js');
 reductio_sum = _dereq_('./sum.js');
 reductio_avg = _dereq_('./avg.js');
+reductio_median = _dereq_('./median.js');
 reductio_value_count = _dereq_('./value-count.js');
+reductio_value_list = _dereq_('./value-list.js');
 reductio_exception_count = _dereq_('./exception-count.js');
 reductio_exception_sum = _dereq_('./exception-sum.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum,
+		exceptionSum, valueList, median,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	avg = count = sum = unique_accessor = countUniques = false;
@@ -203,7 +255,20 @@ function reductio() {
 			}
 		}
 
-		// Maintain the values array.
+		// Maintian the values array.
+		if(valueList || median) {
+			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
+			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
+			reduceInitial = reductio_value_list.initial(reduceInitial);
+		}
+
+		if(median) {
+			reduceAdd = reductio_median.add(reduceAdd);
+			reduceRemove = reductio_median.remove(reduceRemove);
+			reduceInitial = reductio_median.initial(reduceInitial);
+		}
+
+		// Maintain the values count array.
 		if(exceptionAccessor) {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
 			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
@@ -248,6 +313,20 @@ function reductio() {
 		return my;
 	};
 
+	my.valueList = function(value) {
+		if (!arguments.length) return valueList;
+		valueList = value;
+		return my;
+	}
+
+	my.median = function(value) {
+		if (!arguments.length) return median;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+		valueList = value;
+		median = value;
+		return my;
+	}
+
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
 		if( typeof value === 'function' ) {
@@ -270,7 +349,7 @@ function reductio() {
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./sum.js":6,"./value-count.js":7}],6:[function(_dereq_,module,exports){
+},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./median.js":5,"./sum.js":7,"./value-count.js":8,"./value-list.js":9}],7:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior) {
 		return function (p, v) {
@@ -296,11 +375,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],7:[function(_dereq_,module,exports){
-// TODO: Figure out how to use a global crossfilter object. We need to
-// import here because the testing framework doesn't provide global
-// objects. We shouldn't need to require this for use in browser.
-
+},{}],8:[function(_dereq_,module,exports){
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;
@@ -341,6 +416,39 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
-},{}]},{},[5])
-(5)
+},{}],9:[function(_dereq_,module,exports){
+var reductio_value_list = {
+	add: function (a, prior) {
+		var i;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			// Not sure if this is more efficient than sorting.
+			i = p.bisectList(p.valueList, a(v), 0, p.valueList.length);
+			p.valueList.splice(i, 0, a(v));
+			return p;
+		};
+	},
+	remove: function (a, prior) {
+		var i;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			i = p.bisectList(p.valueList, a(v), 0, p.valueList.length);
+			// Value already exists or something has gone terribly wrong.
+			p.valueList.splice(i, 1);
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.valueList = [];
+			p.bisectList = crossfilter.bisect.by(function(d) { return d; }).left;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_value_list;
+},{}]},{},[6])
+(6)
 });

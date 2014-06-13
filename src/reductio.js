@@ -1,13 +1,15 @@
 reductio_count = require('./count.js');
 reductio_sum = require('./sum.js');
 reductio_avg = require('./avg.js');
+reductio_median = require('./median.js');
 reductio_value_count = require('./value-count.js');
+reductio_value_list = require('./value-list.js');
 reductio_exception_count = require('./exception-count.js');
 reductio_exception_sum = require('./exception-sum.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum,
+		exceptionSum, valueList, median,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	avg = count = sum = unique_accessor = countUniques = false;
@@ -74,7 +76,20 @@ function reductio() {
 			}
 		}
 
-		// Maintain the values array.
+		// Maintian the values array.
+		if(valueList || median) {
+			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
+			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
+			reduceInitial = reductio_value_list.initial(reduceInitial);
+		}
+
+		if(median) {
+			reduceAdd = reductio_median.add(reduceAdd);
+			reduceRemove = reductio_median.remove(reduceRemove);
+			reduceInitial = reductio_median.initial(reduceInitial);
+		}
+
+		// Maintain the values count array.
 		if(exceptionAccessor) {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
 			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
@@ -118,6 +133,20 @@ function reductio() {
 		exceptionAccessor = value;
 		return my;
 	};
+
+	my.valueList = function(value) {
+		if (!arguments.length) return valueList;
+		valueList = value;
+		return my;
+	}
+
+	my.median = function(value) {
+		if (!arguments.length) return median;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+		valueList = value;
+		median = value;
+		return my;
+	}
 
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
