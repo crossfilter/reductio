@@ -6,18 +6,27 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 Current aggregations supported are:
 
 ```
+var data = crossfilter([...]);
+var dim = data.dimension(...);
+var group = dim.group();
+var reducer;
+
+reducer = reductio().count(true);
 // Same as group.reduceCount()
-reductio().count(true);
+reducer(group);
 
 // accessorFunction must return a number
+reducer = reductio().sum(accessorFunction);
 // Same as group.reduceSum(accessor)
-reductio().sum(accessorFunction);
+reducer(group);
+
+// There is no need to use the intermediate 'reducer' variable if you are not going to re-use the reducer.
 
 // .count(true) and .sum(...) must both be specified
-reductio().avg(true);
+reductio().avg(true)(group);
 
 // Median value returned by accessor function within each group 
-reductio().median(accessorFunction);
+reductio().median(accessorFunction)(group);
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
@@ -43,6 +52,7 @@ var data = crossfilter([
 var dim = data.dimension(function(d) { return d.foo; });
 var group = dim.group();
 
+// Equivalent to reductio().avg(function(d) { return d.bar; }), which sets the .sum() and .count() values.
 var reducer = reductio()
     .count(true)
     .sum(function(d) { return d.bar; })
