@@ -46,7 +46,7 @@ Aggregations can be chained on a given instance of reductio. For example:
 ```
 reductio().count(true)
     .sum(function(d) { return d.bar; })
-    .avg(true);
+    .avg(true)(group);
 ```
 
 Basic use:
