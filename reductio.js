@@ -127,6 +127,50 @@ var reductio_exception_sum = {
 
 module.exports = reductio_exception_sum;
 },{}],5:[function(_dereq_,module,exports){
+var reductio_histogram = {
+	add: function (a, prior) {
+		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
+		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
+		var curr, i;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
+			curr.y++;
+			curr.splice(bisect(curr, a(v), 0, curr.length), 0, a(v));
+			return p;
+		};
+	},
+	remove: function (a, prior) {
+		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
+		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
+		var curr;
+		return function (p, v) {
+			if(prior) prior(p, v);
+			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
+			curr.y--;
+			curr.splice(bisect(curr, a(v), 0, curr.length), 1);
+			return p;
+		};
+	},
+	initial: function (thresholds, prior) {
+		return function (p) {
+			p = prior(p);
+			p.histogram = [];
+			var arr = [];
+			for(var i = 1; i < thresholds.length; i++) {
+				arr = [];
+				arr.x = thresholds[i - 1];
+				arr.dx = (thresholds[i] - thresholds[i - 1]);
+				arr.y = 0;
+				p.histogram.push(arr);
+			}
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_histogram;
+},{}],6:[function(_dereq_,module,exports){
 var reductio_median = {
 	add: function (prior) {
 		var half;
@@ -176,7 +220,7 @@ var reductio_median = {
 };
 
 module.exports = reductio_median;
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 reductio_count = _dereq_('./count.js');
 reductio_sum = _dereq_('./sum.js');
 reductio_avg = _dereq_('./avg.js');
@@ -185,13 +229,13 @@ reductio_value_count = _dereq_('./value-count.js');
 reductio_value_list = _dereq_('./value-list.js');
 reductio_exception_count = _dereq_('./exception-count.js');
 reductio_exception_sum = _dereq_('./exception-sum.js');
+reductio_histogram = _dereq_('./histogram.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum, valueList, median,
+		exceptionSum, valueList, median, histogramValue,
+		histogramThresholds,
 		reduceAdd, reduceRemove, reduceInitial;
-
-	avg = count = sum = unique_accessor = countUniques = false;
 
 	reduceAdd = function(p, v) { return p; };
 	reduceAdd = function(p, v) { return p; };
@@ -255,7 +299,7 @@ function reductio() {
 			}
 		}
 
-		// Maintian the values array.
+		// Maintain the values array.
 		if(valueList || median) {
 			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
 			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
@@ -273,6 +317,13 @@ function reductio() {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
 			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
 			reduceInitial = reductio_value_count.initial(reduceInitial);
+		}
+
+		// Histogram
+		if(histogramValue && histogramThresholds) {
+			reduceAdd = reductio_histogram.add(histogramValue, reduceAdd);
+			reduceRemove = reductio_histogram.remove(histogramValue, reduceRemove);
+			reduceInitial = reductio_histogram.initial(histogramThresholds ,reduceInitial);
 		}
 	}
 
@@ -318,7 +369,7 @@ function reductio() {
 		if (!arguments.length) return valueList;
 		valueList = value;
 		return my;
-	}
+	};
 
 	my.median = function(value) {
 		if (!arguments.length) return median;
@@ -326,7 +377,7 @@ function reductio() {
 		valueList = value;
 		median = value;
 		return my;
-	}
+	};
 
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
@@ -346,11 +397,23 @@ function reductio() {
 		return my;
 	};
 
+	my.histogramValue = function(value) {
+		if (!arguments.length) return histogramValue;
+		histogramValue = value;
+		return my;
+	};
+
+	my.histogramBins = function(value) {
+		if (!arguments.length) return histogramThresholds;
+		histogramThresholds = value;
+		return my;
+	};	
+
 	return my;
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./median.js":5,"./sum.js":7,"./value-count.js":8,"./value-list.js":9}],7:[function(_dereq_,module,exports){
+},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./median.js":6,"./sum.js":8,"./value-count.js":9,"./value-list.js":10}],8:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior) {
 		return function (p, v) {
@@ -376,7 +439,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;
@@ -417,23 +480,25 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var reductio_value_list = {
 	add: function (a, prior) {
 		var i;
+		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Not sure if this is more efficient than sorting.
-			i = p.bisectList(p.valueList, a(v), 0, p.valueList.length);
+			i = bisect(p.valueList, a(v), 0, p.valueList.length);
 			p.valueList.splice(i, 0, a(v));
 			return p;
 		};
 	},
 	remove: function (a, prior) {
 		var i;
+		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		return function (p, v) {
 			if(prior) prior(p, v);
-			i = p.bisectList(p.valueList, a(v), 0, p.valueList.length);
+			i = bisect(p.valueList, a(v), 0, p.valueList.length);
 			// Value already exists or something has gone terribly wrong.
 			p.valueList.splice(i, 1);
 			return p;
@@ -443,13 +508,12 @@ var reductio_value_list = {
 		return function (p) {
 			p = prior(p);
 			p.valueList = [];
-			p.bisectList = crossfilter.bisect.by(function(d) { return d; }).left;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_value_list;
-},{}]},{},[6])
-(6)
+},{}]},{},[7])
+(7)
 });

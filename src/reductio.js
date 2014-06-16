@@ -6,13 +6,13 @@ reductio_value_count = require('./value-count.js');
 reductio_value_list = require('./value-list.js');
 reductio_exception_count = require('./exception-count.js');
 reductio_exception_sum = require('./exception-sum.js');
+reductio_histogram = require('./histogram.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum, valueList, median,
+		exceptionSum, valueList, median, histogramValue,
+		histogramThresholds,
 		reduceAdd, reduceRemove, reduceInitial;
-
-	avg = count = sum = unique_accessor = countUniques = false;
 
 	reduceAdd = function(p, v) { return p; };
 	reduceAdd = function(p, v) { return p; };
@@ -76,7 +76,7 @@ function reductio() {
 			}
 		}
 
-		// Maintian the values array.
+		// Maintain the values array.
 		if(valueList || median) {
 			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
 			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
@@ -94,6 +94,13 @@ function reductio() {
 			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
 			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
 			reduceInitial = reductio_value_count.initial(reduceInitial);
+		}
+
+		// Histogram
+		if(histogramValue && histogramThresholds) {
+			reduceAdd = reductio_histogram.add(histogramValue, reduceAdd);
+			reduceRemove = reductio_histogram.remove(histogramValue, reduceRemove);
+			reduceInitial = reductio_histogram.initial(histogramThresholds ,reduceInitial);
 		}
 	}
 
@@ -139,7 +146,7 @@ function reductio() {
 		if (!arguments.length) return valueList;
 		valueList = value;
 		return my;
-	}
+	};
 
 	my.median = function(value) {
 		if (!arguments.length) return median;
@@ -147,7 +154,7 @@ function reductio() {
 		valueList = value;
 		median = value;
 		return my;
-	}
+	};
 
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
@@ -166,6 +173,18 @@ function reductio() {
 		exceptionSum = value;
 		return my;
 	};
+
+	my.histogramValue = function(value) {
+		if (!arguments.length) return histogramValue;
+		histogramValue = value;
+		return my;
+	};
+
+	my.histogramBins = function(value) {
+		if (!arguments.length) return histogramThresholds;
+		histogramThresholds = value;
+		return my;
+	};	
 
 	return my;
 }
