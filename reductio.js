@@ -407,7 +407,7 @@ function reductio() {
 		if (!arguments.length) return histogramThresholds;
 		histogramThresholds = value;
 		return my;
-	};	
+	};
 
 	return my;
 }
