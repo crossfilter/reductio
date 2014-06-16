@@ -27,6 +27,18 @@ reductio().avg(true)(group);
 
 // Median value returned by accessor function within each group 
 reductio().median(accessorFunction)(group);
+
+// Histogram of values within grouping. Acts like d3.layout.histogram defined using bins(thresholds).
+// https://github.com/mbostock/d3/wiki/Histogram-Layout
+//
+// This grouping should be usable anywhere d3.layout.histogram can be used. May be useful for small-
+// multiples charts, or for use with the dc.js stack mixin.
+//
+// group.histogram is an array. Each element of the array is a sorted array of values returned by
+// histogramValue that fall into that bin. Each element of the array also has properties, x, dx,
+// and y, as defined in the d3.layout.histogram documentation.
+reductio().histogramBins([0,2,6,10])                    // Bin thresholds
+        .histogramValue(function(d) { return d.bar; }); // Value to bin
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
