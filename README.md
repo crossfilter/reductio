@@ -37,8 +37,8 @@ reductio().median(accessorFunction)(group);
 // group.histogram is an array. Each element of the array is a sorted array of values returned by
 // histogramValue that fall into that bin. Each element of the array also has properties, x, dx,
 // and y, as defined in the d3.layout.histogram documentation.
-reductio().histogramBins([0,2,6,10])                    // Bin thresholds
-        .histogramValue(function(d) { return d.bar; }); // Value to bin
+reductio().histogramBins([0,2,6,10])                            // Bin thresholds
+        .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
