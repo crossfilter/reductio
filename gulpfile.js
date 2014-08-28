@@ -22,4 +22,4 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', ['scripts', 'watch']);
-gulp.task('all', ['scripts', 'html']);
+gulp.task('all', ['scripts']);

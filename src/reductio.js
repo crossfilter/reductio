@@ -2,6 +2,8 @@ reductio_count = require('./count.js');
 reductio_sum = require('./sum.js');
 reductio_avg = require('./avg.js');
 reductio_median = require('./median.js');
+reductio_min = require('./min.js');
+reductio_max = require('./max.js');
 reductio_value_count = require('./value-count.js');
 reductio_value_list = require('./value-list.js');
 reductio_exception_count = require('./exception-count.js');
@@ -10,7 +12,7 @@ reductio_histogram = require('./histogram.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum, valueList, median, histogramValue,
+		exceptionSum, valueList, median, histogramValue, min, max,
 		histogramThresholds,
 		reduceAdd, reduceRemove, reduceInitial;
 
@@ -77,7 +79,7 @@ function reductio() {
 		}
 
 		// Maintain the values array.
-		if(valueList || median) {
+		if(valueList || median || min || max) {
 			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
 			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
 			reduceInitial = reductio_value_list.initial(reduceInitial);
@@ -87,6 +89,18 @@ function reductio() {
 			reduceAdd = reductio_median.add(reduceAdd);
 			reduceRemove = reductio_median.remove(reduceRemove);
 			reduceInitial = reductio_median.initial(reduceInitial);
+		}
+
+		if(min) {
+			reduceAdd = reductio_min.add(reduceAdd);
+			reduceRemove = reductio_min.remove(reduceRemove);
+			reduceInitial = reductio_min.initial(reduceInitial);
+		}
+
+		if(max) {
+			reduceAdd = reductio_max.add(reduceAdd);
+			reduceRemove = reductio_max.remove(reduceRemove);
+			reduceInitial = reductio_max.initial(reduceInitial);
 		}
 
 		// Maintain the values count array.
@@ -153,6 +167,22 @@ function reductio() {
 		if(valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 		valueList = value;
 		median = value;
+		return my;
+	};
+
+	my.min = function(value) {
+		if (!arguments.length) return min;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by min aggregation');
+		valueList = value;
+		min = value;
+		return my;
+	};
+
+	my.max = function(value) {
+		if (!arguments.length) return max;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by max aggregation');
+		valueList = value;
+		max = value;
 		return my;
 	};
 

@@ -171,6 +171,42 @@ var reductio_histogram = {
 
 module.exports = reductio_histogram;
 },{}],6:[function(_dereq_,module,exports){
+var reductio_max = {
+	add: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+ 
+			p.max = p.valueList[p.valueList.length - 1];
+
+			return p;
+		};
+	},
+	remove: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			// Check for undefined.
+			if(p.valueList.length === 0) {
+				p.max = undefined;
+				return p;
+			}
+ 
+			p.max = p.valueList[p.valueList.length - 1];
+
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.max = undefined;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_max;
+},{}],7:[function(_dereq_,module,exports){
 var reductio_median = {
 	add: function (prior) {
 		var half;
@@ -220,11 +256,49 @@ var reductio_median = {
 };
 
 module.exports = reductio_median;
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
+var reductio_min = {
+	add: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+ 
+			p.min = p.valueList[0];
+
+			return p;
+		};
+	},
+	remove: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			// Check for undefined.
+			if(p.valueList.length === 0) {
+				p.min = undefined;
+				return p;
+			}
+ 
+			p.min = p.valueList[0];
+
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.min = undefined;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_min;
+},{}],9:[function(_dereq_,module,exports){
 reductio_count = _dereq_('./count.js');
 reductio_sum = _dereq_('./sum.js');
 reductio_avg = _dereq_('./avg.js');
 reductio_median = _dereq_('./median.js');
+reductio_min = _dereq_('./min.js');
+reductio_max = _dereq_('./max.js');
 reductio_value_count = _dereq_('./value-count.js');
 reductio_value_list = _dereq_('./value-list.js');
 reductio_exception_count = _dereq_('./exception-count.js');
@@ -233,7 +307,7 @@ reductio_histogram = _dereq_('./histogram.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum, valueList, median, histogramValue,
+		exceptionSum, valueList, median, histogramValue, min, max,
 		histogramThresholds,
 		reduceAdd, reduceRemove, reduceInitial;
 
@@ -300,7 +374,7 @@ function reductio() {
 		}
 
 		// Maintain the values array.
-		if(valueList || median) {
+		if(valueList || median || min || max) {
 			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
 			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
 			reduceInitial = reductio_value_list.initial(reduceInitial);
@@ -310,6 +384,18 @@ function reductio() {
 			reduceAdd = reductio_median.add(reduceAdd);
 			reduceRemove = reductio_median.remove(reduceRemove);
 			reduceInitial = reductio_median.initial(reduceInitial);
+		}
+
+		if(min) {
+			reduceAdd = reductio_min.add(reduceAdd);
+			reduceRemove = reductio_min.remove(reduceRemove);
+			reduceInitial = reductio_min.initial(reduceInitial);
+		}
+
+		if(max) {
+			reduceAdd = reductio_max.add(reduceAdd);
+			reduceRemove = reductio_max.remove(reduceRemove);
+			reduceInitial = reductio_max.initial(reduceInitial);
 		}
 
 		// Maintain the values count array.
@@ -379,6 +465,22 @@ function reductio() {
 		return my;
 	};
 
+	my.min = function(value) {
+		if (!arguments.length) return min;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by min aggregation');
+		valueList = value;
+		min = value;
+		return my;
+	};
+
+	my.max = function(value) {
+		if (!arguments.length) return max;
+		if(valueList) console.warn('VALUELIST accessor is being overwritten by max aggregation');
+		valueList = value;
+		max = value;
+		return my;
+	};
+
 	my.exceptionCount = function(value) {
 		if (!arguments.length) return exceptionCount;
 		if( typeof value === 'function' ) {
@@ -413,7 +515,7 @@ function reductio() {
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./median.js":6,"./sum.js":8,"./value-count.js":9,"./value-list.js":10}],8:[function(_dereq_,module,exports){
+},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./max.js":6,"./median.js":7,"./min.js":8,"./sum.js":10,"./value-count.js":11,"./value-list.js":12}],10:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior) {
 		return function (p, v) {
@@ -439,7 +541,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],9:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;
@@ -480,7 +582,7 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
-},{}],10:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var reductio_value_list = {
 	add: function (a, prior) {
 		var i;
@@ -514,6 +616,6 @@ var reductio_value_list = {
 };
 
 module.exports = reductio_value_list;
-},{}]},{},[7])
-(7)
+},{}]},{},[9])
+(9)
 });
