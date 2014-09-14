@@ -6,7 +6,7 @@ module.exports = function(config) {
     
     files: [
 		'node_modules/crossfilter/crossfilter.min.js',
-		'reductio.js',
+		'reductio.min.js',
 		'test/**/*.spec.js'
     ],
 

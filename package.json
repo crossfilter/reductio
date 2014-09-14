@@ -6,9 +6,11 @@
   "directories": {
     "test": "test"
   },
+  "dependencies": {
+    "crossfilter": "^1.3.7"
+  },
   "devDependencies": {
     "browserify": "^4.1.8",
-    "crossfilter": "^1.3.7",
     "gulp": "^3.7.0",
     "gulp-concat": "^2.2.0",
     "gulp-rename": "^1.2.0",
