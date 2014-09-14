@@ -1,6 +1,6 @@
 {
   "name": "reductio",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Reductio: Crossfilter groupings",
   "main": "reductio.js",
   "directories": {
