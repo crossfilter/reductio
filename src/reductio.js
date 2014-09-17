@@ -9,11 +9,13 @@ reductio_value_list = require('./value-list.js');
 reductio_exception_count = require('./exception-count.js');
 reductio_exception_sum = require('./exception-sum.js');
 reductio_histogram = require('./histogram.js');
+reductio_sum_of_sq = require('./sum-of-squares.js');
+reductio_std = require('./std.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
 		exceptionSum, valueList, median, histogramValue, min, max,
-		histogramThresholds,
+		histogramThresholds, std, sumOfSquares,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	reduceAdd = function(p, v) { return p; };
@@ -33,7 +35,7 @@ function reductio() {
 		// We have to build these functions in order. Eventually we can include dependency
 		// information and create a dependency graph if the process becomes complex enough.
 
-		if(count) {
+		if(count || std) {
 			reduceAdd = reductio_count.add;
 			reduceRemove = reductio_count.remove;
 			reduceInitial = reductio_count.initial;
@@ -115,6 +117,24 @@ function reductio() {
 			reduceAdd = reductio_histogram.add(histogramValue, reduceAdd);
 			reduceRemove = reductio_histogram.remove(histogramValue, reduceRemove);
 			reduceInitial = reductio_histogram.initial(histogramThresholds ,reduceInitial);
+		}
+
+		// Sum of Squares
+		if(sumOfSquares) {
+			reduceAdd = reductio_sum_of_sq.add(sumOfSquares, reduceAdd);
+			reduceRemove = reductio_sum_of_sq.remove(sumOfSquares, reduceRemove);
+			reduceInitial = reductio_sum_of_sq.initial(reduceInitial);
+		}
+
+		// Standard deviation
+		if(std) {
+			if(!sumOfSquares || !sum) {
+				console.error("You must set .sumOfSq(accessor) and define a .sum(accessor) to use .std(true). Or use .std(accessor).");
+			} else {
+				reduceAdd = reductio_std.add(reduceAdd);
+				reduceRemove = reductio_std.remove(reduceRemove);
+				reduceInitial = reductio_std.initial(reduceInitial);
+			}
 		}
 	}
 
@@ -213,6 +233,24 @@ function reductio() {
 	my.histogramBins = function(value) {
 		if (!arguments.length) return histogramThresholds;
 		histogramThresholds = value;
+		return my;
+	};
+
+	my.std = function(value) {
+		if (!arguments.length) return std;
+		if(typeof(value) === 'function') {
+			sumOfSquares = value;
+			sum = value;
+			std = true;
+		} else {
+			std = value;
+		}
+		return my;
+	};
+
+	my.sumOfSq = function(value) {
+		if (!arguments.length) return sumOfSquares;
+		sumOfSquares = value;
 		return my;
 	};
 

@@ -304,11 +304,13 @@ reductio_value_list = _dereq_('./value-list.js');
 reductio_exception_count = _dereq_('./exception-count.js');
 reductio_exception_sum = _dereq_('./exception-sum.js');
 reductio_histogram = _dereq_('./histogram.js');
+reductio_sum_of_sq = _dereq_('./sum-of-squares.js');
+reductio_std = _dereq_('./std.js');
 
 function reductio() {
 	var order, avg, count, sum, exceptionAccessor, exceptionCount,
 		exceptionSum, valueList, median, histogramValue, min, max,
-		histogramThresholds,
+		histogramThresholds, std, sumOfSquares,
 		reduceAdd, reduceRemove, reduceInitial;
 
 	reduceAdd = function(p, v) { return p; };
@@ -328,7 +330,7 @@ function reductio() {
 		// We have to build these functions in order. Eventually we can include dependency
 		// information and create a dependency graph if the process becomes complex enough.
 
-		if(count) {
+		if(count || std) {
 			reduceAdd = reductio_count.add;
 			reduceRemove = reductio_count.remove;
 			reduceInitial = reductio_count.initial;
@@ -410,6 +412,24 @@ function reductio() {
 			reduceAdd = reductio_histogram.add(histogramValue, reduceAdd);
 			reduceRemove = reductio_histogram.remove(histogramValue, reduceRemove);
 			reduceInitial = reductio_histogram.initial(histogramThresholds ,reduceInitial);
+		}
+
+		// Sum of Squares
+		if(sumOfSquares) {
+			reduceAdd = reductio_sum_of_sq.add(sumOfSquares, reduceAdd);
+			reduceRemove = reductio_sum_of_sq.remove(sumOfSquares, reduceRemove);
+			reduceInitial = reductio_sum_of_sq.initial(reduceInitial);
+		}
+
+		// Standard deviation
+		if(std) {
+			if(!sumOfSquares || !sum) {
+				console.error("You must set .sumOfSq(accessor) and define a .sum(accessor) to use .std(true). Or use .std(accessor).");
+			} else {
+				reduceAdd = reductio_std.add(reduceAdd);
+				reduceRemove = reductio_std.remove(reduceRemove);
+				reduceInitial = reductio_std.initial(reduceInitial);
+			}
 		}
 	}
 
@@ -511,11 +531,93 @@ function reductio() {
 		return my;
 	};
 
+	my.std = function(value) {
+		if (!arguments.length) return std;
+		if(typeof(value) === 'function') {
+			sumOfSquares = value;
+			sum = value;
+			std = true;
+		} else {
+			std = value;
+		}
+		return my;
+	};
+
+	my.sumOfSq = function(value) {
+		if (!arguments.length) return sumOfSquares;
+		sumOfSquares = value;
+		return my;
+	};
+
 	return my;
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./max.js":6,"./median.js":7,"./min.js":8,"./sum.js":10,"./value-count.js":11,"./value-list.js":12}],10:[function(_dereq_,module,exports){
+},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./max.js":6,"./median.js":7,"./min.js":8,"./std.js":10,"./sum-of-squares.js":11,"./sum.js":12,"./value-count.js":13,"./value-list.js":14}],10:[function(_dereq_,module,exports){
+var reductio_std = {
+	add: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			if(p.count > 0) {
+				p.std = 0.0;
+				var n = p.sumOfSq - p.sum*p.sum/p.count;
+				if (n>0.0) p.std = Math.sqrt(n/(p.count-1));
+			} else {
+				p.std = 0.0;
+			}
+			return p;
+		};
+	},
+	remove: function (prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			if(p.count > 0) {
+				p.std = 0.0;
+				var n = p.sumOfSq - p.sum*p.sum/p.count;
+				if (n>0.0) p.std = Math.sqrt(n/(p.count-1));
+			} else {
+				p.std = 0;
+			}
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.std = 0;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_std;
+},{}],11:[function(_dereq_,module,exports){
+var reductio_sum_of_sq = {
+	add: function (a, prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			p.sumOfSq = p.sumOfSq + a(v)*a(v);
+			return p;
+		};
+	},
+	remove: function (a, prior) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			p.sumOfSq = p.sumOfSq - a(v)*a(v);
+			return p;
+		};
+	},
+	initial: function (prior) {
+		return function (p) {
+			p = prior(p);
+			p.sumOfSq = 0;
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_sum_of_sq;
+},{}],12:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior) {
 		return function (p, v) {
@@ -541,7 +643,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],11:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;
@@ -582,7 +684,7 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
-},{}],12:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var reductio_value_list = {
 	add: function (a, prior) {
 		var i;
