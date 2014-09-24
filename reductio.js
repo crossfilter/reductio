@@ -127,11 +127,14 @@ var reductio_exception_sum = {
 
 module.exports = reductio_exception_sum;
 },{}],5:[function(_dereq_,module,exports){
+(function (global){
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+
 var reductio_histogram = {
 	add: function (a, prior) {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
-		var curr, i;
+		var curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
@@ -170,6 +173,7 @@ var reductio_histogram = {
 };
 
 module.exports = reductio_histogram;
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],6:[function(_dereq_,module,exports){
 var reductio_max = {
 	add: function (prior) {
@@ -644,6 +648,9 @@ var reductio_sum = {
 
 module.exports = reductio_sum;
 },{}],13:[function(_dereq_,module,exports){
+(function (global){
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;
@@ -684,7 +691,11 @@ var reductio_value_count = {
 };
 
 module.exports = reductio_value_count;
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],14:[function(_dereq_,module,exports){
+(function (global){
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+
 var reductio_value_list = {
 	add: function (a, prior) {
 		var i;
@@ -718,6 +729,7 @@ var reductio_value_list = {
 };
 
 module.exports = reductio_value_list;
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}]},{},[9])
 (9)
 });

@@ -1,3 +1,5 @@
+var crossfilter = require('crossfilter');
+
 var reductio_value_count = {
 	add: function (a, prior) {
 		var i, curr;

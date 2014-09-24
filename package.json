@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "browserify": "^4.1.8",
+    "browserify-shim": "^3.7.0",
     "gulp": "^3.7.0",
     "gulp-concat": "^2.2.0",
     "gulp-rename": "^1.2.0",
@@ -33,5 +34,13 @@
   "bugs": {
     "url": "https://github.com/esjewett/reductio/issues"
   },
-  "homepage": "https://github.com/esjewett/reductio"
+  "homepage": "https://github.com/esjewett/reductio",
+  "browserify-shim": {
+    "crossfilter": "global:crossfilter"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  }
 }

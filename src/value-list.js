@@ -1,3 +1,5 @@
+var crossfilter = require('crossfilter');
+
 var reductio_value_list = {
 	add: function (a, prior) {
 		var i;

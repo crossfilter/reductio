@@ -1,8 +1,10 @@
+var crossfilter = require('crossfilter');
+
 var reductio_histogram = {
 	add: function (a, prior) {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
-		var curr, i;
+		var curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
