@@ -1,30 +1,30 @@
 var reductio_avg = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.avg = p.sum / p.count;
+			if(path(p).count > 0) {
+				path(p).avg = path(p).sum / path(p).count;
 			} else {
-				p.avg = 0;
+				path(p).avg = 0;
 			}
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.avg = p.sum / p.count;
+			if(path(p).count > 0) {
+				path(p).avg = path(p).sum / path(p).count;
 			} else {
-				p.avg = 0;
+				path(p).avg = 0;
 			}
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.avg = 0;
+			path(p).avg = 0;
 			return p;
 		};
 	}

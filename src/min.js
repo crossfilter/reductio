@@ -1,32 +1,32 @@
 var reductio_min = {
-	add: function (prior) {
+	add: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
  
-			p.min = p.valueList[0];
+			path(p).min = path(p).valueList[0];
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.min = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).min = undefined;
 				return p;
 			}
  
-			p.min = p.valueList[0];
+			path(p).min = path(p).valueList[0];
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.min = undefined;
+			path(p).min = undefined;
 			return p;
 		};
 	}

@@ -1,171 +1,466 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.reductio=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var reductio_parameters = _dereq_('./parameters.js');
+
+function accessor_build(obj, p) {
+	obj.order = function(value) {
+		if (!arguments.length) return p.order;
+		p.order = value;
+		return obj;
+	};
+
+	obj.count = function(value) {
+		if (!arguments.length) return p.count;
+		p.count = value;
+		return obj;
+	};
+
+	obj.sum = function(value) {
+		if (!arguments.length) return p.sum;
+		p.sum = value;
+		return obj;
+	};
+
+	obj.avg = function(value) {
+		if (!arguments.length) return p.avg;
+		// We can take either an accessor function or a boolean
+		if( typeof value === 'function' ) {
+			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
+			p.sum = value;
+			p.avg = true;
+			p.count = true;
+		} else {
+			p.avg = value;
+		}
+		return obj;
+	};
+
+	obj.exception = function(value) {
+		if (!arguments.length) return p.exceptionAccessor;
+		p.exceptionAccessor = value;
+		return obj;
+	};
+
+	obj.valueList = function(value) {
+		if (!arguments.length) return p.valueList;
+		p.valueList = value;
+		return obj;
+	};
+
+	obj.median = function(value) {
+		if (!arguments.length) return p.median;
+		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+		p.valueList = value;
+		p.median = value;
+		return obj;
+	};
+
+	obj.min = function(value) {
+		if (!arguments.length) return p.min;
+		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by min aggregation');
+		p.valueList = value;
+		p.min = value;
+		return obj;
+	};
+
+	obj.max = function(value) {
+		if (!arguments.length) return p.max;
+		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by max aggregation');
+		p.valueList = value;
+		p.max = value;
+		return obj;
+	};
+
+	obj.exceptionCount = function(value) {
+		if (!arguments.length) return p.exceptionCount;
+		if( typeof value === 'function' ) {
+			if(p.sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
+			p.exceptionAccessor = value;
+			p.exceptionCount = true;
+		} else {
+			p.exceptionCount = value;
+		}
+		return obj;
+	};
+
+	obj.exceptionSum = function(value) {
+		if (!arguments.length) return p.exceptionSum;
+		p.exceptionSum = value;
+		return obj;
+	};
+
+	obj.histogramValue = function(value) {
+		if (!arguments.length) return p.histogramValue;
+		p.histogramValue = value;
+		return obj;
+	};
+
+	obj.histogramBins = function(value) {
+		if (!arguments.length) return p.histogramThresholds;
+		p.histogramThresholds = value;
+		return obj;
+	};
+
+	obj.std = function(value) {
+		if (!arguments.length) return p.std;
+		if(typeof(value) === 'function') {
+			p.sumOfSquares = value;
+			p.sum = value;
+			p.std = true;
+		} else {
+			p.std = value;
+		}
+		return obj;
+	};
+
+	obj.sumOfSq = function(value) {
+		if (!arguments.length) return p.sumOfSquares;
+		p.sumOfSquares = value;
+		return obj;
+	};
+
+	obj.value = function(value, accessor) {
+		if (!arguments.length || typeof value !== 'string' ) {
+			console.error("'value' requires a string argument.");
+		} else {
+			if(!p.values) p.values = {};
+			p.values[value] = {};
+			p.values[value].parameters = reductio_parameters();
+			accessor_build(p.values[value], p.values[value].parameters);
+			if(accessor) p.values[value].accessor = accessor;
+			return p.values[value];
+		}
+	};
+}
+
+var reductio_accessors = {
+	build: accessor_build
+};
+
+module.exports = reductio_accessors;
+},{"./parameters.js":11}],2:[function(_dereq_,module,exports){
 var reductio_avg = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.avg = p.sum / p.count;
+			if(path(p).count > 0) {
+				path(p).avg = path(p).sum / path(p).count;
 			} else {
-				p.avg = 0;
+				path(p).avg = 0;
 			}
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.avg = p.sum / p.count;
+			if(path(p).count > 0) {
+				path(p).avg = path(p).sum / path(p).count;
 			} else {
-				p.avg = 0;
+				path(p).avg = 0;
 			}
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.avg = 0;
+			path(p).avg = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_avg;
-},{}],2:[function(_dereq_,module,exports){
+},{}],3:[function(_dereq_,module,exports){
+var reductio_count = _dereq_('./count.js');
+var reductio_sum = _dereq_('./sum.js');
+var reductio_avg = _dereq_('./avg.js');
+var reductio_median = _dereq_('./median.js');
+var reductio_min = _dereq_('./min.js');
+var reductio_max = _dereq_('./max.js');
+var reductio_value_count = _dereq_('./value-count.js');
+var reductio_value_list = _dereq_('./value-list.js');
+var reductio_exception_count = _dereq_('./exception-count.js');
+var reductio_exception_sum = _dereq_('./exception-sum.js');
+var reductio_histogram = _dereq_('./histogram.js');
+var reductio_sum_of_sq = _dereq_('./sum-of-squares.js');
+var reductio_std = _dereq_('./std.js');
+
+function build_function(p, f, path) {
+	// We have to build these functions in order. Eventually we can include dependency
+	// information and create a dependency graph if the process becomes complex enough.
+
+	if(!path) path = function (d) { return d; };
+
+	if(p.count || p.std) {
+		f.reduceAdd = reductio_count.add(f.reduceAdd, path);
+		f.reduceRemove = reductio_count.remove(f.reduceRemove, path);
+		f.reduceInitial = reductio_count.initial(f.reduceInitial, path);
+	}
+
+	if(p.sum) {
+		f.reduceAdd = reductio_sum.add(p.sum, f.reduceAdd, path);
+		f.reduceRemove = reductio_sum.remove(p.sum, f.reduceRemove, path);
+		f.reduceInitial = reductio_sum.initial(f.reduceInitial, path);
+	}
+
+	if(p.avg) {
+		if(!p.count | !p.sum) {
+			console.error("You must set .count(true) and define a .sum(accessor) to use .avg(true).");
+		} else {
+			f.reduceAdd = reductio_avg.add(p.sum, f.reduceAdd, path);
+			f.reduceRemove = reductio_avg.remove(p.sum, f.reduceRemove, path);
+			f.reduceInitial = reductio_avg.initial(f.reduceInitial, path);
+		}
+	}
+
+	// The unique-only reducers come before the value_count reducers. They need to check if
+	// the value is already in the values array on the group. They should only increment/decrement
+	// counts if the value not in the array or the count on the value is 0.
+	if(p.exceptionCount) {
+		if(!p.exceptionAccessor) {
+			console.error("You must define an .exception(accessor) to use .exceptionCount(true).");
+		} else {
+			f.reduceAdd = reductio_exception_count.add(p.exceptionAccessor, f.reduceAdd, path);
+			f.reduceRemove = reductio_exception_count.remove(p.exceptionAccessor, f.reduceRemove, path);
+			f.reduceInitial = reductio_exception_count.initial(f.reduceInitial, path);
+		}
+	}
+
+	if(p.exceptionSum) {
+		if(!p.exceptionAccessor) {
+			console.error("You must define an .exception(accessor) to use .exceptionSum(accessor).");
+		} else {
+			f.reduceAdd = reductio_exception_sum.add(p.exceptionAccessor, p.exceptionSum, f.reduceAdd, path);
+			f.reduceRemove = reductio_exception_sum.remove(p.exceptionAccessor, p.exceptionSum, f.reduceRemove, path);
+			f.reduceInitial = reductio_exception_sum.initial(f.reduceInitial, path);
+		}
+	}
+
+	// Maintain the values array.
+	if(p.valueList || p.median || p.min || p.max) {
+		f.reduceAdd = reductio_value_list.add(p.valueList, f.reduceAdd, path);
+		f.reduceRemove = reductio_value_list.remove(p.valueList, f.reduceRemove, path);
+		f.reduceInitial = reductio_value_list.initial(f.reduceInitial, path);
+	}
+
+	if(p.median) {
+		f.reduceAdd = reductio_median.add(f.reduceAdd, path);
+		f.reduceRemove = reductio_median.remove(f.reduceRemove, path);
+		f.reduceInitial = reductio_median.initial(f.reduceInitial, path);
+	}
+
+	if(p.min) {
+		f.reduceAdd = reductio_min.add(f.reduceAdd, path);
+		f.reduceRemove = reductio_min.remove(f.reduceRemove, path);
+		f.reduceInitial = reductio_min.initial(f.reduceInitial, path);
+	}
+
+	if(p.max) {
+		f.reduceAdd = reductio_max.add(f.reduceAdd, path);
+		f.reduceRemove = reductio_max.remove(f.reduceRemove, path);
+		f.reduceInitial = reductio_max.initial(f.reduceInitial, path);
+	}
+
+	// Maintain the values count array.
+	if(p.exceptionAccessor) {
+		f.reduceAdd = reductio_value_count.add(p.exceptionAccessor, f.reduceAdd, path);
+		f.reduceRemove = reductio_value_count.remove(p.exceptionAccessor, f.reduceRemove, path);
+		f.reduceInitial = reductio_value_count.initial(f.reduceInitial, path);
+	}
+
+	// Histogram
+	if(p.histogramValue && p.histogramThresholds) {
+		f.reduceAdd = reductio_histogram.add(p.histogramValue, f.reduceAdd, path);
+		f.reduceRemove = reductio_histogram.remove(p.histogramValue, f.reduceRemove, path);
+		f.reduceInitial = reductio_histogram.initial(p.histogramThresholds ,f.reduceInitial, path);
+	}
+
+	// Sum of Squares
+	if(p.sumOfSquares) {
+		f.reduceAdd = reductio_sum_of_sq.add(p.sumOfSquares, f.reduceAdd, path);
+		f.reduceRemove = reductio_sum_of_sq.remove(p.sumOfSquares, f.reduceRemove, path);
+		f.reduceInitial = reductio_sum_of_sq.initial(f.reduceInitial, path);
+	}
+
+	// Standard deviation
+	if(p.std) {
+		if(!p.sumOfSquares || !p.sum) {
+			console.error("You must set .sumOfSq(accessor) and define a .sum(accessor) to use .std(true). Or use .std(accessor).");
+		} else {
+			f.reduceAdd = reductio_std.add(f.reduceAdd, path);
+			f.reduceRemove = reductio_std.remove(f.reduceRemove, path);
+			f.reduceInitial = reductio_std.initial(f.reduceInitial, path);
+		}
+	}
+
+
+
+	// Values go last.
+	if(p.values) {
+		Object.getOwnPropertyNames(p.values).forEach(function(n) {
+			// Set up the path on each group.
+			var setupPath = function(prior) {
+				return function (p) {
+					p = prior(p);
+					path(p)[n] = {};
+					return p;
+				};
+			};
+			f.reduceInitial = setupPath(f.reduceInitial);
+			build_function(p.values[n].parameters, f, function (p) { return p[n]; });
+		});
+	}
+}
+
+var reductio_build = {
+	build: build_function
+};
+
+module.exports = reductio_build;
+},{"./avg.js":2,"./count.js":4,"./exception-count.js":5,"./exception-sum.js":6,"./histogram.js":7,"./max.js":8,"./median.js":9,"./min.js":10,"./std.js":13,"./sum-of-squares.js":14,"./sum.js":15,"./value-count.js":16,"./value-list.js":17}],4:[function(_dereq_,module,exports){
 var reductio_count = {
-	add: function (p, v) {
-		p.count++;
-		return p;
+	add: function(prior, path) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			path(p).count++;
+			return p;
+		};
 	},
-	remove: function (p, v) {
-		p.count--;
-		return p;
+	remove: function(prior, path) {
+		return function (p, v) {
+			if(prior) prior(p, v);
+			path(p).count--;
+			return p;
+		};
 	},
-	initial: function (p) {
-		if(p === undefined) p = {};
-		p.count = 0;
-		return p;
+	initial: function(prior, path) {
+		return function (p) {
+			if(prior) p = prior(p);
+			// if(p === undefined) p = {};
+			path(p).count = 0;
+			return p;
+		};
 	}
 };
 
 module.exports = reductio_count;
-},{}],3:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var reductio_exception_count = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		var i, curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Only count++ if the p.values array doesn't contain a(v) or if it's 0.
-			i = p.bisect(p.values, a(v), 0, p.values.length);
-			curr = p.values[i];
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
+			curr = path(p).values[i];
 			if((!curr || curr[0] !== a(v)) || curr[1] === 0) {
-				p.exceptionCount++;
+				path(p).exceptionCount++;
 			}
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		var i, curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Only count-- if the p.values array contains a(v) value of 1.
-			i = p.bisect(p.values, a(v), 0, p.values.length);
-			curr = p.values[i];
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
+			curr = path(p).values[i];
 			if(curr && curr[0] === a(v) && curr[1] === 1) {
-				p.exceptionCount--;
+				path(p).exceptionCount--;
 			}
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.exceptionCount = 0;
+			path(p).exceptionCount = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_exception_count;
-},{}],4:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 var reductio_exception_sum = {
-	add: function (a, sum, prior) {
+	add: function (a, sum, prior, path) {
 		var i, curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Only sum if the p.values array doesn't contain a(v) or if it's 0.
-			i = p.bisect(p.values, a(v), 0, p.values.length);
-			curr = p.values[i];
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
+			curr = path(p).values[i];
 			if((!curr || curr[0] !== a(v)) || curr[1] === 0) {
-				p.exceptionSum = p.exceptionSum + sum(v);
+				path(p).exceptionSum = path(p).exceptionSum + sum(v);
 			}
 			return p;
 		};
 	},
-	remove: function (a, sum, prior) {
+	remove: function (a, sum, prior, path) {
 		var i, curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Only sum if the p.values array contains a(v) value of 1.
-			i = p.bisect(p.values, a(v), 0, p.values.length);
-			curr = p.values[i];
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
+			curr = path(p).values[i];
 			if(curr && curr[0] === a(v) && curr[1] === 1) {
-				p.exceptionSum = p.exceptionSum - sum(v);
+				path(p).exceptionSum = path(p).exceptionSum - sum(v);
 			}
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.exceptionSum = 0;
+			path(p).exceptionSum = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_exception_sum;
-},{}],5:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_histogram = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
-			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
+			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y++;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 0, a(v));
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
-			curr = p.histogram[bisectHisto(p.histogram, a(v), 0, p.histogram.length) - 1];
+			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y--;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 1);
 			return p;
 		};
 	},
-	initial: function (thresholds, prior) {
+	initial: function (thresholds, prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.histogram = [];
+			path(p).histogram = [];
 			var arr = [];
 			for(var i = 1; i < thresholds.length; i++) {
 				arr = [];
 				arr.x = thresholds[i - 1];
 				arr.dx = (thresholds[i] - thresholds[i - 1]);
 				arr.y = 0;
-				p.histogram.push(arr);
+				path(p).histogram.push(arr);
 			}
 			return p;
 		};
@@ -174,517 +469,310 @@ var reductio_histogram = {
 
 module.exports = reductio_histogram;
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 var reductio_max = {
-	add: function (prior) {
+	add: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
  
-			p.max = p.valueList[p.valueList.length - 1];
+			path(p).max = path(p).valueList[path(p).valueList.length - 1];
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.max = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).max = undefined;
 				return p;
 			}
  
-			p.max = p.valueList[p.valueList.length - 1];
+			path(p).max = path(p).valueList[path(p).valueList.length - 1];
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.max = undefined;
+			path(p).max = undefined;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_max;
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var reductio_median = {
-	add: function (prior) {
+	add: function (prior, path) {
 		var half;
 		return function (p, v) {
 			if(prior) prior(p, v);
 
-			half = Math.floor(p.valueList.length/2);
+			half = Math.floor(path(p).valueList.length/2);
  
-			if(p.valueList.length % 2) {
-				p.median = p.valueList[half];
+			if(path(p).valueList.length % 2) {
+				path(p).median = path(p).valueList[half];
 			} else {
-				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+				path(p).median = (path(p).valueList[half-1] + path(p).valueList[half]) / 2.0;
 			}
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		var half;
 		return function (p, v) {
 			if(prior) prior(p, v);
 
-			half = Math.floor(p.valueList.length/2);
+			half = Math.floor(path(p).valueList.length/2);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.median = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).median = undefined;
 				return p;
 			}
  
-			if(p.valueList.length === 1 || p.valueList.length % 2) {
-				p.median = p.valueList[half];
+			if(path(p).valueList.length === 1 || path(p).valueList.length % 2) {
+				path(p).median = path(p).valueList[half];
 			} else {
-				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+				path(p).median = (path(p).valueList[half-1] + path(p).valueList[half]) / 2.0;
 			}
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.median = undefined;
+			path(p).median = undefined;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_median;
-},{}],8:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var reductio_min = {
-	add: function (prior) {
+	add: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
  
-			p.min = p.valueList[0];
+			path(p).min = path(p).valueList[0];
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.min = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).min = undefined;
 				return p;
 			}
  
-			p.min = p.valueList[0];
+			path(p).min = path(p).valueList[0];
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.min = undefined;
+			path(p).min = undefined;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_min;
-},{}],9:[function(_dereq_,module,exports){
-reductio_count = _dereq_('./count.js');
-reductio_sum = _dereq_('./sum.js');
-reductio_avg = _dereq_('./avg.js');
-reductio_median = _dereq_('./median.js');
-reductio_min = _dereq_('./min.js');
-reductio_max = _dereq_('./max.js');
-reductio_value_count = _dereq_('./value-count.js');
-reductio_value_list = _dereq_('./value-list.js');
-reductio_exception_count = _dereq_('./exception-count.js');
-reductio_exception_sum = _dereq_('./exception-sum.js');
-reductio_histogram = _dereq_('./histogram.js');
-reductio_sum_of_sq = _dereq_('./sum-of-squares.js');
-reductio_std = _dereq_('./std.js');
+},{}],11:[function(_dereq_,module,exports){
+var reductio_parameters = function() {
+	return {
+		order: false,
+		avg: false,
+		count: false,
+		sum: false,
+		exceptionAccessor: false,
+		exceptionCount: false,
+		exceptionSum: false,
+		valueList: false,
+		median: false,
+		histogramValue: false,
+		min: false,
+		max: false,
+		histogramThresholds: false,
+		std: false,
+		sumOfSquares: false,
+		values: false
+	};
+};
+
+module.exports = reductio_parameters;
+},{}],12:[function(_dereq_,module,exports){
+var reductio_build = _dereq_('./build.js');
+var reductio_accessors = _dereq_('./accessors.js');
+var reductio_parameters = _dereq_('./parameters.js');
 
 function reductio() {
-	var order, avg, count, sum, exceptionAccessor, exceptionCount,
-		exceptionSum, valueList, median, histogramValue, min, max,
-		histogramThresholds, std, sumOfSquares,
-		reduceAdd, reduceRemove, reduceInitial;
+	var parameters = reductio_parameters();
 
-	reduceAdd = function(p, v) { return p; };
-	reduceAdd = function(p, v) { return p; };
-	reduceInitial = function () { return {}; };
+	var funcs = {};
 
 	function my(group) {
-		buildFunctions();
+		// Start fresh each time.
+		funcs = {
+			reduceAdd: function(p) { return p; },
+			reduceRemove: function(p) { return p; },
+			reduceInitial: function () { return {}; },
+		};
 
-		group.reduce(reduceAdd, reduceRemove, reduceInitial);
+		reductio_build.build(parameters, funcs);
+
+		group.reduce(funcs.reduceAdd, funcs.reduceRemove, funcs.reduceInitial);
 
 		return group;
 	}
 
-	function buildFunctions() {
-
-		// We have to build these functions in order. Eventually we can include dependency
-		// information and create a dependency graph if the process becomes complex enough.
-
-		if(count || std) {
-			reduceAdd = reductio_count.add;
-			reduceRemove = reductio_count.remove;
-			reduceInitial = reductio_count.initial;
-		}
-
-		if(sum) {
-			reduceAdd = reductio_sum.add(sum, reduceAdd);
-			reduceRemove = reductio_sum.remove(sum, reduceRemove);
-			reduceInitial = reductio_sum.initial(reduceInitial);
-		}
-
-		if(avg) {
-			if(!count | !sum) {
-				console.error("You must set .count(true) and define a .sum(accessor) to use .avg(true).");
-			} else {
-				reduceAdd = reductio_avg.add(sum, reduceAdd);
-				reduceRemove = reductio_avg.remove(sum, reduceRemove);
-				reduceInitial = reductio_avg.initial(reduceInitial);
-			}
-		}
-
-		// The unique-only reducers come before the value_count reducers. They need to check if
-		// the value is already in the values array on the group. They should only increment/decrement
-		// counts if the value not in the array or the count on the value is 0.
-		if(exceptionCount) {
-			if(!exceptionAccessor) {
-				console.error("You must define an .exception(accessor) to use .exceptionCount(true).");
-			} else {
-				reduceAdd = reductio_exception_count.add(exceptionAccessor, reduceAdd);
-				reduceRemove = reductio_exception_count.remove(exceptionAccessor, reduceRemove);
-				reduceInitial = reductio_exception_count.initial(reduceInitial);
-			}
-		}
-
-		if(exceptionSum) {
-			if(!exceptionAccessor) {
-				console.error("You must define an .exception(accessor) to use .exceptionSum(accessor).");
-			} else {
-				reduceAdd = reductio_exception_sum.add(exceptionAccessor, exceptionSum, reduceAdd);
-				reduceRemove = reductio_exception_sum.remove(exceptionAccessor, exceptionSum, reduceRemove);
-				reduceInitial = reductio_exception_sum.initial(reduceInitial);
-			}
-		}
-
-		// Maintain the values array.
-		if(valueList || median || min || max) {
-			reduceAdd = reductio_value_list.add(valueList, reduceAdd);
-			reduceRemove = reductio_value_list.remove(valueList, reduceRemove);
-			reduceInitial = reductio_value_list.initial(reduceInitial);
-		}
-
-		if(median) {
-			reduceAdd = reductio_median.add(reduceAdd);
-			reduceRemove = reductio_median.remove(reduceRemove);
-			reduceInitial = reductio_median.initial(reduceInitial);
-		}
-
-		if(min) {
-			reduceAdd = reductio_min.add(reduceAdd);
-			reduceRemove = reductio_min.remove(reduceRemove);
-			reduceInitial = reductio_min.initial(reduceInitial);
-		}
-
-		if(max) {
-			reduceAdd = reductio_max.add(reduceAdd);
-			reduceRemove = reductio_max.remove(reduceRemove);
-			reduceInitial = reductio_max.initial(reduceInitial);
-		}
-
-		// Maintain the values count array.
-		if(exceptionAccessor) {
-			reduceAdd = reductio_value_count.add(exceptionAccessor, reduceAdd);
-			reduceRemove = reductio_value_count.remove(exceptionAccessor, reduceRemove);
-			reduceInitial = reductio_value_count.initial(reduceInitial);
-		}
-
-		// Histogram
-		if(histogramValue && histogramThresholds) {
-			reduceAdd = reductio_histogram.add(histogramValue, reduceAdd);
-			reduceRemove = reductio_histogram.remove(histogramValue, reduceRemove);
-			reduceInitial = reductio_histogram.initial(histogramThresholds ,reduceInitial);
-		}
-
-		// Sum of Squares
-		if(sumOfSquares) {
-			reduceAdd = reductio_sum_of_sq.add(sumOfSquares, reduceAdd);
-			reduceRemove = reductio_sum_of_sq.remove(sumOfSquares, reduceRemove);
-			reduceInitial = reductio_sum_of_sq.initial(reduceInitial);
-		}
-
-		// Standard deviation
-		if(std) {
-			if(!sumOfSquares || !sum) {
-				console.error("You must set .sumOfSq(accessor) and define a .sum(accessor) to use .std(true). Or use .std(accessor).");
-			} else {
-				reduceAdd = reductio_std.add(reduceAdd);
-				reduceRemove = reductio_std.remove(reduceRemove);
-				reduceInitial = reductio_std.initial(reduceInitial);
-			}
-		}
-	}
-
-	my.order = function(value) {
-		if (!arguments.length) return order;
-		order = value;
-		return my;
-	};
-
-	my.count = function(value) {
-		if (!arguments.length) return count;
-		count = value;
-		return my;
-	};
-
-	my.sum = function(value) {
-		if (!arguments.length) return sum;
-		sum = value;
-		return my;
-	};
-
-	my.avg = function(value) {
-		if (!arguments.length) return avg;
-		// We can take either an accessor function or a boolean
-		if( typeof value === 'function' ) {
-			if(sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
-			sum = value;
-			avg = true;
-			count = true;
-		} else {
-			avg = value;
-		}
-		return my;
-	};
-
-	my.exception = function(value) {
-		if (!arguments.length) return exceptionAccessor;
-		exceptionAccessor = value;
-		return my;
-	};
-
-	my.valueList = function(value) {
-		if (!arguments.length) return valueList;
-		valueList = value;
-		return my;
-	};
-
-	my.median = function(value) {
-		if (!arguments.length) return median;
-		if(valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
-		valueList = value;
-		median = value;
-		return my;
-	};
-
-	my.min = function(value) {
-		if (!arguments.length) return min;
-		if(valueList) console.warn('VALUELIST accessor is being overwritten by min aggregation');
-		valueList = value;
-		min = value;
-		return my;
-	};
-
-	my.max = function(value) {
-		if (!arguments.length) return max;
-		if(valueList) console.warn('VALUELIST accessor is being overwritten by max aggregation');
-		valueList = value;
-		max = value;
-		return my;
-	};
-
-	my.exceptionCount = function(value) {
-		if (!arguments.length) return exceptionCount;
-		if( typeof value === 'function' ) {
-			if(sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
-			exceptionAccessor = value;
-			exceptionCount = true;
-		} else {
-			exceptionCount = value;
-		}
-		return my;
-	};
-
-	my.exceptionSum = function(value) {
-		if (!arguments.length) return exceptionSum;
-		exceptionSum = value;
-		return my;
-	};
-
-	my.histogramValue = function(value) {
-		if (!arguments.length) return histogramValue;
-		histogramValue = value;
-		return my;
-	};
-
-	my.histogramBins = function(value) {
-		if (!arguments.length) return histogramThresholds;
-		histogramThresholds = value;
-		return my;
-	};
-
-	my.std = function(value) {
-		if (!arguments.length) return std;
-		if(typeof(value) === 'function') {
-			sumOfSquares = value;
-			sum = value;
-			std = true;
-		} else {
-			std = value;
-		}
-		return my;
-	};
-
-	my.sumOfSq = function(value) {
-		if (!arguments.length) return sumOfSquares;
-		sumOfSquares = value;
-		return my;
-	};
+	reductio_accessors.build(my, parameters);
 
 	return my;
 }
 
 module.exports = reductio;
-},{"./avg.js":1,"./count.js":2,"./exception-count.js":3,"./exception-sum.js":4,"./histogram.js":5,"./max.js":6,"./median.js":7,"./min.js":8,"./std.js":10,"./sum-of-squares.js":11,"./sum.js":12,"./value-count.js":13,"./value-list.js":14}],10:[function(_dereq_,module,exports){
+},{"./accessors.js":1,"./build.js":3,"./parameters.js":11}],13:[function(_dereq_,module,exports){
 var reductio_std = {
-	add: function (prior) {
+	add: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.std = 0.0;
-				var n = p.sumOfSq - p.sum*p.sum/p.count;
-				if (n>0.0) p.std = Math.sqrt(n/(p.count-1));
+			if(path(p).count > 0) {
+				path(p).std = 0.0;
+				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;
+				if (n>0.0) path(p).std = Math.sqrt(n/(path(p).count-1));
 			} else {
-				p.std = 0.0;
+				path(p).std = 0.0;
 			}
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			if(p.count > 0) {
-				p.std = 0.0;
-				var n = p.sumOfSq - p.sum*p.sum/p.count;
-				if (n>0.0) p.std = Math.sqrt(n/(p.count-1));
+			if(path(p).count > 0) {
+				path(p).std = 0.0;
+				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;
+				if (n>0.0) path(p).std = Math.sqrt(n/(path(p).count-1));
 			} else {
-				p.std = 0;
+				path(p).std = 0;
 			}
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.std = 0;
+			path(p).std = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_std;
-},{}],11:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var reductio_sum_of_sq = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			p.sumOfSq = p.sumOfSq + a(v)*a(v);
+			path(p).sumOfSq = path(p).sumOfSq + a(v)*a(v);
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			p.sumOfSq = p.sumOfSq - a(v)*a(v);
+			path(p).sumOfSq = path(p).sumOfSq - a(v)*a(v);
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.sumOfSq = 0;
+			path(p).sumOfSq = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_sum_of_sq;
-},{}],12:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var reductio_sum = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			p.sum = p.sum + a(v);
+			path(p).sum = path(p).sum + a(v);
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
-			p.sum = p.sum - a(v);
+			path(p).sum = path(p).sum - a(v);
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.sum = 0;
+			path(p).sum = 0;
 			return p;
 		};
 	}
 };
 
 module.exports = reductio_sum;
-},{}],13:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_count = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		var i, curr;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Not sure if this is more efficient than sorting.
-			i = p.bisect(p.values, a(v), 0, p.values.length);
-			curr = p.values[i];
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
+			curr = path(p).values[i];
 			if(curr && curr[0] === a(v)) {
 				// Value already exists in the array - increment it
 				curr[1]++;
 			} else {
 				// Value doesn't exist - add it in form [value, 1]
-				p.values.splice(i, 0, [a(v), 1]);
+				path(p).values.splice(i, 0, [a(v), 1]);
 			}
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		var i;
 		return function (p, v) {
 			if(prior) prior(p, v);
-			i = p.bisect(p.values, a(v), 0, p.values.length);
+			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			// Value already exists or something has gone terribly wrong.
-			p.values[i][1]--;
+			path(p).values[i][1]--;
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
 			// Array[Array[value, count]]
-			p.values = [];
-			p.bisect = crossfilter.bisect.by(function(d) { return d[0]; }).left;
+			path(p).values = [];
+			path(p).bisect = crossfilter.bisect.by(function(d) { return d[0]; }).left;
 			return p;
 		};
 	}
@@ -692,37 +780,37 @@ var reductio_value_count = {
 
 module.exports = reductio_value_count;
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],14:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_list = {
-	add: function (a, prior) {
+	add: function (a, prior, path) {
 		var i;
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		return function (p, v) {
 			if(prior) prior(p, v);
 			// Not sure if this is more efficient than sorting.
-			i = bisect(p.valueList, a(v), 0, p.valueList.length);
-			p.valueList.splice(i, 0, a(v));
+			i = bisect(path(p).valueList, a(v), 0, path(p).valueList.length);
+			path(p).valueList.splice(i, 0, a(v));
 			return p;
 		};
 	},
-	remove: function (a, prior) {
+	remove: function (a, prior, path) {
 		var i;
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		return function (p, v) {
 			if(prior) prior(p, v);
-			i = bisect(p.valueList, a(v), 0, p.valueList.length);
+			i = bisect(path(p).valueList, a(v), 0, path(p).valueList.length);
 			// Value already exists or something has gone terribly wrong.
-			p.valueList.splice(i, 1);
+			path(p).valueList.splice(i, 1);
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.valueList = [];
+			path(p).valueList = [];
 			return p;
 		};
 	}
@@ -730,6 +818,6 @@ var reductio_value_list = {
 
 module.exports = reductio_value_list;
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[9])
-(9)
+},{}]},{},[12])
+(12)
 });

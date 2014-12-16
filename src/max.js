@@ -1,32 +1,32 @@
 var reductio_max = {
-	add: function (prior) {
+	add: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
  
-			p.max = p.valueList[p.valueList.length - 1];
+			path(p).max = path(p).valueList[path(p).valueList.length - 1];
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		return function (p, v) {
 			if(prior) prior(p, v);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.max = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).max = undefined;
 				return p;
 			}
  
-			p.max = p.valueList[p.valueList.length - 1];
+			path(p).max = path(p).valueList[path(p).valueList.length - 1];
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.max = undefined;
+			path(p).max = undefined;
 			return p;
 		};
 	}

@@ -1,46 +1,46 @@
 var reductio_median = {
-	add: function (prior) {
+	add: function (prior, path) {
 		var half;
 		return function (p, v) {
 			if(prior) prior(p, v);
 
-			half = Math.floor(p.valueList.length/2);
+			half = Math.floor(path(p).valueList.length/2);
  
-			if(p.valueList.length % 2) {
-				p.median = p.valueList[half];
+			if(path(p).valueList.length % 2) {
+				path(p).median = path(p).valueList[half];
 			} else {
-				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+				path(p).median = (path(p).valueList[half-1] + path(p).valueList[half]) / 2.0;
 			}
 
 			return p;
 		};
 	},
-	remove: function (prior) {
+	remove: function (prior, path) {
 		var half;
 		return function (p, v) {
 			if(prior) prior(p, v);
 
-			half = Math.floor(p.valueList.length/2);
+			half = Math.floor(path(p).valueList.length/2);
 
 			// Check for undefined.
-			if(p.valueList.length === 0) {
-				p.median = undefined;
+			if(path(p).valueList.length === 0) {
+				path(p).median = undefined;
 				return p;
 			}
  
-			if(p.valueList.length === 1 || p.valueList.length % 2) {
-				p.median = p.valueList[half];
+			if(path(p).valueList.length === 1 || path(p).valueList.length % 2) {
+				path(p).median = path(p).valueList[half];
 			} else {
-				p.median = (p.valueList[half-1] + p.valueList[half]) / 2.0;
+				path(p).median = (path(p).valueList[half-1] + path(p).valueList[half]) / 2.0;
 			}
 
 			return p;
 		};
 	},
-	initial: function (prior) {
+	initial: function (prior, path) {
 		return function (p) {
 			p = prior(p);
-			p.median = undefined;
+			path(p).median = undefined;
 			return p;
 		};
 	}
