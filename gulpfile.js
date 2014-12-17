@@ -5,9 +5,11 @@ var rename = require('gulp-rename');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var streamify = require('gulp-streamify');
+var shim = require('browserify-shim');
 
 gulp.task('scripts', function () {
 	return browserify('./src/reductio.js')
+		.transform(shim)
 		.bundle({ standalone: 'reductio' })
 		.pipe(source('reductio.js'))
         .pipe(gulp.dest('./'))

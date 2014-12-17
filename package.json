@@ -2,7 +2,7 @@
   "name": "reductio",
   "version": "0.0.3",
   "description": "Reductio: Crossfilter groupings",
-  "main": "reductio.js",
+  "main": "src/reductio.js",
   "directories": {
     "test": "test"
   },
@@ -37,10 +37,5 @@
   "homepage": "https://github.com/esjewett/reductio",
   "browserify-shim": {
     "crossfilter": "global:crossfilter"
-  },
-  "browserify": {
-    "transform": [
-      "browserify-shim"
-    ]
   }
 }
