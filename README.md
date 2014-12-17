@@ -28,6 +28,17 @@ reductio().avg(true)(group);
 // Median value returned by accessor function within each group 
 reductio().median(accessorFunction)(group);
 
+// Minimum and maximum
+reductio().min(accessorFunction)(group);
+reductio().max(accessorFunction)(group);
+
+// Sum of squares (used in standard deviation) (as of 0.0.3)
+reductio().sumOfSq(accessorFunction)(group);
+
+// Standard deviation (as of 0.0.3)
+reductio().sumOfSq(accessorFunction).std(true)(group);
+reductio().std(accessorFunction)(group);
+
 // Histogram of values within grouping. Acts like d3.layout.histogram defined using bins(thresholds).
 // https://github.com/mbostock/d3/wiki/Histogram-Layout
 //
@@ -39,6 +50,21 @@ reductio().median(accessorFunction)(group);
 // and y, as defined in the d3.layout.histogram documentation.
 reductio().histogramBins([0,2,6,10])                            // Bin thresholds
         .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
+
+// Values/sub-groups (as of 0.0.4)
+// 
+// Allows group structures such as
+// {
+//   x: { sum: 5 }
+//   y: { count: 3, sum: 12, avg: 4 }
+// }
+//
+// Used for tracking multiple aggregations on a single group. For example, sum of x and y.
+
+var reducer = reductio();
+reducer.value("x").sum(xSumAccessor);
+reducer.value("y").count(true).sum(ySumAccessor).avg(true);
+reducer(group);
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
