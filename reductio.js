@@ -130,6 +130,12 @@ function accessor_build(obj, p) {
 			return p.values[value];
 		}
 	};
+
+	obj.nest = function(keyAccessorArray) {
+		if(!arguments.length) return p.nestKeys;
+		p.nestKeys = keyAccessorArray;
+		return obj;
+	};
 }
 
 var reductio_accessors = {
@@ -137,7 +143,7 @@ var reductio_accessors = {
 };
 
 module.exports = reductio_accessors;
-},{"./parameters.js":11}],2:[function(_dereq_,module,exports){
+},{"./parameters.js":12}],2:[function(_dereq_,module,exports){
 var reductio_avg = {
 	add: function (a, prior, path) {
 		return function (p, v) {
@@ -185,6 +191,7 @@ var reductio_exception_sum = _dereq_('./exception-sum.js');
 var reductio_histogram = _dereq_('./histogram.js');
 var reductio_sum_of_sq = _dereq_('./sum-of-squares.js');
 var reductio_std = _dereq_('./std.js');
+var reductio_nest = _dereq_('./nest.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -294,6 +301,12 @@ function build_function(p, f, path) {
 		}
 	}
 
+	// Nesting
+	if(p.nestKeys) {
+		f.reduceAdd = reductio_nest.add(p.nestKeys, f.reduceAdd, path);
+		f.reduceRemove = reductio_nest.remove(p.nestKeys, f.reduceRemove, path);
+		f.reduceInitial = reductio_nest.initial(f.reduceInitial, path);
+	}
 
 
 	// Values go last.
@@ -318,7 +331,7 @@ var reductio_build = {
 };
 
 module.exports = reductio_build;
-},{"./avg.js":2,"./count.js":4,"./exception-count.js":5,"./exception-sum.js":6,"./histogram.js":7,"./max.js":8,"./median.js":9,"./min.js":10,"./std.js":13,"./sum-of-squares.js":14,"./sum.js":15,"./value-count.js":16,"./value-list.js":17}],4:[function(_dereq_,module,exports){
+},{"./avg.js":2,"./count.js":4,"./exception-count.js":5,"./exception-sum.js":6,"./histogram.js":7,"./max.js":8,"./median.js":9,"./min.js":10,"./nest.js":11,"./std.js":14,"./sum-of-squares.js":15,"./sum.js":16,"./value-count.js":17,"./value-list.js":18}],4:[function(_dereq_,module,exports){
 var reductio_count = {
 	add: function(prior, path) {
 		return function (p, v) {
@@ -592,6 +605,68 @@ var reductio_min = {
 
 module.exports = reductio_min;
 },{}],11:[function(_dereq_,module,exports){
+(function (global){
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+
+var reductio_nest = {
+	add: function (keyAccessors, prior, path) {
+		var i; // Current key accessor
+		var arrRef;
+		var newRef;
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			arrRef = path(p).nest;
+			keyAccessors.forEach(function(a) {
+				newRef = arrRef.filter(function(d) { return d.key === a(v); })[0];
+				if(newRef) {
+					// There is another level.
+					arrRef = newRef.values;
+				} else {
+					// Next level doesn't yet exist so we create it.
+					newRef = [];
+					arrRef.push({ key: a(v), values: newRef });
+					arrRef = newRef;
+				}
+			});
+
+			arrRef.push(v);
+			
+			return p;
+		};
+	},
+	remove: function (keyAccessors, prior, path) {
+		var arrRef;
+		var nextRef;
+		return function (p, v) {
+			if(prior) prior(p, v);
+
+			arrRef = path(p).nest;
+			keyAccessors.forEach(function(a) {
+				arrRef = arrRef.filter(function(d) { return d.key === a(v); })[0].values;
+			});
+
+			// Array contains an actual reference to the row, so just splice it out.
+			arrRef.splice(arrRef.indexOf(v), 1);
+
+			// If the leaf now has length 0 and it's not the base array remove it.
+			// TODO
+
+			return p;
+		};
+	},
+	initial: function (prior, path) {
+		return function (p) {
+			p = prior(p);
+			path(p).nest = [];
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_nest;
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],12:[function(_dereq_,module,exports){
 var reductio_parameters = function() {
 	return {
 		order: false,
@@ -609,12 +684,13 @@ var reductio_parameters = function() {
 		histogramThresholds: false,
 		std: false,
 		sumOfSquares: false,
-		values: false
+		values: false,
+		nestKeys: false
 	};
 };
 
 module.exports = reductio_parameters;
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var reductio_build = _dereq_('./build.js');
 var reductio_accessors = _dereq_('./accessors.js');
 var reductio_parameters = _dereq_('./parameters.js');
@@ -645,7 +721,7 @@ function reductio() {
 }
 
 module.exports = reductio;
-},{"./accessors.js":1,"./build.js":3,"./parameters.js":11}],13:[function(_dereq_,module,exports){
+},{"./accessors.js":1,"./build.js":3,"./parameters.js":12}],14:[function(_dereq_,module,exports){
 var reductio_std = {
 	add: function (prior, path) {
 		return function (p, v) {
@@ -683,7 +759,7 @@ var reductio_std = {
 };
 
 module.exports = reductio_std;
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var reductio_sum_of_sq = {
 	add: function (a, prior, path) {
 		return function (p, v) {
@@ -709,7 +785,7 @@ var reductio_sum_of_sq = {
 };
 
 module.exports = reductio_sum_of_sq;
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 var reductio_sum = {
 	add: function (a, prior, path) {
 		return function (p, v) {
@@ -735,7 +811,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
@@ -780,7 +856,7 @@ var reductio_value_count = {
 
 module.exports = reductio_value_count;
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
@@ -818,6 +894,6 @@ var reductio_value_list = {
 
 module.exports = reductio_value_list;
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[12])
-(12)
+},{}]},{},[13])
+(13)
 });

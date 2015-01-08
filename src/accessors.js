@@ -129,6 +129,12 @@ function accessor_build(obj, p) {
 			return p.values[value];
 		}
 	};
+
+	obj.nest = function(keyAccessorArray) {
+		if(!arguments.length) return p.nestKeys;
+		p.nestKeys = keyAccessorArray;
+		return obj;
+	};
 }
 
 var reductio_accessors = {

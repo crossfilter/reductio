@@ -11,6 +11,7 @@ var reductio_exception_sum = require('./exception-sum.js');
 var reductio_histogram = require('./histogram.js');
 var reductio_sum_of_sq = require('./sum-of-squares.js');
 var reductio_std = require('./std.js');
+var reductio_nest = require('./nest.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -120,6 +121,12 @@ function build_function(p, f, path) {
 		}
 	}
 
+	// Nesting
+	if(p.nestKeys) {
+		f.reduceAdd = reductio_nest.add(p.nestKeys, f.reduceAdd, path);
+		f.reduceRemove = reductio_nest.remove(p.nestKeys, f.reduceRemove, path);
+		f.reduceInitial = reductio_nest.initial(f.reduceInitial, path);
+	}
 
 
 	// Values go last.

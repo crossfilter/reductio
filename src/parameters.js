@@ -15,7 +15,8 @@ var reductio_parameters = function() {
 		histogramThresholds: false,
 		std: false,
 		sumOfSquares: false,
-		values: false
+		values: false,
+		nestKeys: false
 	};
 };
 
