@@ -32,9 +32,10 @@ reductio().median(accessorFunction)(group);
 reductio().min(accessorFunction)(group);
 reductio().max(accessorFunction)(group);
 
-// Min, max, median as boolean.
-// Once you've defined one accessor function for min, max, or median, it will be used by the others.
-// This avoid warning messages about overwriting the valueList.
+// Min, max, median as boolean. (as of 0.0.6)
+// Once you've defined one accessor function for min, max, or median,
+// it will be used by the others. This avoids warning messages about
+// overwriting the valueList.
 reductio().min(accessorFunction).max(true).median(true)(group);
 
 // Sum of squares (used in standard deviation) (as of 0.0.3)
@@ -70,6 +71,22 @@ var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
 reducer.value("y").count(true).sum(ySumAccessor).avg(true);
 reducer(group);
+
+
+// Nesting (as of 0.0.6)
+//
+// The following provides a result similar to
+// d3.nest().key(keyAccessor1).key(keyAccessor2) when applied to the records in the group.
+
+reductio().nest([keyAccessor1, keyAccessor2])(group)
+
+// Structure will be under the 'nest' attribute of the group. Usually you'll want to use
+// the group key as the first level of nesting, then use this to accomplish sub-group
+// nesting.
+//
+// Note that leaves will not be created when there is no record with that value
+// in the branch. However, once a leaf is created it is not currently removed,
+// so there is the possibility of leaves with empty 'values' arrays. Check for this.
 ```
 
 Aggregations can be chained on a given instance of reductio. For example:
