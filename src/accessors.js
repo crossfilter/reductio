@@ -47,24 +47,30 @@ function accessor_build(obj, p) {
 
 	obj.median = function(value) {
 		if (!arguments.length) return p.median;
-		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
-		p.valueList = value;
+		if(typeof value === 'function') {
+			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			p.valueList = value;
+		}
 		p.median = value;
 		return obj;
 	};
 
 	obj.min = function(value) {
 		if (!arguments.length) return p.min;
-		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by min aggregation');
-		p.valueList = value;
+		if(typeof value === 'function') {
+			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			p.valueList = value;
+		}
 		p.min = value;
 		return obj;
 	};
 
 	obj.max = function(value) {
 		if (!arguments.length) return p.max;
-		if(p.valueList) console.warn('VALUELIST accessor is being overwritten by max aggregation');
-		p.valueList = value;
+		if(typeof value === 'function') {
+			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			p.valueList = value;
+		}
 		p.max = value;
 		return obj;
 	};

@@ -19,7 +19,8 @@ describe('Reductio median', function () {
         filterDim = data.dimension(function(d) { return d.bar; });
 
         reductio()
-                .median(function(d) { return d.bar; })(group);
+                .min(function(d) { return d.bar; })
+                .median(true)(group);
 
         median = group;
     });

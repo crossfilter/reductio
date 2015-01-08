@@ -32,6 +32,11 @@ reductio().median(accessorFunction)(group);
 reductio().min(accessorFunction)(group);
 reductio().max(accessorFunction)(group);
 
+// Min, max, median as boolean.
+// Once you've defined one accessor function for min, max, or median, it will be used by the others.
+// This avoid warning messages about overwriting the valueList.
+reductio().min(accessorFunction).max(true).median(true)(group);
+
 // Sum of squares (used in standard deviation) (as of 0.0.3)
 reductio().sumOfSq(accessorFunction)(group);
 
