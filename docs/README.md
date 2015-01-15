@@ -6,6 +6,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 {"gitdown": "badge", "name": "npm-version"}
 {"gitdown": "badge", "name": "bower-version"}
 {"gitdown": "badge", "name": "codeclimate-gpa"}
+{"gitdown": "badge", "name": "david"}
+{"gitdown": "badge", "name": "david-dev"}
 
 {"gitdown": "contents"}
 
