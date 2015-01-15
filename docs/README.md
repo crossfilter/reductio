@@ -3,32 +3,17 @@ Reductio: Crossfilter grouping
 
 Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. 
 
-[![NPM version](http://img.shields.io/npm/v/reductio.svg?style=flat)](https://www.npmjs.org/package/reductio)
-[![Bower version](http://img.shields.io/bower/v/reductio.svg?style=flat)](http://bower.io/search/?q=reductio)
-[![Code Climate](https://codeclimate.com/github/esjewett/reductio/badges/gpa.svg)](https://codeclimate.com/github/esjewett/reductio)
+{"gitdown": "badge", "name": "npm-version"}
+{"gitdown": "badge", "name": "bower-version"}
+{"gitdown": "badge", "name": "codeclimate-gpa"}
 
-* [Aggregations](#aggregations)
-    * [Current aggregations](#aggregations-current-aggregations)
-        * [Count](#aggregations-current-aggregations-count)
-        * [Sum](#aggregations-current-aggregations-sum)
-        * [Average](#aggregations-current-aggregations-average)
-        * [Median](#aggregations-current-aggregations-median)
-        * [Minimum and Maximum](#aggregations-current-aggregations-minimum-and-maximum)
-        * [Sum of squares](#aggregations-current-aggregations-sum-of-squares)
-        * [Standard deviation](#aggregations-current-aggregations-standard-deviation)
-        * [Histogram](#aggregations-current-aggregations-histogram)
-        * [Values or sub-groupings](#aggregations-current-aggregations-values-or-sub-groupings)
-        * [Nest](#aggregations-current-aggregations-nest)
-    * [Chaining aggregations](#aggregations-chaining-aggregations)
-    * [Aggregation example](#aggregations-aggregation-example)
-    * [Exception aggregation](#aggregations-exception-aggregation)
+{"gitdown": "contents"}
 
-
-<h1 id="aggregations">Aggregations</h1>
+# Aggregations
 
 Aggregations are additive (so you can track more than one aggregation on a given group) and can depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
 
-<h2 id="aggregations-current-aggregations">Current aggregations</h2>
+## Current aggregations
 Current aggregations supported are shown given the following setup.
 
 ```
@@ -38,7 +23,7 @@ var group = dim.group();
 var reducer;
 ```
 
-<h3 id="aggregations-current-aggregations-count">Count</h3>
+### Count
 
 ```
 reducer = reductio().count(true);
@@ -46,7 +31,7 @@ reducer = reductio().count(true);
 reducer(group);
 ```
 
-<h3 id="aggregations-current-aggregations-sum">Sum</h3>
+### Sum
 ```
 // accessorFunction must return a number
 reducer = reductio().sum(accessorFunction);
@@ -54,7 +39,7 @@ reducer = reductio().sum(accessorFunction);
 reducer(group);
 ```
 
-<h3 id="aggregations-current-aggregations-average">Average</h3>
+### Average
 ```
 // There is no need to use the intermediate 'reducer' variable if you are not going to re-use the reducer.
 
@@ -62,13 +47,13 @@ reducer(group);
 reductio().avg(true)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-median">Median</h3>
+### Median
 ```
 // Median value returned by accessor function within each group 
 reductio().median(accessorFunction)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-minimum-and-maximum">Minimum and Maximum</h3>
+### Minimum and Maximum
 ```
 // Minimum and maximum
 reductio().min(accessorFunction)(group);
@@ -81,20 +66,20 @@ reductio().max(accessorFunction)(group);
 reductio().min(accessorFunction).max(true).median(true)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-sum-of-squares">Sum of squares</h3>
+### Sum of squares
 ```
 // Sum of squares (used in standard deviation) (as of 0.0.3)
 reductio().sumOfSq(accessorFunction)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-standard-deviation">Standard deviation</h3>
+### Standard deviation
 ```
 // Standard deviation (as of 0.0.3)
 reductio().sumOfSq(accessorFunction).std(true)(group);
 reductio().std(accessorFunction)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-histogram">Histogram</h3>
+### Histogram
 ```
 // Histogram of values within grouping. Acts like d3.layout.histogram defined using bins(thresholds).
 // https://github.com/mbostock/d3/wiki/Histogram-Layout
@@ -109,7 +94,7 @@ reductio().histogramBins([0,2,6,10])                            // Bin threshold
         .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
 ```
 
-<h3 id="aggregations-current-aggregations-values-or-sub-groupings">Values or sub-groupings</h3>
+### Values or sub-groupings
 ```
 // Values/sub-groups (as of 0.0.4)
 // 
@@ -127,7 +112,7 @@ reducer.value("y").count(true).sum(ySumAccessor).avg(true);
 reducer(group);
 ```
 
-<h3 id="aggregations-current-aggregations-nest">Nest</h3>
+### Nest
 ```
 // Nesting (as of 0.0.6)
 //
@@ -145,7 +130,7 @@ reductio().nest([keyAccessor1, keyAccessor2])(group)
 // so there is the possibility of leaves with empty 'values' arrays. Check for this.
 ```
 
-<h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
+## Chaining aggregations
 Aggregations can be chained on a given instance of reductio. For example:
 
 ```
@@ -154,7 +139,7 @@ reductio().count(true)
     .avg(true)(group);
 ```
 
-<h2 id="aggregations-aggregation-example">Aggregation example</h2>
+## Aggregation example
 
 Basic use:
 
@@ -186,7 +171,7 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
-<h2 id="aggregations-exception-aggregation">Exception aggregation</h2>
+## Exception aggregation
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```
