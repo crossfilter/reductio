@@ -9,9 +9,9 @@ var shim = require('browserify-shim');
 var Gitdown = require('gitdown');
 
 gulp.task('scripts', function () {
-	return browserify('./src/reductio.js')
+	return browserify('./src/reductio.js', { standalone: 'reductio' })
 		.transform(shim)
-		.bundle({ standalone: 'reductio' })
+		.bundle()
 		.pipe(source('reductio.js'))
         .pipe(gulp.dest('./'))
         .pipe(rename('reductio.min.js'))
