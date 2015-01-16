@@ -110,6 +110,7 @@ function accessor_build(obj, p) {
 		if(typeof(value) === 'function') {
 			p.sumOfSquares = value;
 			p.sum = value;
+			p.count = true;
 			p.std = true;
 		} else {
 			p.std = value;

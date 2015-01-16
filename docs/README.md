@@ -26,12 +26,13 @@ var reducer;
 ```
 
 ### Count
-
 ```
 reducer = reductio().count(true);
 // Same as group.reduceCount()
 reducer(group);
 ```
+
+Stored under the 'count' property of groups. The value will be a count of every record that matches the group accessor.
 
 ### Sum
 ```
@@ -41,30 +42,36 @@ reducer = reductio().sum(accessorFunction);
 reducer(group);
 ```
 
+Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor.
+
 ### Average
 ```
 // There is no need to use the intermediate 'reducer' variable if you are not going to re-use the reducer.
-
+//
 // .count(true) and .sum(...) must both be specified
 reductio().avg(true)(group);
 ```
+Stored under the 'avg' property of groups. Depends on *count* and *sum* aggregations being specified. Is equal to sum/count for the group.
 
 ### Median
 ```
 // Median value returned by accessor function within each group 
-reductio().median(accessorFunction)(group);
+
 ```
 
-### Minimum and Maximum
+### Minimum, Maximum, Median
 ```
 // Minimum and maximum
 reductio().min(accessorFunction)(group);
 reductio().max(accessorFunction)(group);
+reductio().median(accessorFunction)(group);
+```
+Stored under the 'median', 'min', and 'max' property of groups.
 
+New in 0.0.6: Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```valueList(accessorFunction)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
+
+```
 // Min, max, median as boolean. (as of 0.0.6)
-// Once you've defined one accessor function for min, max, or median,
-// it will be used by the others. This avoids warning messages about
-// overwriting the valueList.
 reductio().min(accessorFunction).max(true).median(true)(group);
 ```
 
@@ -73,64 +80,60 @@ reductio().min(accessorFunction).max(true).median(true)(group);
 // Sum of squares (used in standard deviation) (as of 0.0.3)
 reductio().sumOfSq(accessorFunction)(group);
 ```
+Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group.
 
 ### Standard deviation
 ```
 // Standard deviation (as of 0.0.3)
-reductio().sumOfSq(accessorFunction).std(true)(group);
+reductio().sumOfSq(accessorFunction).sum(accessorFunction).count(true).std(true)(group);
 reductio().std(accessorFunction)(group);
 ```
+Stored under the 'std' property of the group. Defined as the sum-of-squares minus the average of the square of sums for all records in the group. In other words, for group 'g', ```g.sumOfSq - g.sum*g.sum/g.count```.
+
+If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise you can pass in an accessorFunction directly.
 
 ### Histogram
 ```
-// Histogram of values within grouping. Acts like d3.layout.histogram defined using bins(thresholds).
-// https://github.com/mbostock/d3/wiki/Histogram-Layout
-//
-// This grouping should be usable anywhere d3.layout.histogram can be used. May be useful for small-
-// multiples charts, or for use with the dc.js stack mixin.
-//
-// group.histogram is an array. Each element of the array is a sorted array of values returned by
-// histogramValue that fall into that bin. Each element of the array also has properties, x, dx,
-// and y, as defined in the d3.layout.histogram documentation.
 reductio().histogramBins([0,2,6,10])                            // Bin thresholds
         .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
 ```
 
-### Values or sub-groupings
-```
-// Values/sub-groups (as of 0.0.4)
-// 
-// Allows group structures such as
-// {
-//   x: { sum: 5 }
-//   y: { count: 3, sum: 12, avg: 4 }
-// }
-//
-// Used for tracking multiple aggregations on a single group. For example, sum of x and y.
+Histogram of values within grouping, stored on the 'histogram' property of the group. Acts like [d3.layout.histogram](https://github.com/mbostock/d3/wiki/Histogram-Layout) defined using bins(thresholds).
 
+This grouping should be usable anywhere d3.layout.histogram can be used. May be useful for small-multiples charts, or for use with the dc.js stack mixin.
+
+```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
+
+### Values or sub-groupings (as of 0.0.4)
+```
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
 reducer.value("y").count(true).sum(ySumAccessor).avg(true);
 reducer(group);
 ```
 
-### Nest
+Allows group structures such as
 ```
-// Nesting (as of 0.0.6)
-//
-// The following provides a result similar to
-// d3.nest().key(keyAccessor1).key(keyAccessor2) when applied to the records in the group.
+{
+  x: { sum: 5 }
+  y: { count: 3, sum: 12, avg: 4 }
+}
+```
 
+Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data.
+
+### Nest (as of 0.0.6)
+```
 reductio().nest([keyAccessor1, keyAccessor2])(group)
-
-// Structure will be under the 'nest' attribute of the group. Usually you'll want to use
-// the group key as the first level of nesting, then use this to accomplish sub-group
-// nesting.
-//
-// Note that leaves will not be created when there is no record with that value
-// in the branch. However, once a leaf is created it is not currently removed,
-// so there is the possibility of leaves with empty 'values' arrays. Check for this.
 ```
+
+Stored under the 'nest' property of the group.
+
+Provides a result similar to ```d3.nest().key(keyAccessor1).key(keyAccessor2)``` when applied to the records in the group.
+
+Usually you'll want to use the group key as the first level of nesting, then use this to accomplish sub-group nesting.
+
+Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
 
 ## Chaining aggregations
 Aggregations can be chained on a given instance of reductio. For example:
