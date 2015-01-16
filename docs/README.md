@@ -102,9 +102,9 @@ Histogram of values within grouping, stored on the 'histogram' property of the g
 
 This grouping should be usable anywhere d3.layout.histogram can be used. May be useful for small-multiples charts, or for use with the dc.js stack mixin.
 
-```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
+The property ```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
 
-### Values or sub-groupings (as of 0.0.4)
+### Values or sub-groupings
 ```
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -122,7 +122,7 @@ Allows group structures such as
 
 Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data.
 
-### Nest (as of 0.0.6)
+### Nest
 ```
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```

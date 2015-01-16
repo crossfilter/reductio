@@ -19,6 +19,11 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [Sum of squares](#aggregations-current-aggregations-sum-of-squares)
         * [Standard deviation](#aggregations-current-aggregations-standard-deviation)
         * [Histogram](#aggregations-current-aggregations-histogram)
+        * [Values or sub-groupings](#aggregations-current-aggregations-values-or-sub-groupings)
+        * [Nest](#aggregations-current-aggregations-nest)
+    * [Chaining aggregations](#aggregations-chaining-aggregations)
+    * [Aggregation example](#aggregations-aggregation-example)
+    * [Exception aggregation](#aggregations-exception-aggregation)
 
 
 <h1 id="aggregations">Aggregations</h1>
@@ -112,9 +117,9 @@ Histogram of values within grouping, stored on the 'histogram' property of the g
 
 This grouping should be usable anywhere d3.layout.histogram can be used. May be useful for small-multiples charts, or for use with the dc.js stack mixin.
 
-```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
+The property ```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
 
-### Values or sub-groupings (as of 0.0.4)
+<h3 id="aggregations-current-aggregations-values-or-sub-groupings">Values or sub-groupings</h3>
 ```
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -132,7 +137,7 @@ Allows group structures such as
 
 Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data.
 
-### Nest (as of 0.0.6)
+<h3 id="aggregations-current-aggregations-nest">Nest</h3>
 ```
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
@@ -145,7 +150,7 @@ Usually you'll want to use the group key as the first level of nesting, then use
 
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
 
-## Chaining aggregations
+<h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
 Aggregations can be chained on a given instance of reductio. For example:
 
 ```
@@ -154,7 +159,7 @@ reductio().count(true)
     .avg(true)(group);
 ```
 
-## Aggregation example
+<h2 id="aggregations-aggregation-example">Aggregation example</h2>
 
 Basic use:
 
@@ -186,7 +191,7 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
-## Exception aggregation
+<h2 id="aggregations-exception-aggregation">Exception aggregation</h2>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```
