@@ -12,13 +12,15 @@ module.exports = function(config) {
 
 	browsers: [
 		// 'Chrome'
-		'ChromeCanary'
+		'ChromeCanary',
+		'Firefox'
 		// 'PhantomJS'
 	],
 
 	plugins: [
 		'karma-jasmine',
-		'karma-chrome-launcher'
+		'karma-chrome-launcher',
+		'karma-firefox-launcher'
 	],
 
 	reporters: ['dots'],
