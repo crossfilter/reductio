@@ -5,9 +5,9 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 
 [![NPM version](http://img.shields.io/npm/v/reductio.svg?style=flat)](https://www.npmjs.org/package/reductio)
 [![Bower version](http://img.shields.io/bower/v/reductio.svg?style=flat)](http://bower.io/search/?q=reductio)
+[![Travis build status](http://img.shields.io/travis/esjewett/reductio/master.svg?style=flat)](https://travis-ci.org/esjewett/reductio)
 [![Code Climate](https://codeclimate.com/github/esjewett/reductio/badges/gpa.svg)](https://codeclimate.com/github/esjewett/reductio)
 [![Dependency Status](https://david-dm.org/esjewett/reductio.svg?style=flat)](https://david-dm.org/esjewett/reductio)
-[![Dependency Status](https://david-dm.org/esjewett/reductio/dev-status.svg?style=flat)](https://david-dm.org/esjewett/reductio#info=devDependencies)
 
 * [Aggregations](#aggregations)
     * [Current aggregations](#aggregations-current-aggregations)
