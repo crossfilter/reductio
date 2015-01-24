@@ -16,7 +16,8 @@ var reductio_parameters = function() {
 		std: false,
 		sumOfSquares: false,
 		values: false,
-		nestKeys: false
+		nestKeys: false,
+		aliasKeys: false
 	};
 };
 

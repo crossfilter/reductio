@@ -1,6 +1,6 @@
 {
   "name": "reductio",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Reductio: Crossfilter groupings",
   "main": "src/reductio.js",
   "directories": {
@@ -22,10 +22,11 @@
     "karma-chrome-launcher": "^0.1.4",
     "karma-firefox-launcher": "^0.1.4",
     "karma-jasmine": "~0.1.0",
+    "karma-phantomjs-launcher": "^0.1.4",
     "vinyl-source-stream": "^1.0.0"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start --browsers Firefox --single-run"
+    "test": "./node_modules/karma/bin/karma start --browsers PhantomJS --single-run"
   },
   "repository": {
     "type": "git",

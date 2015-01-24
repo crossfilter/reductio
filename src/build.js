@@ -12,6 +12,7 @@ var reductio_histogram = require('./histogram.js');
 var reductio_sum_of_sq = require('./sum-of-squares.js');
 var reductio_std = require('./std.js');
 var reductio_nest = require('./nest.js');
+var reductio_alias = require('./alias.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -128,6 +129,10 @@ function build_function(p, f, path) {
 		f.reduceInitial = reductio_nest.initial(f.reduceInitial, path);
 	}
 
+	// Alias
+	if(p.aliasKeys) {
+		f.reduceInitial = reductio_alias.initial(f.reduceInitial, path, p.aliasKeys);
+	}
 
 	// Values go last.
 	if(p.values) {

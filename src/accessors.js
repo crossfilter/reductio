@@ -142,6 +142,12 @@ function accessor_build(obj, p) {
 		p.nestKeys = keyAccessorArray;
 		return obj;
 	};
+
+	obj.alias = function(propAccessorObj) {
+		if(!arguments.length) return p.aliasKeys;
+		p.aliasKeys = propAccessorObj;
+		return obj;
+	};
 }
 
 var reductio_accessors = {
