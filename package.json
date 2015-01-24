@@ -32,6 +32,9 @@
     "type": "git",
     "url": "https://github.com/esjewett/reductio.git"
   },
+  "keywords": [
+    "crossfilter"
+  ],
   "author": "Ethan Jewett",
   "license": "Apache 2.0",
   "bugs": {
