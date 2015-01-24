@@ -17,7 +17,8 @@ var reductio_parameters = function() {
 		sumOfSquares: false,
 		values: false,
 		nestKeys: false,
-		aliasKeys: false
+		aliasKeys: false,
+		groupAll: false
 	};
 };
 

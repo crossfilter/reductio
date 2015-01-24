@@ -18,7 +18,47 @@ function reductio() {
 
 		reductio_build.build(parameters, funcs);
 
-		group.reduce(funcs.reduceAdd, funcs.reduceRemove, funcs.reduceInitial);
+		// If we're doing groupAll
+		if(parameters.groupAll) {
+			if(group.top) {
+				console.warn("'groupAll' is defined but attempting to run on a standard dimension.group(). Must run on dimension.groupAll().");
+			} else {
+				var bisect = crossfilter.bisect.by(function(d) { return d.key; }).left;
+				var i;
+				var keys;
+				group.reduce(
+					function(p, v) {
+						keys = parameters.groupAll(v);
+						keys.forEach(function(k) {
+							i = bisect(p, k, 0, p.length);
+							if(!p[i] || p[i].key !== k) {
+								// If the group doesn't yet exist, create it first.
+								p.splice(i, 0, { key: k, value: funcs.reduceInitial() });
+							}
+
+							// Then pass the record and the group value to the reducers
+							funcs.reduceAdd(p[i].value, v);
+						});
+						return p;
+					},
+					function(p, v) {
+						keys = parameters.groupAll(v);
+						keys.forEach(function(k) {
+							i = bisect(p, k, 0, p.length);
+							// The group should exist or we're in trouble!
+							// Then pass the record and the group value to the reducers
+							funcs.reduceRemove(p[i].value, v);
+						});
+						return p;
+					},
+					function() {
+						return [];
+					}
+				);
+			}
+		} else {
+			group.reduce(funcs.reduceAdd, funcs.reduceRemove, funcs.reduceInitial);
+		}
 
 		return group;
 	}
@@ -180,6 +220,12 @@ function accessor_build(obj, p) {
 		p.aliasKeys = propAccessorObj;
 		return obj;
 	};
+
+	obj.groupAll = function(groupTest) {
+		if(!arguments.length) return p.groupAll;
+		p.groupAll = groupTest;
+		return obj;
+	};
 }
 
 var reductio_accessors = {
@@ -193,7 +239,6 @@ var reductio_alias = {
 		return function (p) {
 			if(prior) p = prior(p);
 			for(var prop in obj) {
-				console.log("PROPERTY: " +prop);
 				path(p)[prop] = function() { return obj[prop](path(p)); };
 			}
 			return p;
@@ -750,7 +795,8 @@ var reductio_parameters = function() {
 		sumOfSquares: false,
 		values: false,
 		nestKeys: false,
-		aliasKeys: false
+		aliasKeys: false,
+		groupAll: false
 	};
 };
 

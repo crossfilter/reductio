@@ -148,6 +148,12 @@ function accessor_build(obj, p) {
 		p.aliasKeys = propAccessorObj;
 		return obj;
 	};
+
+	obj.groupAll = function(groupTest) {
+		if(!arguments.length) return p.groupAll;
+		p.groupAll = groupTest;
+		return obj;
+	};
 }
 
 var reductio_accessors = {

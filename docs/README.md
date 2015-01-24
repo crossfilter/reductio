@@ -135,6 +135,13 @@ Usually you'll want to use the group key as the first level of nesting, then use
 
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
 
+### Alias
+
+
+## groupAll aggregations
+
+
+
 ## Chaining aggregations
 Aggregations can be chained on a given instance of reductio. For example:
 

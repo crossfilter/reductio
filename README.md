@@ -21,6 +21,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [Histogram](#aggregations-current-aggregations-histogram)
         * [Values or sub-groupings](#aggregations-current-aggregations-values-or-sub-groupings)
         * [Nest](#aggregations-current-aggregations-nest)
+        * [Alias](#aggregations-current-aggregations-alias)
+    * [groupAll aggregations](#aggregations-groupall-aggregations)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
     * [Aggregation example](#aggregations-aggregation-example)
     * [Exception aggregation](#aggregations-exception-aggregation)
@@ -149,6 +151,13 @@ Provides a result similar to ```d3.nest().key(keyAccessor1).key(keyAccessor2)```
 Usually you'll want to use the group key as the first level of nesting, then use this to accomplish sub-group nesting.
 
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
+
+<h3 id="aggregations-current-aggregations-alias">Alias</h3>
+
+
+<h2 id="aggregations-groupall-aggregations">groupAll aggregations</h2>
+
+
 
 <h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
 Aggregations can be chained on a given instance of reductio. For example:
