@@ -153,11 +153,53 @@ Usually you'll want to use the group key as the first level of nesting, then use
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
 
 <h3 id="aggregations-current-aggregations-alias">Alias</h3>
+```
+reductio().count(true).alias({ newCount: function(g) { return g.count; } });
+```
 
+Allows definition of an accessor function of any name on the group that returns a value from the group. At the moment only functions are allowed, which allows us to define the accessor at initialization-time. In the future it would be good to support aliased properties as well because this would allow recreating a data structure in the exact form required for another library.
+
+On the group, we can then call the following to retrieve the count value.
+```
+group.top(1)[0].newCount();
+```
 
 <h2 id="aggregations-groupall-aggregations">groupAll aggregations</h2>
 
+Sometimes it is necessary to include one record in multiple groups. This is common in OLAP scenarios, classification, and tracking moving averages, to give a few examples. Say we have a data set like
 
+```
+[
+  { foo: 'one', num: 1 },
+  { foo: 'two', num: 2 },
+  { foo: 'three', num: 2 },
+  { foo: 'one', num: 3 },
+  { foo: 'one', num: 4 },
+  { foo: 'two', num: 5 },
+]
+```
+
+We want to track a moving count of the last 2 values on the ```num``` property. So our group with a key ```2``` should count up all records with a ```num``` of ```2``` *or* ```1```. Normally this must be done using the Crossfilter dimension.groupAll method. With reductio we can use all the standard reductio reducers in this type of scenario by specifying some additional groupAll information and called the reducer on the output of ```dimension.groupAll``` *instead* of the output of ```dimension.group```.
+
+reductio().groupAll takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
+
+```
+data.dimension(function(d) { return d.num; });
+filterDim = data.dimension(function(d) { return d.foo; });
+groupAll = dim.groupAll();
+
+var reducer = reductio()
+  .groupAll(function(record) {
+    if(record.num === 5) {
+      return [5];
+    } else {
+      return [record.num, record.num+1];
+    }
+  })
+  .count(true);
+
+reducer(groupAll);
+```
 
 <h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
 Aggregations can be chained on a given instance of reductio. For example:
