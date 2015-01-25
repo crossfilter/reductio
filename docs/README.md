@@ -18,7 +18,7 @@ Aggregations are composable (so you can track more than one aggregation on a giv
 ## Standard aggregations
 Current aggregations supported are shown given the following setup.
 
-```
+```javascript
 var data = crossfilter([...]);
 var dim = data.dimension(...);
 var group = dim.group();
@@ -28,7 +28,7 @@ var reducer;
 ### reductio.<b>count</b>()
 Works the same way as Crossfilter's standard ```group.reduceCount()```.
 
-```
+```javascript
 reducer = reductio().count(true);
 reducer(group);
 ```
@@ -38,7 +38,7 @@ Stored under the 'count' property of groups. The value will be a count of every 
 ### reductio.<b>sum</b>(<i>value</i>)
 Works the same was as Crossfilter's standard ```group.reduceSum()```.
 
-```
+```javascript
 reducer = reductio().sum(function(d) { return +d.number; });
 reducer(group);
 ```
@@ -46,13 +46,13 @@ reducer(group);
 Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor. The accessor function must return a number.
 
 ### reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)
-```
+```javascript
 reductio().avg(function(d) { return +d.number; })(group);
 ```
 Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
 ### reductio.<b>min</b>(<i>boolean</i>|<i>value</i>), reductio.<b>max</b>(<i>boolean</i>|<i>value</i>), reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)
-```
+```javascript
 reductio().min(function(d) { return +d.number; })
   .max(true)
   .median(true)(group);
@@ -62,13 +62,13 @@ Stored under the 'median', 'min', and 'max' property of groups.
 Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```redectio.valueList(value)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
 
 ### reductio.<b>sumOfSq</b>(<i>value</i>)
-```
+```javascript
 reductio().sumOfSq(accessorFunction)(group);
 ```
 Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group. This is used in the standard deviation aggregation, but can be used on its own as well.
 
 ### reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)
-```
+```javascript
 reductio().sumOfSq(accessorFunction).sum(accessorFunction).count(true).std(true)(group);
 reductio().std(accessorFunction)(group);
 ```
@@ -77,7 +77,7 @@ Stored under the 'std' property of the group. Defined as the sum-of-squares minu
 If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise pass in an accessor function directly.
 
 ### Histogram
-```
+```javascript
 reductio().histogramBins([0,2,6,10])
         .histogramValue(function(d) { return +d.number; })(group)
 ```
@@ -95,7 +95,7 @@ Defines the bin thresholds for the histogram. Will result in ```thresholdArray.l
 Accessor for the value to be binned.
 
 ### reductio.<b>value</b>(<i>propertyName</i>)
-```
+```javascript
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
 reducer.value("y").count(true).sum(ySumAccessor).avg(true);
@@ -103,7 +103,7 @@ reducer(group);
 ```
 
 Allows group structures such as
-```
+```javascript
 {
   x: { sum: 5 }
   y: { count: 3, sum: 12, avg: 4 }
@@ -113,7 +113,7 @@ Allows group structures such as
 Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data. ```propertyName``` must be a valid Javascript object property name and must not conflict with any of the property names already used by Reductio (i.e. ```count```, ```sum```, ```avg```, etc.).
 
 ### reductio.<b>nest</b>(<i>keyAccessorArray</i>)
-```
+```javascript
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
 
@@ -126,7 +126,7 @@ Usually you'll want to use the group key as the first level of nesting, then use
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not removed, so there is the possibility of leaves with empty 'values' arrays.
 
 ### reductio.<b>alias</b>(<i>mapping</i>)
-```
+```javascript
 reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 ```
 
@@ -135,7 +135,7 @@ Allows definition of an accessor function of any name on the group that returns 
 At the moment only functions are allowed, which allows us to define the accessor at initialization-time. In the future it would be good to support aliased properties as well because this would allow recreating a data structure in the exact form required for another library.
 
 On the group, we can then call the following to retrieve the count value.
-```
+```javascript
 group.top(1)[0].newCount();
 ```
 
@@ -143,7 +143,7 @@ group.top(1)[0].newCount();
 
 Sometimes it is necessary to include one record in multiple groups. This is common in OLAP scenarios, classification, and tracking moving averages, to give a few examples. Say we have a data set like
 
-```
+```javascript
 [
   { foo: 'one', num: 1 },
   { foo: 'two', num: 2 },
@@ -160,7 +160,7 @@ We want to track a moving count of the last 2 values on the ```num``` property. 
 
 Takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
 
-```
+```javascript
 data.dimension(function(d) { return d.num; });
 filterDim = data.dimension(function(d) { return d.foo; });
 groupAll = dim.groupAll();
@@ -181,7 +181,7 @@ reducer(groupAll);
 ## Chaining aggregations
 As seen above, aggregations can be chained on a given instance of reductio. For example:
 
-```
+```javascript
 reductio().count(true)
     .sum(function(d) { return d.bar; })
     .avg(true)(group);
@@ -191,7 +191,7 @@ reductio().count(true)
 
 Basic use:
 
-```
+```javascript
 var data = crossfilter([
   { foo: 'one', bar: 1 },
   { foo: 'two', bar: 2 },
@@ -222,7 +222,7 @@ group.top(Infinity);
 ## Exception aggregation
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
-```
+```javascript
 var data = crossfilter([
   { foo: 'one', bar: 'A', num: 1 },
   { foo: 'two', bar: 'B', num: 2 },
