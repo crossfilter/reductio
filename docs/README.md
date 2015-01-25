@@ -1,7 +1,7 @@
 Reductio: Crossfilter grouping
 ========
 
-Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. 
+Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. Crossfilter supports basic count and sum aggregations, but even aggregations as conceptually simple as a group minimum or maximum can be difficult to build correctly and efficiently on a Crossfilter group. Reductio provides helper function that generates these aggregations in an efficient and composable way, making it easy to use more complex aggregations with Crossfilter and to have more than one aggregation per group without having to worry about designing 2-way reduce functions.
 
 {"gitdown": "badge", "name": "npm-version"}
 {"gitdown": "badge", "name": "bower-version"}
@@ -13,9 +13,9 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 
 # Aggregations
 
-Aggregations are additive (so you can track more than one aggregation on a given group) and can depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
+Aggregations are composable (so you can track more than one aggregation on a given group) and may depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
 
-## Current aggregations
+## Standard aggregations
 Current aggregations supported are shown given the following setup.
 
 ```
@@ -193,7 +193,7 @@ reductio().count(true)
     .avg(true)(group);
 ```
 
-## Aggregation example
+# Example
 
 Basic use:
 

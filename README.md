@@ -1,7 +1,7 @@
 Reductio: Crossfilter grouping
 ========
 
-Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. 
+Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. Crossfilter supports basic count and sum aggregations, but even aggregations as conceptually simple as a group minimum or maximum can be difficult to build correctly and efficiently on a Crossfilter group. Reductio provides helper function that generates these aggregations in an efficient and composable way, making it easy to use more complex aggregations with Crossfilter and to have more than one aggregation per group without having to worry about designing 2-way reduce functions.
 
 [![NPM version](http://img.shields.io/npm/v/reductio.svg?style=flat)](https://www.npmjs.org/package/reductio)
 [![Bower version](http://img.shields.io/bower/v/reductio.svg?style=flat)](http://bower.io/search/?q=reductio)
@@ -10,29 +10,29 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 [![Dependency Status](https://david-dm.org/esjewett/reductio.svg?style=flat)](https://david-dm.org/esjewett/reductio)
 
 * [Aggregations](#aggregations)
-    * [Current aggregations](#aggregations-current-aggregations)
-        * [Count](#aggregations-current-aggregations-count)
-        * [Sum](#aggregations-current-aggregations-sum)
-        * [Average](#aggregations-current-aggregations-average)
-        * [Median](#aggregations-current-aggregations-median)
-        * [Minimum, Maximum, Median](#aggregations-current-aggregations-minimum-maximum-median)
-        * [Sum of squares](#aggregations-current-aggregations-sum-of-squares)
-        * [Standard deviation](#aggregations-current-aggregations-standard-deviation)
-        * [Histogram](#aggregations-current-aggregations-histogram)
-        * [Values or sub-groupings](#aggregations-current-aggregations-values-or-sub-groupings)
-        * [Nest](#aggregations-current-aggregations-nest)
-        * [Alias](#aggregations-current-aggregations-alias)
+    * [Standard aggregations](#aggregations-standard-aggregations)
+        * [Count](#aggregations-standard-aggregations-count)
+        * [Sum](#aggregations-standard-aggregations-sum)
+        * [Average](#aggregations-standard-aggregations-average)
+        * [Median](#aggregations-standard-aggregations-median)
+        * [Minimum, Maximum, Median](#aggregations-standard-aggregations-minimum-maximum-median)
+        * [Sum of squares](#aggregations-standard-aggregations-sum-of-squares)
+        * [Standard deviation](#aggregations-standard-aggregations-standard-deviation)
+        * [Histogram](#aggregations-standard-aggregations-histogram)
+        * [Values or sub-groupings](#aggregations-standard-aggregations-values-or-sub-groupings)
+        * [Nest](#aggregations-standard-aggregations-nest)
+        * [Alias](#aggregations-standard-aggregations-alias)
     * [groupAll aggregations](#aggregations-groupall-aggregations)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
-    * [Aggregation example](#aggregations-aggregation-example)
-    * [Exception aggregation](#aggregations-exception-aggregation)
+* [Example](#example)
+    * [Exception aggregation](#example-exception-aggregation)
 
 
 <h1 id="aggregations">Aggregations</h1>
 
-Aggregations are additive (so you can track more than one aggregation on a given group) and can depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
+Aggregations are composable (so you can track more than one aggregation on a given group) and may depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
 
-<h2 id="aggregations-current-aggregations">Current aggregations</h2>
+<h2 id="aggregations-standard-aggregations">Standard aggregations</h2>
 Current aggregations supported are shown given the following setup.
 
 ```
@@ -42,7 +42,7 @@ var group = dim.group();
 var reducer;
 ```
 
-<h3 id="aggregations-current-aggregations-count">Count</h3>
+<h3 id="aggregations-standard-aggregations-count">Count</h3>
 ```
 reducer = reductio().count(true);
 // Same as group.reduceCount()
@@ -51,7 +51,7 @@ reducer(group);
 
 Stored under the 'count' property of groups. The value will be a count of every record that matches the group accessor.
 
-<h3 id="aggregations-current-aggregations-sum">Sum</h3>
+<h3 id="aggregations-standard-aggregations-sum">Sum</h3>
 ```
 // accessorFunction must return a number
 reducer = reductio().sum(accessorFunction);
@@ -61,7 +61,7 @@ reducer(group);
 
 Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor.
 
-<h3 id="aggregations-current-aggregations-average">Average</h3>
+<h3 id="aggregations-standard-aggregations-average">Average</h3>
 ```
 // There is no need to use the intermediate 'reducer' variable if you are not going to re-use the reducer.
 //
@@ -70,13 +70,13 @@ reductio().avg(true)(group);
 ```
 Stored under the 'avg' property of groups. Depends on *count* and *sum* aggregations being specified. Is equal to sum/count for the group.
 
-<h3 id="aggregations-current-aggregations-median">Median</h3>
+<h3 id="aggregations-standard-aggregations-median">Median</h3>
 ```
 // Median value returned by accessor function within each group 
 
 ```
 
-<h3 id="aggregations-current-aggregations-minimum-maximum-median">Minimum, Maximum, Median</h3>
+<h3 id="aggregations-standard-aggregations-minimum-maximum-median">Minimum, Maximum, Median</h3>
 ```
 // Minimum and maximum
 reductio().min(accessorFunction)(group);
@@ -92,14 +92,14 @@ New in 0.0.6: Once you've defined one accessor function for min, max, or median 
 reductio().min(accessorFunction).max(true).median(true)(group);
 ```
 
-<h3 id="aggregations-current-aggregations-sum-of-squares">Sum of squares</h3>
+<h3 id="aggregations-standard-aggregations-sum-of-squares">Sum of squares</h3>
 ```
 // Sum of squares (used in standard deviation) (as of 0.0.3)
 reductio().sumOfSq(accessorFunction)(group);
 ```
 Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group.
 
-<h3 id="aggregations-current-aggregations-standard-deviation">Standard deviation</h3>
+<h3 id="aggregations-standard-aggregations-standard-deviation">Standard deviation</h3>
 ```
 // Standard deviation (as of 0.0.3)
 reductio().sumOfSq(accessorFunction).sum(accessorFunction).count(true).std(true)(group);
@@ -109,7 +109,7 @@ Stored under the 'std' property of the group. Defined as the sum-of-squares minu
 
 If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise you can pass in an accessorFunction directly.
 
-<h3 id="aggregations-current-aggregations-histogram">Histogram</h3>
+<h3 id="aggregations-standard-aggregations-histogram">Histogram</h3>
 ```
 reductio().histogramBins([0,2,6,10])                            // Bin thresholds
         .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
@@ -121,7 +121,7 @@ This grouping should be usable anywhere d3.layout.histogram can be used. May be 
 
 The property ```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
 
-<h3 id="aggregations-current-aggregations-values-or-sub-groupings">Values or sub-groupings</h3>
+<h3 id="aggregations-standard-aggregations-values-or-sub-groupings">Values or sub-groupings</h3>
 ```
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -139,7 +139,7 @@ Allows group structures such as
 
 Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data.
 
-<h3 id="aggregations-current-aggregations-nest">Nest</h3>
+<h3 id="aggregations-standard-aggregations-nest">Nest</h3>
 ```
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
@@ -152,7 +152,7 @@ Usually you'll want to use the group key as the first level of nesting, then use
 
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
 
-<h3 id="aggregations-current-aggregations-alias">Alias</h3>
+<h3 id="aggregations-standard-aggregations-alias">Alias</h3>
 ```
 reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 ```
@@ -210,7 +210,7 @@ reductio().count(true)
     .avg(true)(group);
 ```
 
-<h2 id="aggregations-aggregation-example">Aggregation example</h2>
+<h1 id="example">Example</h1>
 
 Basic use:
 
@@ -242,7 +242,7 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
-<h2 id="aggregations-exception-aggregation">Exception aggregation</h2>
+<h2 id="example-exception-aggregation">Exception aggregation</h2>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```
