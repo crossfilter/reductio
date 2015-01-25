@@ -11,18 +11,18 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 
 * [Aggregations](#aggregations)
     * [Standard aggregations](#aggregations-standard-aggregations)
-        * [Count](#aggregations-standard-aggregations-count)
-        * [Sum](#aggregations-standard-aggregations-sum)
-        * [Average](#aggregations-standard-aggregations-average)
-        * [Median](#aggregations-standard-aggregations-median)
-        * [Minimum, Maximum, Median](#aggregations-standard-aggregations-minimum-maximum-median)
-        * [Sum of squares](#aggregations-standard-aggregations-sum-of-squares)
-        * [Standard deviation](#aggregations-standard-aggregations-standard-deviation)
+        * [reductio.count()](#aggregations-standard-aggregations-reductio-count-)
+        * [reductio.sum(*value*)](#aggregations-standard-aggregations-reductio-sum-value-)
+        * [reductio.avg(*boolean*|*value*)](#aggregations-standard-aggregations-reductio-avg-boolean-value-)
+        * [reductio.min(*boolean*|*value*), reductio.max(*boolean*|*value*), reductio.median(*boolean*|*value*)](#aggregations-standard-aggregations-reductio-min-boolean-value-reductio-max-boolean-value-reductio-median-boolean-value-)
+        * [reductio.sumOfSq(*value*)](#aggregations-standard-aggregations-reductio-sumofsq-value-)
+        * [reductio.std(*boolean*|*value*)](#aggregations-standard-aggregations-reductio-std-boolean-value-)
         * [Histogram](#aggregations-standard-aggregations-histogram)
-        * [Values or sub-groupings](#aggregations-standard-aggregations-values-or-sub-groupings)
-        * [Nest](#aggregations-standard-aggregations-nest)
-        * [Alias](#aggregations-standard-aggregations-alias)
+        * [reductio.value(*propertyName*)](#aggregations-standard-aggregations-reductio-value-propertyname-)
+        * [reductio.nest(*keyAccessorArray*)](#aggregations-standard-aggregations-reductio-nest-keyaccessorarray-)
+        * [reductio.alias(*mapping*)](#aggregations-standard-aggregations-reductio-alias-mapping-)
     * [groupAll aggregations](#aggregations-groupall-aggregations)
+        * [reductio.groupAll(*groupingFunction*)](#aggregations-groupall-aggregations-reductio-groupall-groupingfunction-)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Example](#example)
     * [Exception aggregation](#example-exception-aggregation)
@@ -42,77 +42,61 @@ var group = dim.group();
 var reducer;
 ```
 
-<h3 id="aggregations-standard-aggregations-count">Count</h3>
+<h3 id="aggregations-standard-aggregations-reductio-count-">reductio.count()</h3>
+Works the same way as Crossfilter's standard ```group.reduceCount()```.
+
 ```
 reducer = reductio().count(true);
-// Same as group.reduceCount()
 reducer(group);
 ```
 
 Stored under the 'count' property of groups. The value will be a count of every record that matches the group accessor.
 
-<h3 id="aggregations-standard-aggregations-sum">Sum</h3>
+<h3 id="aggregations-standard-aggregations-reductio-sum-value-">reductio.sum(*value*)</h3>
+Works the same was as Crossfilter's standard ```group.reduceSum()```.
+
 ```
-// accessorFunction must return a number
-reducer = reductio().sum(accessorFunction);
-// Same as group.reduceSum(accessor)
+reducer = reductio().sum(function(d) { return +d.number; });
 reducer(group);
 ```
 
-Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor.
+Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor. The accessor function must return a number.
 
-<h3 id="aggregations-standard-aggregations-average">Average</h3>
+<h3 id="aggregations-standard-aggregations-reductio-avg-boolean-value-">reductio.avg(*boolean*|*value*)</h3>
 ```
-// There is no need to use the intermediate 'reducer' variable if you are not going to re-use the reducer.
-//
-// .count(true) and .sum(...) must both be specified
-reductio().avg(true)(group);
+reductio().avg(function(d) { return +d.number; })(group);
 ```
-Stored under the 'avg' property of groups. Depends on *count* and *sum* aggregations being specified. Is equal to sum/count for the group.
+Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
-<h3 id="aggregations-standard-aggregations-median">Median</h3>
+<h3 id="aggregations-standard-aggregations-reductio-min-boolean-value-reductio-max-boolean-value-reductio-median-boolean-value-">reductio.min(*boolean*|*value*), reductio.max(*boolean*|*value*), reductio.median(*boolean*|*value*)</h3>
 ```
-// Median value returned by accessor function within each group 
-
-```
-
-<h3 id="aggregations-standard-aggregations-minimum-maximum-median">Minimum, Maximum, Median</h3>
-```
-// Minimum and maximum
-reductio().min(accessorFunction)(group);
-reductio().max(accessorFunction)(group);
-reductio().median(accessorFunction)(group);
+reductio().min(function(d) { return +d.number; })
+  .max(true)
+  .median(true)(group);
 ```
 Stored under the 'median', 'min', and 'max' property of groups.
 
-New in 0.0.6: Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```valueList(accessorFunction)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
+Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```redectio.valueList(value)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
 
+<h3 id="aggregations-standard-aggregations-reductio-sumofsq-value-">reductio.sumOfSq(*value*)</h3>
 ```
-// Min, max, median as boolean. (as of 0.0.6)
-reductio().min(accessorFunction).max(true).median(true)(group);
-```
-
-<h3 id="aggregations-standard-aggregations-sum-of-squares">Sum of squares</h3>
-```
-// Sum of squares (used in standard deviation) (as of 0.0.3)
 reductio().sumOfSq(accessorFunction)(group);
 ```
-Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group.
+Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group. This is used in the standard deviation aggregation, but can be used on its own as well.
 
-<h3 id="aggregations-standard-aggregations-standard-deviation">Standard deviation</h3>
+<h3 id="aggregations-standard-aggregations-reductio-std-boolean-value-">reductio.std(*boolean*|*value*)</h3>
 ```
-// Standard deviation (as of 0.0.3)
 reductio().sumOfSq(accessorFunction).sum(accessorFunction).count(true).std(true)(group);
 reductio().std(accessorFunction)(group);
 ```
 Stored under the 'std' property of the group. Defined as the sum-of-squares minus the average of the square of sums for all records in the group. In other words, for group 'g', ```g.sumOfSq - g.sum*g.sum/g.count```.
 
-If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise you can pass in an accessorFunction directly.
+If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise pass in an accessor function directly.
 
 <h3 id="aggregations-standard-aggregations-histogram">Histogram</h3>
 ```
-reductio().histogramBins([0,2,6,10])                            // Bin thresholds
-        .histogramValue(function(d) { return d.bar; })(group)   // Value to bin
+reductio().histogramBins([0,2,6,10])
+        .histogramValue(function(d) { return +d.number; })(group)
 ```
 
 Histogram of values within grouping, stored on the 'histogram' property of the group. Acts like [d3.layout.histogram](https://github.com/mbostock/d3/wiki/Histogram-Layout) defined using bins(thresholds).
@@ -121,7 +105,13 @@ This grouping should be usable anywhere d3.layout.histogram can be used. May be 
 
 The property ```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
 
-<h3 id="aggregations-standard-aggregations-values-or-sub-groupings">Values or sub-groupings</h3>
+<h4 id="aggregations-standard-aggregations-histogram-reductio-histogrambins-thresholdarray-">reductio.histogramBins(*thresholdArray*)</h4>
+Defines the bin thresholds for the histogram. Will result in ```thresholdArray.length - 1``` bins.
+
+<h4 id="aggregations-standard-aggregations-histogram-reductio-histgramvalue-value-">reductio.histgramValue(*value*)</h4>
+Accessor for the value to be binned.
+
+<h3 id="aggregations-standard-aggregations-reductio-value-propertyname-">reductio.value(*propertyName*)</h3>
 ```
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -137,9 +127,9 @@ Allows group structures such as
 }
 ```
 
-Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data.
+Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data. ```propertyName``` must be a valid Javascript object property name and must not conflict with any of the property names already used by Reductio (i.e. ```count```, ```sum```, ```avg```, etc.).
 
-<h3 id="aggregations-standard-aggregations-nest">Nest</h3>
+<h3 id="aggregations-standard-aggregations-reductio-nest-keyaccessorarray-">reductio.nest(*keyAccessorArray*)</h3>
 ```
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
@@ -150,14 +140,16 @@ Provides a result similar to ```d3.nest().key(keyAccessor1).key(keyAccessor2)```
 
 Usually you'll want to use the group key as the first level of nesting, then use this to accomplish sub-group nesting.
 
-Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not currently removed, so there is the possibility of leaves with empty 'values' arrays. Check for this.
+Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not removed, so there is the possibility of leaves with empty 'values' arrays.
 
-<h3 id="aggregations-standard-aggregations-alias">Alias</h3>
+<h3 id="aggregations-standard-aggregations-reductio-alias-mapping-">reductio.alias(*mapping*)</h3>
 ```
 reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 ```
 
-Allows definition of an accessor function of any name on the group that returns a value from the group. At the moment only functions are allowed, which allows us to define the accessor at initialization-time. In the future it would be good to support aliased properties as well because this would allow recreating a data structure in the exact form required for another library.
+Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the accessor functions that get the required values from the group.
+
+At the moment only functions are allowed, which allows us to define the accessor at initialization-time. In the future it would be good to support aliased properties as well because this would allow recreating a data structure in the exact form required for another library.
 
 On the group, we can then call the following to retrieve the count value.
 ```
@@ -181,14 +173,16 @@ Sometimes it is necessary to include one record in multiple groups. This is comm
 
 We want to track a moving count of the last 2 values on the ```num``` property. So our group with a key ```2``` should count up all records with a ```num``` of ```2``` *or* ```1```. Normally this must be done using the Crossfilter dimension.groupAll method. With reductio we can use all the standard reductio reducers in this type of scenario by specifying some additional groupAll information and called the reducer on the output of ```dimension.groupAll``` *instead* of the output of ```dimension.group```.
 
-reductio().groupAll takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
+<h3 id="aggregations-groupall-aggregations-reductio-groupall-groupingfunction-">reductio.groupAll(*groupingFunction*)</h3>
+
+Takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
 
 ```
 data.dimension(function(d) { return d.num; });
 filterDim = data.dimension(function(d) { return d.foo; });
 groupAll = dim.groupAll();
 
-var reducer = reductio()
+reducer = reductio()
   .groupAll(function(record) {
     if(record.num === 5) {
       return [5];
@@ -202,7 +196,7 @@ reducer(groupAll);
 ```
 
 <h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
-Aggregations can be chained on a given instance of reductio. For example:
+As seen above, aggregations can be chained on a given instance of reductio. For example:
 
 ```
 reductio().count(true)
