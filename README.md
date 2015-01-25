@@ -14,7 +14,9 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>count</b>()](#aggregations-standard-aggregations-reductio-b-count-b-)
         * [reductio.<b>sum</b>(<i>value</i>)](#aggregations-standard-aggregations-reductio-b-sum-b-i-value-i-)
         * [reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-avg-b-i-boolean-i-i-value-i-)
-        * [reductio.<b>min</b>(<i>boolean</i>|<i>value</i>), reductio.<b>max</b>(<i>boolean</i>|<i>value</i>), reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-reductio-b-max-b-i-boolean-i-i-value-i-reductio-b-median-b-i-boolean-i-i-value-i-)
+        * [reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-)
+        * [reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-max-b-i-boolean-i-i-value-i-)
+        * [reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-median-b-i-boolean-i-i-value-i-)
         * [reductio.<b>sumOfSq</b>(<i>value</i>)](#aggregations-standard-aggregations-reductio-b-sumofsq-b-i-value-i-)
         * [reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-std-b-i-boolean-i-i-value-i-)
         * [Histogram](#aggregations-standard-aggregations-histogram)
@@ -68,7 +70,9 @@ reductio().avg(function(d) { return +d.number; })(group);
 ```
 Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-reductio-b-max-b-i-boolean-i-i-value-i-reductio-b-median-b-i-boolean-i-i-value-i-">reductio.<b>min</b>(<i>boolean</i>|<i>value</i>), reductio.<b>max</b>(<i>boolean</i>|<i>value</i>), reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)</h3>
+<h3 id="aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-">reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)</h3>
+<h3 id="aggregations-standard-aggregations-reductio-b-max-b-i-boolean-i-i-value-i-">reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)</h3>
+<h3 id="aggregations-standard-aggregations-reductio-b-median-b-i-boolean-i-i-value-i-">reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)</h3>
 ```javascript
 reductio().min(function(d) { return +d.number; })
   .max(true)

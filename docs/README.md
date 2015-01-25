@@ -51,7 +51,9 @@ reductio().avg(function(d) { return +d.number; })(group);
 ```
 Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
-### reductio.<b>min</b>(<i>boolean</i>|<i>value</i>), reductio.<b>max</b>(<i>boolean</i>|<i>value</i>), reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)
+### reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)
+### reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)
+### reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)
 ```javascript
 reductio().min(function(d) { return +d.number; })
   .max(true)
