@@ -65,14 +65,18 @@ Once you've defined one accessor function for min, max, or median (or if you hav
 
 ### reductio.<b>sumOfSq</b>(<i>value</i>)
 ```javascript
-reductio().sumOfSq(accessorFunction)(group);
+reductio().sumOfSq(function(d) { return d.number; })(group);
 ```
 Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group. This is used in the standard deviation aggregation, but can be used on its own as well.
 
 ### reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)
 ```javascript
-reductio().sumOfSq(accessorFunction).sum(accessorFunction).count(true).std(true)(group);
-reductio().std(accessorFunction)(group);
+reductio().sumOfSq(function(d) { return d.number; })
+    .sum(function(d) { return d.number; })
+    .count(true)
+    .std(true)(group);
+reductio()
+    .std(function(d) { return d.number; })(group);
 ```
 Stored under the 'std' property of the group. Defined as the sum-of-squares minus the average of the square of sums for all records in the group. In other words, for group 'g', ```g.sumOfSq - g.sum*g.sum/g.count```.
 
