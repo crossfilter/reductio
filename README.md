@@ -20,6 +20,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>sumOfSq</b>(<i>value</i>)](#aggregations-standard-aggregations-reductio-b-sumofsq-b-i-value-i-)
         * [reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-std-b-i-boolean-i-i-value-i-)
         * [Histogram](#aggregations-standard-aggregations-histogram)
+            * [reductio.<b>histogramBins</b>(<i>thresholdArray</i>)](#aggregations-standard-aggregations-histogram-reductio-b-histogrambins-b-i-thresholdarray-i-)
+            * [reductio.<b>histogramValue</b>(<i>value</i>)](#aggregations-standard-aggregations-histogram-reductio-b-histogramvalue-b-i-value-i-)
         * [reductio.<b>value</b>(<i>propertyName</i>)](#aggregations-standard-aggregations-reductio-b-value-b-i-propertyname-i-)
         * [reductio.<b>nest</b>(<i>keyAccessorArray</i>)](#aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-)
         * [reductio.<b>alias</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-)
@@ -27,7 +29,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>groupAll</b>(<i>groupingFunction</i>)](#aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Example](#example)
-    * [Exception aggregation](#example-exception-aggregation)
+* [Exception aggregation](#exception-aggregation)
 
 
 <h1 id="aggregations">Aggregations</h1>
@@ -244,7 +246,7 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
-<h2 id="example-exception-aggregation">Exception aggregation</h2>
+<h1 id="exception-aggregation">Exception aggregation</h1>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```javascript

@@ -9,7 +9,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 {"gitdown": "badge", "name": "codeclimate-gpa"}
 {"gitdown": "badge", "name": "david"}
 
-{"gitdown": "contents"}
+{"gitdown": "contents", "maxLevel": 4}
 
 # Aggregations
 
@@ -225,7 +225,7 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
-## Exception aggregation
+# Exception aggregation
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```javascript
