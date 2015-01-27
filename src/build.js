@@ -33,7 +33,7 @@ function build_function(p, f, path) {
 	}
 
 	if(p.avg) {
-		if(!p.count | !p.sum) {
+		if(!p.count || !p.sum) {
 			console.error("You must set .count(true) and define a .sum(accessor) to use .avg(true).");
 		} else {
 			f.reduceAdd = reductio_avg.add(p.sum, f.reduceAdd, path);
