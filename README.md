@@ -25,11 +25,14 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>value</b>(<i>propertyName</i>)](#aggregations-standard-aggregations-reductio-b-value-b-i-propertyname-i-)
         * [reductio.<b>nest</b>(<i>keyAccessorArray</i>)](#aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-)
         * [reductio.<b>alias</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-)
+        * [Exception aggregation](#aggregations-standard-aggregations-exception-aggregation)
+            * [reductio.<b>exception</b>(<i>accessor</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-)
+            * [reductio.<b>exceptionCount</b>(<i>boolean</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-)
+            * [reductio.<b>exceptionSum</b>(<i>value</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptionsum-b-i-value-i-)
     * [groupAll aggregations](#aggregations-groupall-aggregations)
         * [reductio.<b>groupAll</b>(<i>groupingFunction</i>)](#aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Example](#example)
-* [Exception aggregation](#exception-aggregation)
 
 
 <h1 id="aggregations">Aggregations</h1>
@@ -130,6 +133,7 @@ reducer(group);
 ```
 
 Allows group structures such as
+
 ```javascript
 {
   x: { sum: 5 }
@@ -138,6 +142,32 @@ Allows group structures such as
 ```
 
 Used for tracking multiple aggregations on a single group. For example, sum of x and sum of y. Useful for visualizations like scatter-plots where individual marks represent multiple dimensions in the data. ```propertyName``` must be a valid Javascript object property name and must not conflict with any of the property names already used by Reductio (i.e. ```count```, ```sum```, ```avg```, etc.).
+
+As many values as desired can be defined and any aggregation in this list can be defined on a value and they are calculated independently from aggregations defined on other values or on the base level of the group. Therefore, values are the way to deal with scenarios in which you want to calculated the same aggregation twice with difference logic (sum credits *and* sum debits) or where you are struggling with aggregations that are interdependent (average and sum are linked, so if you want to average a different value than you are summing, use a value).
+
+Note that exception aggregations are supported on values, but groupAll aggregations are not.
+
+A more comprehensive example:
+
+```javascript
+var reducer = reductio();
+reducer.value("w").exception(function(d) { return d.bar; }).exceptionSum(function(d) { return d.num1; });
+reducer.value("x").exception(function(d) { return d.bar; }).exceptionSum(function(d) { return d.num2; });
+reducer.value("y").sum(function(d) { return d.num3; });
+reducer.value("z").sum(function(d) { return d.num4; });
+reducer(group);
+```
+
+Will result in groups that look like
+
+```javascript
+{ key: groupKey, value: {
+  w: { exceptionSum: 2 },
+  x: { exceptionSum: 3 },
+  y: { sum: 4 },
+  z: { sum: 2 }
+}}
+```
 
 <h3 id="aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-">reductio.<b>nest</b>(<i>keyAccessorArray</i>)</h3>
 ```javascript
@@ -165,6 +195,49 @@ On the group, we can then call the following to retrieve the count value.
 ```javascript
 group.top(1)[0].newCount();
 ```
+
+<h3 id="aggregations-standard-aggregations-exception-aggregation">Exception aggregation</h3>
+We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
+
+```javascript
+var data = crossfilter([
+  { foo: 'one', bar: 'A', num: 1 },
+  { foo: 'two', bar: 'B', num: 2 },
+  { foo: 'three', bar: 'A', num: 3 },
+  { foo: 'one', bar: 'B', num: 2 },
+  { foo: 'one', bar: 'A', num: 1 },
+  { foo: 'two', bar: 'B', num: 2 },
+]);
+
+var dim = data.dimension(function(d) { return d.foo; });
+var group = dim.group();
+
+var reducer = reductio()
+    .exception(function(d) { return d.bar; })
+    .exceptionCount(true)
+    .exceptionSum(function(d) { return d.num; });
+
+reducer(group);
+
+group.top(Infinity);
+// [ { key: 'one', value: { exceptionCount: 2, exceptionSum: 3 },    // 'bar' dimension has 2 values: 'A' and 'B'.
+//   { key: 'two', value: { exceptionCount: 1, exceptionSum: 2 },    // 'bar' dimension has 1 value: 'B'.
+//   { key: 'three', value: { exceptionCount: 1 , exceptionSum: 3} ] // 'bar' dimension has 1 value: 'A'.
+```
+
+Right now we support exceptionCount and exceptionSum, but it might also make sense to support other types of dependent aggregation. These types of aggregations are meant to help with a situation where you want to use Crossfilter on a flattened one-to-many or many-to-many relational model, which can result in redundant values.
+
+<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-">reductio.<b>exception</b>(<i>accessor</i>)</h4>
+
+The exception accessor defines the value by which to restrict the calculation of the exception aggregation. In each group, only the first record with each unique value returned by this accessor will be considered for aggregation.
+
+<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-">reductio.<b>exceptionCount</b>(<i>boolean</i>)</h4>
+
+A count subject to exception calculation.
+
+<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptionsum-b-i-value-i-">reductio.<b>exceptionSum</b>(<i>value</i>)</h4>
+
+A sum subject to exception calculation. Make sure that for each value within a group that the exception accessor returns, the exceptionSum accessor returns an identical value, or results will be unpredictable because the record added for each exception value will not necessarily be the same record that is removed.
 
 <h2 id="aggregations-groupall-aggregations">groupAll aggregations</h2>
 
@@ -245,34 +318,3 @@ group.top(Infinity);
 //   { key: 'two', value: { count: 2, sum: 8, avg: 4 },
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
-
-<h1 id="exception-aggregation">Exception aggregation</h1>
-We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
-
-```javascript
-var data = crossfilter([
-  { foo: 'one', bar: 'A', num: 1 },
-  { foo: 'two', bar: 'B', num: 2 },
-  { foo: 'three', bar: 'A', num: 3 },
-  { foo: 'one', bar: 'B', num: 2 },
-  { foo: 'one', bar: 'A', num: 1 },
-  { foo: 'two', bar: 'B', num: 2 },
-]);
-
-var dim = data.dimension(function(d) { return d.foo; });
-var group = dim.group();
-
-var reducer = reductio()
-    .exception(function(d) { return d.bar; })
-    .exceptionCount(true)
-    .exceptionSum(function(d) { return d.num; });
-
-reducer(group);
-
-group.top(Infinity);
-// [ { key: 'one', value: { exceptionCount: 2, exceptionSum: 3 },    // 'bar' dimension has 2 values: 'A' and 'B'.
-//   { key: 'two', value: { exceptionCount: 1, exceptionSum: 2 },    // 'bar' dimension has 1 value: 'B'.
-//   { key: 'three', value: { exceptionCount: 1 , exceptionSum: 3} ] // 'bar' dimension has 1 value: 'A'.
-```
-
-Right now we support exceptionCount and exceptionSum, but it might also make sense to support other types of dependent aggregation. These types of aggregations are meant to help with a situation where you want to use Crossfilter on a flattened one-to-many or many-to-many relational model, which can result in redundant values. When using exceptionSum, make sure that for each value within a group that the exception accessor returns, the exceptionSum accessor returns an identical value, or results will be unpredictable.
