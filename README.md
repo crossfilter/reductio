@@ -203,19 +203,23 @@ reductio().count(true)
   .sum(function(d) { return +d.num; })
   .aliasProp({
       newCount: function(g) { return g.count; },
-      average: function(g) { return g.sum / g.count; }
+      average: function(g) { return g.sum / g.count; },
+      description: function (g, v) { return v.desc; }
   });
 ```
 
 Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the values returned by the accessor function.
 
+Accessors also have access to the record, so you can use this function to do things like assigning additional descriptive information to the group property based on the records seen.
+
 On the group, we can then call the following to retrieve the count value.
 ```javascript
 group.top(1)[0].newCount;
 group.top(1)[0].average;
+group.top(1)[0].description;
 ```
 
-It is *very* important that the functions in the _mapping_ don't modify the group. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
+It is *very* important that the functions in the _mapping_ don't modify the group directly. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
 
 <h3 id="aggregations-standard-aggregations-exception-aggregation">Exception aggregation</h3>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:

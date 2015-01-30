@@ -3,7 +3,7 @@ var reductio_alias_prop = {
 		return function (p, v) {
 			if(prior) prior(p, v);
 			for(var prop in obj) {
-				path(p)[prop] = obj[prop](path(p));
+				path(p)[prop] = obj[prop](path(p),v);
 			}
 			return p;
 		};

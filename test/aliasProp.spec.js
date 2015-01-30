@@ -20,7 +20,8 @@ describe('Alias property', function () {
                 .sum(function(d) { return +d.num; })
                 .aliasProp({
                     newCount: function(g) { return g.count; },
-                    average: function(g) { return g.sum / g.count; }
+                    average: function(g) { return g.sum / g.count; },
+                    description: function(g, v) { return v.foo; }
                 });
 
         reducer(group);
@@ -50,5 +51,16 @@ describe('Alias property', function () {
         expect(values['one'].average).toEqual(2);
         expect(values['two'].average).toEqual(2);
         expect(values['three'].average).toEqual(3);
+    });
+
+    it('grouping have the right descriptions', function () {
+        var values = {};
+        group.top(Infinity).forEach(function (d) {
+            values[d.key] = d.value;
+        });
+
+        expect(values['one'].description).toEqual('one');
+        expect(values['two'].description).toEqual('two');
+        expect(values['three'].description).toEqual('three');
     });
 });
