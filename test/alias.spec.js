@@ -1,5 +1,5 @@
 // Alias tests
-describe('Alias properties', function () {
+describe('Alias function', function () {
     var group;
 
     beforeEach(function () {

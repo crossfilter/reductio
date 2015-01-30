@@ -149,6 +149,12 @@ function accessor_build(obj, p) {
 		return obj;
 	};
 
+	obj.aliasProp = function(propAccessorObj) {
+		if(!arguments.length) return p.aliasPropKeys;
+		p.aliasPropKeys = propAccessorObj;
+		return obj;
+	};
+
 	obj.groupAll = function(groupTest) {
 		if(!arguments.length) return p.groupAll;
 		p.groupAll = groupTest;

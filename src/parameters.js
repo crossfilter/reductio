@@ -18,6 +18,7 @@ var reductio_parameters = function() {
 		values: false,
 		nestKeys: false,
 		aliasKeys: false,
+		aliasPropKeys: false,
 		groupAll: false
 	};
 };

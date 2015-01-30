@@ -13,6 +13,7 @@ var reductio_sum_of_sq = require('./sum-of-squares.js');
 var reductio_std = require('./std.js');
 var reductio_nest = require('./nest.js');
 var reductio_alias = require('./alias.js');
+var reductio_alias_prop = require('./aliasProp.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -129,9 +130,16 @@ function build_function(p, f, path) {
 		f.reduceInitial = reductio_nest.initial(f.reduceInitial, path);
 	}
 
-	// Alias
+	// Alias functions
 	if(p.aliasKeys) {
 		f.reduceInitial = reductio_alias.initial(f.reduceInitial, path, p.aliasKeys);
+	}
+
+	// Alias properties - this is less efficient than alias functions
+	if(p.aliasPropKeys) {
+		f.reduceAdd = reductio_alias_prop.add(p.aliasPropKeys, f.reduceAdd, path);
+		// This isn't a typo. The function is the same for add/remove.
+		f.reduceRemove = reductio_alias_prop.add(p.aliasPropKeys, f.reduceRemove, path);
 	}
 
 	// Values go last.

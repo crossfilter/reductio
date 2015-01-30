@@ -165,12 +165,32 @@ reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 
 Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the accessor functions that get the required values from the group.
 
-At the moment only functions are allowed, which allows us to define the accessor at initialization-time. In the future it would be good to support aliased properties as well because this would allow recreating a data structure in the exact form required for another library.
-
-On the group, we can then call the following to retrieve the count value.
+On the group, we can then call the following function to retrieve the new count value.
 ```javascript
 group.top(1)[0].newCount();
 ```
+
+This approach to aliases is more efficient than the aliasProp approach below because it executes no logic at the time off aggregation.
+
+### reductio.<b>aliasProp</b>(<i>mapping</i>)
+```javascript
+reductio().count(true)
+  .sum(function(d) { return +d.num; })
+  .aliasProp({
+      newCount: function(g) { return g.count; },
+      average: function(g) { return g.sum / g.count; }
+  });
+```
+
+Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the values returned by the accessor function.
+
+On the group, we can then call the following to retrieve the count value.
+```javascript
+group.top(1)[0].newCount;
+group.top(1)[0].average;
+```
+
+It is *very* important that the functions in the _mapping_ don't modify the group. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
 
 ### Exception aggregation
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
