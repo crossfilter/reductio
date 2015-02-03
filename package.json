@@ -1,6 +1,6 @@
 {
   "name": "reductio",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "Reductio: Crossfilter groupings",
   "main": "src/reductio.js",
   "directories": {
@@ -14,6 +14,7 @@
     "browserify-shim": "^3.7.0",
     "gitdown": "^1.2.6",
     "gulp": "^3.7.0",
+    "gulp-bump": "^0.1.13",
     "gulp-concat": "^2.2.0",
     "gulp-rename": "^1.2.0",
     "gulp-streamify": "0.0.5",

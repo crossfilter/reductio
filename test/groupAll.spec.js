@@ -31,8 +31,9 @@ describe('groupAll', function () {
         reducer(group);
     });
 
-    it('has three groups', function () {
+    it('has five groups', function () {
         expect(group.value().length).toEqual(5);
+        expect(group.all().length).toEqual(5);
     });
 
     it('groupings have the right counts', function () {

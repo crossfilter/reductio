@@ -54,6 +54,10 @@ function reductio() {
 						return [];
 					}
 				);
+				if(!group.all) {
+					// Add an 'all' method for compatibility with standard Crossfilter groups.
+					group.all = function() { return this.value(); };
+				}
 			}
 		} else {
 			group.reduce(funcs.reduceAdd, funcs.reduceRemove, funcs.reduceInitial);

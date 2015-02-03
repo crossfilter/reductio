@@ -7,6 +7,7 @@ var source = require('vinyl-source-stream');
 var streamify = require('gulp-streamify');
 var shim = require('browserify-shim');
 var Gitdown = require('gitdown');
+var bump = require('gulp-bump');
 
 gulp.task('scripts', function () {
 	return browserify('./src/reductio.js', { standalone: 'reductio' })
@@ -29,6 +30,12 @@ gulp.task('docs', function () {
 	
 	return gitdown
 		.write('README.md');
+});
+
+gulp.task('bump', function(){
+  gulp.src(['./bower.json', './package.json'])
+  .pipe(bump({type:'minor'}))
+  .pipe(gulp.dest('./'));
 });
 
 // Watch Files For Changes

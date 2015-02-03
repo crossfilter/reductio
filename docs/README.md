@@ -256,6 +256,8 @@ Sometimes it is necessary to include one record in multiple groups. This is comm
 
 We want to track a moving count of the last 2 values on the ```num``` property. So our group with a key ```2``` should count up all records with a ```num``` of ```2``` *or* ```1```. Normally this must be done using the Crossfilter dimension.groupAll method. With reductio we can use all the standard reductio reducers in this type of scenario by specifying some additional groupAll information and called the reducer on the output of ```dimension.groupAll``` *instead* of the output of ```dimension.group```.
 
+The object returned by ```dimension.groupAll``` in Crossfilter does not have the standard ```all```, ```top```, or ```order``` methods. As a convenience, the reducer function produced by Reductio adds an ```all``` method to this object if it does not already exist.
+
 ### reductio.<b>groupAll</b>(<i>groupingFunction</i>)
 
 Takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
