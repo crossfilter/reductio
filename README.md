@@ -9,6 +9,10 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 [![Code Climate](https://codeclimate.com/github/esjewett/reductio/badges/gpa.svg)](https://codeclimate.com/github/esjewett/reductio)
 [![Dependency Status](https://david-dm.org/esjewett/reductio.svg?style=flat)](https://david-dm.org/esjewett/reductio)
 
+* [Installation](#installation)
+    * [NPM](#installation-npm)
+    * [Bower](#installation-bower)
+    * [Download](#installation-download)
 * [Aggregations](#aggregations)
     * [Standard aggregations](#aggregations-standard-aggregations)
         * [reductio.<b>count</b>()](#aggregations-standard-aggregations-reductio-b-count-b-)
@@ -35,6 +39,21 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Example](#example)
 
+
+<h1 id="installation">Installation</h1>
+
+<h2 id="installation-npm">NPM</h2>
+```shell
+npm install --save-dev reductio
+```
+
+<h2 id="installation-bower">Bower</h2>
+```shell
+bower install --save-dev reductio
+```
+
+<h2 id="installation-download">Download</h2>
+Download from the [releases](https://github.com/esjewett/reductio/releases) page. Serve the reductio.js or reductio.min.js file in the top-level directory as part of your application.
 
 <h1 id="aggregations">Aggregations</h1>
 

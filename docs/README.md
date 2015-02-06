@@ -11,6 +11,21 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 
 {"gitdown": "contents", "maxLevel": 4}
 
+# Installation
+
+## NPM
+```shell
+npm install --save-dev reductio
+```
+
+## Bower 
+```shell
+bower install --save-dev reductio
+```
+
+## Download
+Download from the [releases](https://github.com/esjewett/reductio/releases) page. Serve the reductio.js or reductio.min.js file in the top-level directory as part of your application.
+
 # Aggregations
 
 Aggregations are composable (so you can track more than one aggregation on a given group) and may depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
