@@ -1,3 +1,4 @@
+var reductio_filter = require('./filter.js');
 var reductio_count = require('./count.js');
 var reductio_sum = require('./sum.js');
 var reductio_avg = require('./avg.js');
@@ -20,6 +21,14 @@ function build_function(p, f, path) {
 	// information and create a dependency graph if the process becomes complex enough.
 
 	if(!path) path = function (d) { return d; };
+
+	// Keep track of the original reducers so that filtering can skip back to
+	// them if this particular value is filtered out.
+	var origF = {
+		reduceAdd: f.reduceAdd,
+		reduceRemove: f.reduceRemove,
+		reduceInitial: f.reduceInitial
+	};
 
 	if(p.count || p.std) {
 		f.reduceAdd = reductio_count.add(f.reduceAdd, path);
@@ -140,6 +149,13 @@ function build_function(p, f, path) {
 		f.reduceAdd = reductio_alias_prop.add(p.aliasPropKeys, f.reduceAdd, path);
 		// This isn't a typo. The function is the same for add/remove.
 		f.reduceRemove = reductio_alias_prop.add(p.aliasPropKeys, f.reduceRemove, path);
+	}
+
+	// Filters determine if our built-up priors should run, or if it should skip
+	// back to the filters given at the beginning of this build function.
+	if (p.filter) {
+		f.reduceAdd = reductio_filter.add(p.filter, f.reduceAdd, origF.reduceAdd, path);
+		f.reduceRemove = reductio_filter.remove(p.filter, f.reduceRemove, origF.reduceRemove, path);
 	}
 
 	// Values go last.

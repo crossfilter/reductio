@@ -7,6 +7,7 @@ var reductio_parameters = function() {
 		exceptionAccessor: false,
 		exceptionCount: false,
 		exceptionSum: false,
+		filter: false,
 		valueList: false,
 		median: false,
 		histogramValue: false,
