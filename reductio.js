@@ -73,7 +73,7 @@ function reductio() {
 }
 
 module.exports = reductio;
-},{"./accessors.js":2,"./build.js":6,"./parameters.js":15}],2:[function(require,module,exports){
+},{"./accessors.js":2,"./build.js":6,"./parameters.js":16}],2:[function(require,module,exports){
 var reductio_parameters = require('./parameters.js');
 
 function accessor_build(obj, p) {
@@ -112,6 +112,12 @@ function accessor_build(obj, p) {
 	obj.exception = function(value) {
 		if (!arguments.length) return p.exceptionAccessor;
 		p.exceptionAccessor = value;
+		return obj;
+	};
+
+	obj.filter = function(value) {
+		if (!arguments.length) return p.filter;
+		p.filter = value;
 		return obj;
 	};
 
@@ -243,7 +249,8 @@ var reductio_accessors = {
 };
 
 module.exports = reductio_accessors;
-},{"./parameters.js":15}],3:[function(require,module,exports){
+
+},{"./parameters.js":16}],3:[function(require,module,exports){
 var reductio_alias = {
 	initial: function(prior, path, obj) {
 		return function (p) {
@@ -306,6 +313,7 @@ var reductio_avg = {
 
 module.exports = reductio_avg;
 },{}],6:[function(require,module,exports){
+var reductio_filter = require('./filter.js');
 var reductio_count = require('./count.js');
 var reductio_sum = require('./sum.js');
 var reductio_avg = require('./avg.js');
@@ -328,6 +336,14 @@ function build_function(p, f, path) {
 	// information and create a dependency graph if the process becomes complex enough.
 
 	if(!path) path = function (d) { return d; };
+
+	// Keep track of the original reducers so that filtering can skip back to
+	// them if this particular value is filtered out.
+	var origF = {
+		reduceAdd: f.reduceAdd,
+		reduceRemove: f.reduceRemove,
+		reduceInitial: f.reduceInitial
+	};
 
 	if(p.count || p.std) {
 		f.reduceAdd = reductio_count.add(f.reduceAdd, path);
@@ -450,6 +466,13 @@ function build_function(p, f, path) {
 		f.reduceRemove = reductio_alias_prop.add(p.aliasPropKeys, f.reduceRemove, path);
 	}
 
+	// Filters determine if our built-up priors should run, or if it should skip
+	// back to the filters given at the beginning of this build function.
+	if (p.filter) {
+		f.reduceAdd = reductio_filter.add(p.filter, f.reduceAdd, origF.reduceAdd, path);
+		f.reduceRemove = reductio_filter.remove(p.filter, f.reduceRemove, origF.reduceRemove, path);
+	}
+
 	// Values go last.
 	if(p.values) {
 		Object.getOwnPropertyNames(p.values).forEach(function(n) {
@@ -472,7 +495,8 @@ var reductio_build = {
 };
 
 module.exports = reductio_build;
-},{"./alias.js":3,"./aliasProp.js":4,"./avg.js":5,"./count.js":7,"./exception-count.js":8,"./exception-sum.js":9,"./histogram.js":10,"./max.js":11,"./median.js":12,"./min.js":13,"./nest.js":14,"./std.js":16,"./sum-of-squares.js":17,"./sum.js":18,"./value-count.js":19,"./value-list.js":20}],7:[function(require,module,exports){
+
+},{"./alias.js":3,"./aliasProp.js":4,"./avg.js":5,"./count.js":7,"./exception-count.js":8,"./exception-sum.js":9,"./filter.js":10,"./histogram.js":11,"./max.js":12,"./median.js":13,"./min.js":14,"./nest.js":15,"./std.js":17,"./sum-of-squares.js":18,"./sum.js":19,"./value-count.js":20,"./value-list.js":21}],7:[function(require,module,exports){
 var reductio_count = {
 	add: function(prior, path) {
 		return function (p, v) {
@@ -576,6 +600,37 @@ var reductio_exception_sum = {
 
 module.exports = reductio_exception_sum;
 },{}],10:[function(require,module,exports){
+var reductio_filter = {
+	// The big idea here is that you give us a filter function to run on values,
+	// a 'prior' reducer to run (just like the rest of the standard reducers),
+	// and a reference to the last reducer (called 'skip' below) defined before
+	// the most recent chain of reducers.  This supports individual filters for
+	// each .value('...') chain that you add to your reducer.
+	add: function (filter, prior, skip) {
+		return function (p, v) {
+			if (filter(v)) {
+				if (prior) prior(p, v);
+			} else {
+				if (skip) skip(p, v);
+			}
+			return p;
+		};
+	},
+	remove: function (filter, prior, skip) {
+		return function (p, v) {
+			if (filter(v)) {
+				if (prior) prior(p, v);
+			} else {
+				if (skip) skip(p, v);
+			}
+			return p;
+		};
+	}
+};
+
+module.exports = reductio_filter;
+
+},{}],11:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
@@ -623,7 +678,7 @@ var reductio_histogram = {
 
 module.exports = reductio_histogram;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var reductio_max = {
 	add: function (prior, path) {
 		return function (p, v) {
@@ -659,7 +714,7 @@ var reductio_max = {
 };
 
 module.exports = reductio_max;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var reductio_median = {
 	add: function (prior, path) {
 		var half;
@@ -709,7 +764,7 @@ var reductio_median = {
 };
 
 module.exports = reductio_median;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var reductio_min = {
 	add: function (prior, path) {
 		return function (p, v) {
@@ -745,7 +800,7 @@ var reductio_min = {
 };
 
 module.exports = reductio_min;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
@@ -807,7 +862,7 @@ var reductio_nest = {
 
 module.exports = reductio_nest;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var reductio_parameters = function() {
 	return {
 		order: false,
@@ -817,6 +872,7 @@ var reductio_parameters = function() {
 		exceptionAccessor: false,
 		exceptionCount: false,
 		exceptionSum: false,
+		filter: false,
 		valueList: false,
 		median: false,
 		histogramValue: false,
@@ -834,7 +890,8 @@ var reductio_parameters = function() {
 };
 
 module.exports = reductio_parameters;
-},{}],16:[function(require,module,exports){
+
+},{}],17:[function(require,module,exports){
 var reductio_std = {
 	add: function (prior, path) {
 		return function (p, v) {
@@ -872,7 +929,7 @@ var reductio_std = {
 };
 
 module.exports = reductio_std;
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var reductio_sum_of_sq = {
 	add: function (a, prior, path) {
 		return function (p, v) {
@@ -898,7 +955,7 @@ var reductio_sum_of_sq = {
 };
 
 module.exports = reductio_sum_of_sq;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var reductio_sum = {
 	add: function (a, prior, path) {
 		return function (p, v) {
@@ -924,7 +981,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
@@ -969,7 +1026,7 @@ var reductio_value_count = {
 
 module.exports = reductio_value_count;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
