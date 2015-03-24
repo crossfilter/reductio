@@ -3,9 +3,10 @@ module.exports = function(config) {
     basePath: '.',
 
     frameworks: ['jasmine'],
-    
+
     files: [
 		'node_modules/crossfilter/crossfilter.min.js',
+		'node_modules/lodash/index.js',
 		'reductio.min.js',
 		'test/**/*.spec.js'
     ],

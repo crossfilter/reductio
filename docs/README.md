@@ -18,7 +18,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 npm install --save-dev reductio
 ```
 
-## Bower 
+## Bower
 ```shell
 bower install --save-dev reductio
 ```
@@ -159,6 +159,45 @@ Will result in groups that look like
   z: { sum: 2 }
 }}
 ```
+
+### reductio.<b>filter</b>(<i>filterFn</i>)
+```javascript
+reductio().filter(filterFn)(group)
+```
+Filters values from being added/removed from groups.  Works well with ```value```
+chains, and is also very useful if you need to aggregate sparsely-populated fields.
+
+```javascript
+var reducer = reductio();
+reducer.value("evens").count(true)
+  .filter(function(d) { return d.bar % 2 === 0}; });
+reducer.value("rare")
+  .filter(function(d) { return typeof d.rareVal === 'undefined' ; })
+  .sum(function(d) return d.rareVal; );
+reducer(group);
+```
+
+For example:
+
+```javascript
+// Given:
+[
+  { foo: 'one', num: 1 },
+  { foo: 'two', num: 2 },
+  { foo: 'three', num: 3, rareVal: 98 },
+  { foo: 'one', num: 3, rareVal: 99 },
+  { foo: 'one', num: 4, rareVal: 100 },
+  { foo: 'two', num: 6 }
+]
+
+// The groups will look like:
+[
+  { key: 'one', value: { evens: { count: 1 }, rare: { sum: 199 } }
+  { key: 'two', value: { evens: { count: 2 }, rare: { sum: 98 } }
+  { key: 'three', value: { evens: { count: 0 }, rare: { sum: 0 } }
+]
+```
+
 
 ### reductio.<b>nest</b>(<i>keyAccessorArray</i>)
 ```javascript

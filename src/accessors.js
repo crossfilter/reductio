@@ -39,6 +39,12 @@ function accessor_build(obj, p) {
 		return obj;
 	};
 
+	obj.filter = function(value) {
+		if (!arguments.length) return p.filter;
+		p.filter = value;
+		return obj;
+	};
+
 	obj.valueList = function(value) {
 		if (!arguments.length) return p.valueList;
 		p.valueList = value;
