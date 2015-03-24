@@ -3,64 +3,34 @@ Reductio: Crossfilter grouping
 
 Reductio is a library for generating Crossfilter reduce functions and applying them to Crossfilter groups. Crossfilter supports basic count and sum aggregations, but even aggregations as conceptually simple as a group minimum or maximum can be difficult to build correctly and efficiently on a Crossfilter group. Reductio provides helper functions that generate these aggregations in an efficient and composable way, making it easy to use more complex aggregations with Crossfilter and to have more than one aggregation per group without having to worry about designing 2-way reduce functions.
 
-[![NPM version](http://img.shields.io/npm/v/reductio.svg?style=flat)](https://www.npmjs.org/package/reductio)
-[![Bower version](http://img.shields.io/bower/v/reductio.svg?style=flat)](http://bower.io/search/?q=reductio)
-[![Travis build status](http://img.shields.io/travis/esjewett/reductio/master.svg?style=flat)](https://travis-ci.org/esjewett/reductio)
-[![Code Climate](https://codeclimate.com/github/esjewett/reductio/badges/gpa.svg)](https://codeclimate.com/github/esjewett/reductio)
-[![Dependency Status](https://david-dm.org/esjewett/reductio.svg?style=flat)](https://david-dm.org/esjewett/reductio)
+{"gitdown": "badge", "name": "npm-version"}
+{"gitdown": "badge", "name": "bower-version"}
+{"gitdown": "badge", "name": "travis"}
+{"gitdown": "badge", "name": "codeclimate-gpa"}
+{"gitdown": "badge", "name": "david"}
 
-* [Installation](#installation)
-    * [NPM](#installation-npm)
-    * [Bower](#installation-bower)
-    * [Download](#installation-download)
-* [Aggregations](#aggregations)
-    * [Standard aggregations](#aggregations-standard-aggregations)
-        * [reductio.<b>count</b>()](#aggregations-standard-aggregations-reductio-b-count-b-)
-        * [reductio.<b>sum</b>(<i>value</i>)](#aggregations-standard-aggregations-reductio-b-sum-b-i-value-i-)
-        * [reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-avg-b-i-boolean-i-i-value-i-)
-        * [reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-)
-        * [reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-max-b-i-boolean-i-i-value-i-)
-        * [reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-median-b-i-boolean-i-i-value-i-)
-        * [reductio.<b>sumOfSq</b>(<i>value</i>)](#aggregations-standard-aggregations-reductio-b-sumofsq-b-i-value-i-)
-        * [reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)](#aggregations-standard-aggregations-reductio-b-std-b-i-boolean-i-i-value-i-)
-        * [Histogram](#aggregations-standard-aggregations-histogram)
-            * [reductio.<b>histogramBins</b>(<i>thresholdArray</i>)](#aggregations-standard-aggregations-histogram-reductio-b-histogrambins-b-i-thresholdarray-i-)
-            * [reductio.<b>histogramValue</b>(<i>value</i>)](#aggregations-standard-aggregations-histogram-reductio-b-histogramvalue-b-i-value-i-)
-        * [reductio.<b>value</b>(<i>propertyName</i>)](#aggregations-standard-aggregations-reductio-b-value-b-i-propertyname-i-)
-        * [reductio.<b>filter</b>(<i>filterFn</i>)](#aggregations-standard-aggregations-reductio-b-filter-b-i-filterfn-i-)
-        * [reductio.<b>nest</b>(<i>keyAccessorArray</i>)](#aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-)
-        * [reductio.<b>alias</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-)
-        * [reductio.<b>aliasProp</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-aliasprop-b-i-mapping-i-)
-        * [Exception aggregation](#aggregations-standard-aggregations-exception-aggregation)
-            * [reductio.<b>exception</b>(<i>accessor</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-)
-            * [reductio.<b>exceptionCount</b>(<i>boolean</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-)
-            * [reductio.<b>exceptionSum</b>(<i>value</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptionsum-b-i-value-i-)
-    * [groupAll aggregations](#aggregations-groupall-aggregations)
-        * [reductio.<b>groupAll</b>(<i>groupingFunction</i>)](#aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-)
-    * [Chaining aggregations](#aggregations-chaining-aggregations)
-* [Example](#example)
+{"gitdown": "contents", "maxLevel": 4}
 
+# Installation
 
-<h1 id="installation">Installation</h1>
-
-<h2 id="installation-npm">NPM</h2>
+## NPM
 ```shell
 npm install --save-dev reductio
 ```
 
-<h2 id="installation-bower">Bower</h2>
+## Bower
 ```shell
 bower install --save-dev reductio
 ```
 
-<h2 id="installation-download">Download</h2>
+## Download
 Download from the [releases](https://github.com/esjewett/reductio/releases) page. Serve the reductio.js or reductio.min.js file in the top-level directory as part of your application.
 
-<h1 id="aggregations">Aggregations</h1>
+# Aggregations
 
 Aggregations are composable (so you can track more than one aggregation on a given group) and may depend on each other (the 'avg' aggregation requires that 'count' and 'sum' be specified).
 
-<h2 id="aggregations-standard-aggregations">Standard aggregations</h2>
+## Standard aggregations
 Current aggregations supported are shown given the following setup.
 
 ```javascript
@@ -70,7 +40,7 @@ var group = dim.group();
 var reducer;
 ```
 
-<h3 id="aggregations-standard-aggregations-reductio-b-count-b-">reductio.<b>count</b>()</h3>
+### reductio.<b>count</b>()
 Works the same way as Crossfilter's standard ```group.reduceCount()```.
 
 ```javascript
@@ -80,7 +50,7 @@ reducer(group);
 
 Stored under the 'count' property of groups. The value will be a count of every record that matches the group accessor.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-sum-b-i-value-i-">reductio.<b>sum</b>(<i>value</i>)</h3>
+### reductio.<b>sum</b>(<i>value</i>)
 Works the same was as Crossfilter's standard ```group.reduceSum()```.
 
 ```javascript
@@ -90,15 +60,15 @@ reducer(group);
 
 Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor. The accessor function must return a number.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-avg-b-i-boolean-i-i-value-i-">reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)</h3>
+### reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)
 ```javascript
 reductio().avg(function(d) { return +d.number; })(group);
 ```
 Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-">reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)</h3>
-<h3 id="aggregations-standard-aggregations-reductio-b-max-b-i-boolean-i-i-value-i-">reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)</h3>
-<h3 id="aggregations-standard-aggregations-reductio-b-median-b-i-boolean-i-i-value-i-">reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)</h3>
+### reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)
+### reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)
+### reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)
 ```javascript
 reductio().min(function(d) { return +d.number; })
   .max(true)
@@ -108,13 +78,13 @@ Stored under the 'median', 'min', and 'max' property of groups.
 
 Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```redectio.valueList(value)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-sumofsq-b-i-value-i-">reductio.<b>sumOfSq</b>(<i>value</i>)</h3>
+### reductio.<b>sumOfSq</b>(<i>value</i>)
 ```javascript
 reductio().sumOfSq(function(d) { return d.number; })(group);
 ```
 Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group. This is used in the standard deviation aggregation, but can be used on its own as well.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-std-b-i-boolean-i-i-value-i-">reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)</h3>
+### reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)
 ```javascript
 reductio().sumOfSq(function(d) { return d.number; })
     .sum(function(d) { return d.number; })
@@ -127,7 +97,7 @@ Stored under the 'std' property of the group. Defined as the sum-of-squares minu
 
 If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise pass in an accessor function directly.
 
-<h3 id="aggregations-standard-aggregations-histogram">Histogram</h3>
+### Histogram
 ```javascript
 reductio().histogramBins([0,2,6,10])
         .histogramValue(function(d) { return +d.number; })(group)
@@ -139,13 +109,13 @@ This grouping should be usable anywhere d3.layout.histogram can be used. May be 
 
 The property ```group.histogram``` is an array. Each element of the array is a sorted array of values returned by ```histogramValue``` that fall into that bin. Each element of the array also has properties, x, dx, and y, as defined in the d3.layout.histogram documentation.
 
-<h4 id="aggregations-standard-aggregations-histogram-reductio-b-histogrambins-b-i-thresholdarray-i-">reductio.<b>histogramBins</b>(<i>thresholdArray</i>)</h4>
+#### reductio.<b>histogramBins</b>(<i>thresholdArray</i>)
 Defines the bin thresholds for the histogram. Will result in ```thresholdArray.length - 1``` bins.
 
-<h4 id="aggregations-standard-aggregations-histogram-reductio-b-histogramvalue-b-i-value-i-">reductio.<b>histogramValue</b>(<i>value</i>)</h4>
+#### reductio.<b>histogramValue</b>(<i>value</i>)
 Accessor for the value to be binned.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-value-b-i-propertyname-i-">reductio.<b>value</b>(<i>propertyName</i>)</h3>
+### reductio.<b>value</b>(<i>propertyName</i>)
 ```javascript
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -190,7 +160,7 @@ Will result in groups that look like
 }}
 ```
 
-<h3 id="aggregations-standard-aggregations-reductio-b-filter-b-i-filterfn-i-">reductio.<b>filter</b>(<i>filterFn</i>)</h3>
+### reductio.<b>filter</b>(<i>filterFn</i>)
 ```javascript
 reductio().filter(filterFn)(group)
 ```
@@ -229,7 +199,7 @@ For example:
 ```
 
 
-<h3 id="aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-">reductio.<b>nest</b>(<i>keyAccessorArray</i>)</h3>
+### reductio.<b>nest</b>(<i>keyAccessorArray</i>)
 ```javascript
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
@@ -242,7 +212,7 @@ Usually you'll want to use the group key as the first level of nesting, then use
 
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not removed, so there is the possibility of leaves with empty 'values' arrays.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-">reductio.<b>alias</b>(<i>mapping</i>)</h3>
+### reductio.<b>alias</b>(<i>mapping</i>)
 ```javascript
 reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 ```
@@ -256,7 +226,7 @@ group.top(1)[0].newCount();
 
 This approach to aliases is more efficient than the aliasProp approach below because it executes no logic at the time off aggregation.
 
-<h3 id="aggregations-standard-aggregations-reductio-b-aliasprop-b-i-mapping-i-">reductio.<b>aliasProp</b>(<i>mapping</i>)</h3>
+### reductio.<b>aliasProp</b>(<i>mapping</i>)
 ```javascript
 reductio().count(true)
   .sum(function(d) { return +d.num; })
@@ -280,7 +250,7 @@ group.top(1)[0].description;
 
 It is *very* important that the functions in the _mapping_ don't modify the group directly. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
 
-<h3 id="aggregations-standard-aggregations-exception-aggregation">Exception aggregation</h3>
+### Exception aggregation
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
 
 ```javascript
@@ -311,19 +281,19 @@ group.top(Infinity);
 
 Right now we support exceptionCount and exceptionSum, but it might also make sense to support other types of dependent aggregation. These types of aggregations are meant to help with a situation where you want to use Crossfilter on a flattened one-to-many or many-to-many relational model, which can result in redundant values.
 
-<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-">reductio.<b>exception</b>(<i>accessor</i>)</h4>
+#### reductio.<b>exception</b>(<i>accessor</i>)
 
 The exception accessor defines the value by which to restrict the calculation of the exception aggregation. In each group, only the first record with each unique value returned by this accessor will be considered for aggregation.
 
-<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-">reductio.<b>exceptionCount</b>(<i>boolean</i>)</h4>
+#### reductio.<b>exceptionCount</b>(<i>boolean</i>)
 
 A count subject to exception calculation.
 
-<h4 id="aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptionsum-b-i-value-i-">reductio.<b>exceptionSum</b>(<i>value</i>)</h4>
+#### reductio.<b>exceptionSum</b>(<i>value</i>)
 
 A sum subject to exception calculation. Make sure that for each value within a group that the exception accessor returns, the exceptionSum accessor returns an identical value, or results will be unpredictable because the record added for each exception value will not necessarily be the same record that is removed.
 
-<h2 id="aggregations-groupall-aggregations">groupAll aggregations</h2>
+## groupAll aggregations
 
 Sometimes it is necessary to include one record in multiple groups. This is common in OLAP scenarios, classification, and tracking moving averages, to give a few examples. Say we have a data set like
 
@@ -342,7 +312,7 @@ We want to track a moving count of the last 2 values on the ```num``` property. 
 
 The object returned by ```dimension.groupAll``` in Crossfilter does not have the standard ```all```, ```top```, or ```order``` methods. As a convenience, the reducer function produced by Reductio adds an ```all``` method to this object if it does not already exist.
 
-<h3 id="aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-">reductio.<b>groupAll</b>(<i>groupingFunction</i>)</h3>
+### reductio.<b>groupAll</b>(<i>groupingFunction</i>)
 
 Takes a single argument: a function that takes a record from the data set (e.g. ```{ foo: 'three', num: 2 }```) and returns an array of keys of the groups that the record should be included in (e.g. ```[2,3]```). This is a very simple example, but the same thing could be done for dates, with a function for a 5-day moving average returning an array of 5 dates.
 
@@ -364,7 +334,7 @@ reducer = reductio()
 reducer(groupAll);
 ```
 
-<h2 id="aggregations-chaining-aggregations">Chaining aggregations</h2>
+## Chaining aggregations
 As seen above, aggregations can be chained on a given instance of reductio. For example:
 
 ```javascript
@@ -373,7 +343,7 @@ reductio().count(true)
     .avg(true)(group);
 ```
 
-<h1 id="example">Example</h1>
+# Example
 
 Basic use:
 

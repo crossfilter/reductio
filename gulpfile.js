@@ -20,17 +20,17 @@ gulp.task('scripts', function () {
         .pipe(gulp.dest('./'));
 });
 
-// gulp.task('docs', function () {
-// 	// Set up gitdown
-// 	Gitdown.notice = function () { return ''; };
-// 	var gitdown = Gitdown.read('docs/README.md');
-// 	var config = gitdown.config;
-// 	config.gitinfo.gitPath = './docs';
-// 	gitdown.config = config;
+gulp.task('docs', function () {
+	// Set up gitdown
+	Gitdown.notice = function () { return ''; };
+	var gitdown = Gitdown.read('docs/README.md');
+	var config = gitdown.config;
+	config.gitinfo.gitPath = './docs';
+	gitdown.config = config;
 	
-// 	return gitdown
-// 		.write('README.md');
-// });
+	return gitdown
+		.write('README.md');
+});
 
 gulp.task('bump', function(){
   gulp.src(['./bower.json', './package.json'])
@@ -44,5 +44,5 @@ gulp.task('watch', function() {
     gulp.watch('./docs/*', ['docs']);
 });
 
-gulp.task('default', ['scripts', 'watch']);
-gulp.task('all', ['scripts']);
+gulp.task('default', ['scripts', 'docs', 'watch']);
+gulp.task('all', ['scripts', 'docs']);
