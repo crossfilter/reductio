@@ -172,7 +172,7 @@ var reducer = reductio();
 reducer.value("evens").count(true)
   .filter(function(d) { return d.bar % 2 === 0}; });
 reducer.value("rare")
-  .filter(function(d) { return typeof d.rareVal === 'undefined' ; })
+  .filter(function(d) { return typeof d.rareVal !== 'undefined' ; })
   .sum(function(d) return d.rareVal; );
 reducer(group);
 ```
