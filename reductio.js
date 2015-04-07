@@ -116,7 +116,7 @@ function accessor_build(obj, p) {
 	obj.sum = function(value) {
 		if (!arguments.length) return p.sum;
 		
-		value = accessorify(value);
+		value = accessorifyNumeric(value);
 
 		p.sum = value;
 		return obj;
@@ -229,7 +229,7 @@ function accessor_build(obj, p) {
 	obj.histogramValue = function(value) {
 		if (!arguments.length) return p.histogramValue;
 
-		value = accessorify(value);
+		value = accessorifyNumeric(value);
 
 		p.histogramValue = value;
 		return obj;
