@@ -13,8 +13,8 @@ module.exports = function(config) {
 
 	browsers: [
 		// 'Chrome'
-		'ChromeCanary',
-		'Firefox',
+		// 'ChromeCanary',
+		// 'Firefox',
 		'PhantomJS'
 		// 'PhantomJS'
 	],

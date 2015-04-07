@@ -13,6 +13,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
     * [NPM](#installation-npm)
     * [Bower](#installation-bower)
     * [Download](#installation-download)
+* [Accessor Functions](#accessor-functions)
 * [Aggregations](#aggregations)
     * [Standard aggregations](#aggregations-standard-aggregations)
         * [reductio.<b>count</b>()](#aggregations-standard-aggregations-reductio-b-count-b-)
@@ -55,6 +56,28 @@ bower install --save-dev reductio
 
 <h2 id="installation-download">Download</h2>
 Download from the [releases](https://github.com/esjewett/reductio/releases) page. Serve the reductio.js or reductio.min.js file in the top-level directory as part of your application.
+
+<h1 id="accessor-functions">Accessor functions</h1>
+
+In most cases when an accessor function is required, Reductio supports the use of the property name to be accessed in the form or a string instead. When appropriate, Reductio will even cast the value of a property to a number for you, though be aware that this will convert nulls and undefined values into 0s.
+
+For example, the following:
+
+```javascript
+reducer = reductio().sum(function(d) { return +d.number; });
+reducer(group);
+```
+
+Is equivalent to:
+
+```javascript
+reducer = reductio().sum('number');
+reducer(group);
+```
+
+Aggregations that support this syntax with casting to a numeric value: sum, avg, exception sum, histogram value, min, max, median
+
+Aggregations that support this syntax without casting: next, exception, value list, standard deviation, sum of squares
 
 <h1 id="aggregations">Aggregations</h1>
 

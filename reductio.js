@@ -77,11 +77,35 @@ module.exports = reductio;
 var reductio_parameters = require('./parameters.js');
 
 function accessor_build(obj, p) {
-	obj.order = function(value) {
-		if (!arguments.length) return p.order;
-		p.order = value;
-		return obj;
-	};
+	// obj.order = function(value) {
+	// 	if (!arguments.length) return p.order;
+	// 	p.order = value;
+	// 	return obj;
+	// };
+
+	// Converts a string to an accessor function
+	function accessorify(v) {
+		if( typeof v === 'string' ) {
+			// Rewrite to a function
+			var tempValue = v;
+			var func = function (d) { return d[tempValue]; }
+			return func;
+		} else {
+			return v;
+		}
+	}
+
+	// Converts a string to an accessor function
+	function accessorifyNumeric(v) {
+		if( typeof v === 'string' ) {
+			// Rewrite to a function
+			var tempValue = v;
+			var func = function (d) { return +d[tempValue]; }
+			return func;
+		} else {
+			return v;
+		}
+	}
 
 	obj.count = function(value) {
 		if (!arguments.length) return p.count;
@@ -91,13 +115,19 @@ function accessor_build(obj, p) {
 
 	obj.sum = function(value) {
 		if (!arguments.length) return p.sum;
+		
+		value = accessorify(value);
+
 		p.sum = value;
 		return obj;
 	};
 
 	obj.avg = function(value) {
 		if (!arguments.length) return p.avg;
-		// We can take either an accessor function or a boolean
+
+		value = accessorifyNumeric(value);
+
+		// We can take an accessor function, a boolean, or a string
 		if( typeof value === 'function' ) {
 			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			p.sum = value;
@@ -111,6 +141,9 @@ function accessor_build(obj, p) {
 
 	obj.exception = function(value) {
 		if (!arguments.length) return p.exceptionAccessor;
+
+		value = accessorify(value);
+
 		p.exceptionAccessor = value;
 		return obj;
 	};
@@ -123,12 +156,18 @@ function accessor_build(obj, p) {
 
 	obj.valueList = function(value) {
 		if (!arguments.length) return p.valueList;
+
+		value = accessorify(value);
+
 		p.valueList = value;
 		return obj;
 	};
 
 	obj.median = function(value) {
 		if (!arguments.length) return p.median;
+
+		value = accessorifyNumeric(value);
+
 		if(typeof value === 'function') {
 			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 			p.valueList = value;
@@ -139,6 +178,9 @@ function accessor_build(obj, p) {
 
 	obj.min = function(value) {
 		if (!arguments.length) return p.min;
+
+		value = accessorifyNumeric(value);
+
 		if(typeof value === 'function') {
 			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 			p.valueList = value;
@@ -149,6 +191,9 @@ function accessor_build(obj, p) {
 
 	obj.max = function(value) {
 		if (!arguments.length) return p.max;
+
+		value = accessorifyNumeric(value);
+
 		if(typeof value === 'function') {
 			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 			p.valueList = value;
@@ -159,6 +204,9 @@ function accessor_build(obj, p) {
 
 	obj.exceptionCount = function(value) {
 		if (!arguments.length) return p.exceptionCount;
+
+		value = accessorify(value);
+
 		if( typeof value === 'function' ) {
 			if(p.sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
 			p.exceptionAccessor = value;
@@ -171,12 +219,18 @@ function accessor_build(obj, p) {
 
 	obj.exceptionSum = function(value) {
 		if (!arguments.length) return p.exceptionSum;
+
+		value = accessorifyNumeric(value);
+
 		p.exceptionSum = value;
 		return obj;
 	};
 
 	obj.histogramValue = function(value) {
 		if (!arguments.length) return p.histogramValue;
+
+		value = accessorify(value);
+
 		p.histogramValue = value;
 		return obj;
 	};
@@ -189,6 +243,9 @@ function accessor_build(obj, p) {
 
 	obj.std = function(value) {
 		if (!arguments.length) return p.std;
+
+		value = accessorifyNumeric(value);
+
 		if(typeof(value) === 'function') {
 			p.sumOfSquares = value;
 			p.sum = value;
@@ -202,6 +259,9 @@ function accessor_build(obj, p) {
 
 	obj.sumOfSq = function(value) {
 		if (!arguments.length) return p.sumOfSquares;
+
+		value = accessorifyNumeric(value);
+
 		p.sumOfSquares = value;
 		return obj;
 	};
@@ -221,6 +281,9 @@ function accessor_build(obj, p) {
 
 	obj.nest = function(keyAccessorArray) {
 		if(!arguments.length) return p.nestKeys;
+
+		keyAccessorArray.map(accessorify);
+
 		p.nestKeys = keyAccessorArray;
 		return obj;
 	};
