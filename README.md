@@ -77,7 +77,7 @@ reducer(group);
 
 Aggregations that support this syntax with casting to a numeric value: sum, avg, exception sum, histogram value, min, max, median
 
-Aggregations that support this syntax without casting: next, exception, value list, standard deviation, sum of squares
+Aggregations that support this syntax without casting: nest, exception, value list, standard deviation, sum of squares
 
 <h1 id="aggregations">Aggregations</h1>
 
