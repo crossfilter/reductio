@@ -1,6 +1,7 @@
 var reductio_build = require('./build.js');
 var reductio_accessors = require('./accessors.js');
 var reductio_parameters = require('./parameters.js');
+var crossfilter = require('crossfilter');
 
 function reductio() {
 	var parameters = reductio_parameters();
