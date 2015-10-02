@@ -1,14 +1,14 @@
 var reductio_sum_of_sq = {
 	add: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sumOfSq = path(p).sumOfSq + a(v)*a(v);
 			return p;
 		};
 	},
 	remove: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sumOfSq = path(p).sumOfSq - a(v)*a(v);
 			return p;
 		};

@@ -3,8 +3,8 @@ var crossfilter = require('crossfilter');
 var reductio_value_count = {
 	add: function (a, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Not sure if this is more efficient than sorting.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -20,8 +20,8 @@ var reductio_value_count = {
 	},
 	remove: function (a, prior, path) {
 		var i;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			// Value already exists or something has gone terribly wrong.
 			path(p).values[i][1]--;

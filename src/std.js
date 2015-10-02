@@ -1,7 +1,7 @@
 var reductio_std = {
 	add: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).std = 0.0;
 				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;
@@ -13,8 +13,8 @@ var reductio_std = {
 		};
 	},
 	remove: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).std = 0.0;
 				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;

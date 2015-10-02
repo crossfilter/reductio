@@ -5,8 +5,8 @@ var reductio_histogram = {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y++;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 0, a(v));
@@ -17,8 +17,8 @@ var reductio_histogram = {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y--;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 1);

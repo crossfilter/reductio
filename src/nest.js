@@ -5,8 +5,8 @@ var reductio_nest = {
 		var i; // Current key accessor
 		var arrRef;
 		var newRef;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			arrRef = path(p).nest;
 			keyAccessors.forEach(function(a) {
@@ -30,8 +30,8 @@ var reductio_nest = {
 	remove: function (keyAccessors, prior, path) {
 		var arrRef;
 		var nextRef;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			arrRef = path(p).nest;
 			keyAccessors.forEach(function(a) {

@@ -27,7 +27,7 @@ function reductio() {
 				var i;
 				var keys;
 				group.reduce(
-					function(p, v) {
+					function(p, v, nf) {
 						keys = parameters.groupAll(v);
 						keys.forEach(function(k) {
 							i = bisect(p, k, 0, p.length);
@@ -37,17 +37,17 @@ function reductio() {
 							}
 
 							// Then pass the record and the group value to the reducers
-							funcs.reduceAdd(p[i].value, v);
+							funcs.reduceAdd(p[i].value, v, nf);
 						});
 						return p;
 					},
-					function(p, v) {
+					function(p, v, nf) {
 						keys = parameters.groupAll(v);
 						keys.forEach(function(k) {
 							i = bisect(p, k, 0, p.length);
 							// The group should exist or we're in trouble!
 							// Then pass the record and the group value to the reducers
-							funcs.reduceRemove(p[i].value, v);
+							funcs.reduceRemove(p[i].value, v, nf);
 						});
 						return p;
 					},

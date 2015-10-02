@@ -5,21 +5,21 @@ var reductio_filter = {
 	// the most recent chain of reducers.  This supports individual filters for
 	// each .value('...') chain that you add to your reducer.
 	add: function (filter, prior, skip) {
-		return function (p, v) {
-			if (filter(v)) {
-				if (prior) prior(p, v);
+		return function (p, v, nf) {
+			if (filter(v, nf)) {
+				if (prior) prior(p, v, nf);
 			} else {
-				if (skip) skip(p, v);
+				if (skip) skip(p, v, nf);
 			}
 			return p;
 		};
 	},
 	remove: function (filter, prior, skip) {
-		return function (p, v) {
-			if (filter(v)) {
-				if (prior) prior(p, v);
+		return function (p, v, nf) {
+			if (filter(v, nf)) {
+				if (prior) prior(p, v, nf);
 			} else {
-				if (skip) skip(p, v);
+				if (skip) skip(p, v, nf);
 			}
 			return p;
 		};

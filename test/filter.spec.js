@@ -1,6 +1,6 @@
 // Filtering tests
 describe('Reductio filter', function () {
-    var dim;
+    var dim, dim2;
 
     beforeEach(function () {
         var data = crossfilter([
@@ -13,6 +13,7 @@ describe('Reductio filter', function () {
         ]);
 
         dim = data.dimension(function(d) { return d.foo; });
+        dim2 = data.dimension(function(d) { return d.foo; });
     });
 
     it('groups a counting reducer', function() {
@@ -60,5 +61,34 @@ describe('Reductio filter', function () {
       expect(map.one.value.avg).toBeCloseTo(10);
       expect(map.two.value.count).toEqual(0);
       expect(map.three.value.count).toEqual(0);
+    });
+    it('exposes data lifecycle information from Crossfilter2', function() {
+      var reducer = reductio();
+      reducer.value('addOnly')
+        .count(true)
+        .filter(function(d, nf) { return d.bar > 3 && nf; });
+      reducer.value('normal')
+        .count(true)
+        .filter(function(d, nf) { return d.bar > 3; });
+
+      var group = reducer(dim.group());
+
+      var map = _.indexBy(group.top(Infinity), 'key');
+      expect(map.one.value.addOnly.count).toEqual(2);
+      expect(map.two.value.addOnly.count).toEqual(1);
+      expect(map.three.value.addOnly.count).toEqual(0);
+      expect(map.one.value.normal.count).toEqual(2);
+      expect(map.two.value.normal.count).toEqual(1);
+      expect(map.three.value.normal.count).toEqual(0);
+
+      dim2.filter('one');
+
+      map = _.indexBy(group.top(Infinity), 'key');
+      expect(map.one.value.addOnly.count).toEqual(2);
+      expect(map.two.value.addOnly.count).toEqual(1);
+      expect(map.three.value.addOnly.count).toEqual(0);
+      expect(map.one.value.normal.count).toEqual(2);
+      expect(map.two.value.normal.count).toEqual(0);
+      expect(map.three.value.normal.count).toEqual(0);
     });
 });

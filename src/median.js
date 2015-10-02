@@ -1,8 +1,8 @@
 var reductio_median = {
 	add: function (prior, path) {
 		var half;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			half = Math.floor(path(p).valueList.length/2);
  
@@ -17,8 +17,8 @@ var reductio_median = {
 	},
 	remove: function (prior, path) {
 		var half;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			half = Math.floor(path(p).valueList.length/2);
 

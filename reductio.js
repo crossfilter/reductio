@@ -29,7 +29,7 @@ function reductio() {
 				var i;
 				var keys;
 				group.reduce(
-					function(p, v) {
+					function(p, v, nf) {
 						keys = parameters.groupAll(v);
 						keys.forEach(function(k) {
 							i = bisect(p, k, 0, p.length);
@@ -39,17 +39,17 @@ function reductio() {
 							}
 
 							// Then pass the record and the group value to the reducers
-							funcs.reduceAdd(p[i].value, v);
+							funcs.reduceAdd(p[i].value, v, nf);
 						});
 						return p;
 					},
-					function(p, v) {
+					function(p, v, nf) {
 						keys = parameters.groupAll(v);
 						keys.forEach(function(k) {
 							i = bisect(p, k, 0, p.length);
 							// The group should exist or we're in trouble!
 							// Then pass the record and the group value to the reducers
-							funcs.reduceRemove(p[i].value, v);
+							funcs.reduceRemove(p[i].value, v, nf);
 						});
 						return p;
 					},
@@ -333,8 +333,8 @@ module.exports = reductio_alias;
 },{}],4:[function(require,module,exports){
 var reductio_alias_prop = {
 	add: function (obj, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			for(var prop in obj) {
 				path(p)[prop] = obj[prop](path(p),v);
 			}
@@ -347,8 +347,8 @@ module.exports = reductio_alias_prop;
 },{}],5:[function(require,module,exports){
 var reductio_avg = {
 	add: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).avg = path(p).sum / path(p).count;
 			} else {
@@ -358,8 +358,8 @@ var reductio_avg = {
 		};
 	},
 	remove: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).avg = path(p).sum / path(p).count;
 			} else {
@@ -565,15 +565,15 @@ module.exports = reductio_build;
 },{"./alias.js":3,"./aliasProp.js":4,"./avg.js":5,"./count.js":7,"./exception-count.js":8,"./exception-sum.js":9,"./filter.js":10,"./histogram.js":11,"./max.js":12,"./median.js":13,"./min.js":14,"./nest.js":15,"./std.js":17,"./sum-of-squares.js":18,"./sum.js":19,"./value-count.js":20,"./value-list.js":21}],7:[function(require,module,exports){
 var reductio_count = {
 	add: function(prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).count++;
 			return p;
 		};
 	},
 	remove: function(prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).count--;
 			return p;
 		};
@@ -593,8 +593,8 @@ module.exports = reductio_count;
 var reductio_exception_count = {
 	add: function (a, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Only count++ if the p.values array doesn't contain a(v) or if it's 0.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -606,8 +606,8 @@ var reductio_exception_count = {
 	},
 	remove: function (a, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Only count-- if the p.values array contains a(v) value of 1.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -631,8 +631,8 @@ module.exports = reductio_exception_count;
 var reductio_exception_sum = {
 	add: function (a, sum, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Only sum if the p.values array doesn't contain a(v) or if it's 0.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -644,8 +644,8 @@ var reductio_exception_sum = {
 	},
 	remove: function (a, sum, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Only sum if the p.values array contains a(v) value of 1.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -673,21 +673,21 @@ var reductio_filter = {
 	// the most recent chain of reducers.  This supports individual filters for
 	// each .value('...') chain that you add to your reducer.
 	add: function (filter, prior, skip) {
-		return function (p, v) {
-			if (filter(v)) {
-				if (prior) prior(p, v);
+		return function (p, v, nf) {
+			if (filter(v, nf)) {
+				if (prior) prior(p, v, nf);
 			} else {
-				if (skip) skip(p, v);
+				if (skip) skip(p, v, nf);
 			}
 			return p;
 		};
 	},
 	remove: function (filter, prior, skip) {
-		return function (p, v) {
-			if (filter(v)) {
-				if (prior) prior(p, v);
+		return function (p, v, nf) {
+			if (filter(v, nf)) {
+				if (prior) prior(p, v, nf);
 			} else {
-				if (skip) skip(p, v);
+				if (skip) skip(p, v, nf);
 			}
 			return p;
 		};
@@ -705,8 +705,8 @@ var reductio_histogram = {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y++;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 0, a(v));
@@ -717,8 +717,8 @@ var reductio_histogram = {
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
 		var bisectHisto = crossfilter.bisect.by(function(d) { return d.x; }).right;
 		var curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			curr = path(p).histogram[bisectHisto(path(p).histogram, a(v), 0, path(p).histogram.length) - 1];
 			curr.y--;
 			curr.splice(bisect(curr, a(v), 0, curr.length), 1);
@@ -747,8 +747,8 @@ module.exports = reductio_histogram;
 },{}],12:[function(require,module,exports){
 var reductio_max = {
 	add: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
  
 			path(p).max = path(p).valueList[path(p).valueList.length - 1];
 
@@ -756,8 +756,8 @@ var reductio_max = {
 		};
 	},
 	remove: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			// Check for undefined.
 			if(path(p).valueList.length === 0) {
@@ -784,8 +784,8 @@ module.exports = reductio_max;
 var reductio_median = {
 	add: function (prior, path) {
 		var half;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			half = Math.floor(path(p).valueList.length/2);
  
@@ -800,8 +800,8 @@ var reductio_median = {
 	},
 	remove: function (prior, path) {
 		var half;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			half = Math.floor(path(p).valueList.length/2);
 
@@ -833,8 +833,8 @@ module.exports = reductio_median;
 },{}],14:[function(require,module,exports){
 var reductio_min = {
 	add: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
  
 			path(p).min = path(p).valueList[0];
 
@@ -842,8 +842,8 @@ var reductio_min = {
 		};
 	},
 	remove: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			// Check for undefined.
 			if(path(p).valueList.length === 0) {
@@ -875,8 +875,8 @@ var reductio_nest = {
 		var i; // Current key accessor
 		var arrRef;
 		var newRef;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			arrRef = path(p).nest;
 			keyAccessors.forEach(function(a) {
@@ -900,8 +900,8 @@ var reductio_nest = {
 	remove: function (keyAccessors, prior, path) {
 		var arrRef;
 		var nextRef;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			arrRef = path(p).nest;
 			keyAccessors.forEach(function(a) {
@@ -960,8 +960,8 @@ module.exports = reductio_parameters;
 },{}],17:[function(require,module,exports){
 var reductio_std = {
 	add: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).std = 0.0;
 				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;
@@ -973,8 +973,8 @@ var reductio_std = {
 		};
 	},
 	remove: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			if(path(p).count > 0) {
 				path(p).std = 0.0;
 				var n = path(p).sumOfSq - path(p).sum*path(p).sum/path(p).count;
@@ -998,15 +998,15 @@ module.exports = reductio_std;
 },{}],18:[function(require,module,exports){
 var reductio_sum_of_sq = {
 	add: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sumOfSq = path(p).sumOfSq + a(v)*a(v);
 			return p;
 		};
 	},
 	remove: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sumOfSq = path(p).sumOfSq - a(v)*a(v);
 			return p;
 		};
@@ -1024,15 +1024,15 @@ module.exports = reductio_sum_of_sq;
 },{}],19:[function(require,module,exports){
 var reductio_sum = {
 	add: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sum = path(p).sum + a(v);
 			return p;
 		};
 	},
 	remove: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sum = path(p).sum - a(v);
 			return p;
 		};
@@ -1054,8 +1054,8 @@ var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof g
 var reductio_value_count = {
 	add: function (a, prior, path) {
 		var i, curr;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Not sure if this is more efficient than sorting.
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			curr = path(p).values[i];
@@ -1071,8 +1071,8 @@ var reductio_value_count = {
 	},
 	remove: function (a, prior, path) {
 		var i;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			i = path(p).bisect(path(p).values, a(v), 0, path(p).values.length);
 			// Value already exists or something has gone terribly wrong.
 			path(p).values[i][1]--;
@@ -1100,8 +1100,8 @@ var reductio_value_list = {
 	add: function (a, prior, path) {
 		var i;
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			// Not sure if this is more efficient than sorting.
 			i = bisect(path(p).valueList, a(v), 0, path(p).valueList.length);
 			path(p).valueList.splice(i, 0, a(v));
@@ -1111,8 +1111,8 @@ var reductio_value_list = {
 	remove: function (a, prior, path) {
 		var i;
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			i = bisect(path(p).valueList, a(v), 0, path(p).valueList.length);
 			// Value already exists or something has gone terribly wrong.
 			path(p).valueList.splice(i, 1);

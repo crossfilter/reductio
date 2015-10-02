@@ -11,7 +11,7 @@ var bump = require('gulp-bump');
 var karma = require('gulp-karma');
 
 var testFiles = [
-	'node_modules/crossfilter/crossfilter.min.js',
+	'node_modules/crossfilter2/crossfilter.min.js',
 	'node_modules/lodash/index.js',
 	'reductio.min.js',
 	'test/**/*.spec.js'

@@ -1,14 +1,14 @@
 var reductio_sum = {
 	add: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sum = path(p).sum + a(v);
 			return p;
 		};
 	},
 	remove: function (a, prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 			path(p).sum = path(p).sum - a(v);
 			return p;
 		};

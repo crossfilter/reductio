@@ -1,7 +1,7 @@
 var reductio_min = {
 	add: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
  
 			path(p).min = path(p).valueList[0];
 
@@ -9,8 +9,8 @@ var reductio_min = {
 		};
 	},
 	remove: function (prior, path) {
-		return function (p, v) {
-			if(prior) prior(p, v);
+		return function (p, v, nf) {
+			if(prior) prior(p, v, nf);
 
 			// Check for undefined.
 			if(path(p).valueList.length === 0) {
