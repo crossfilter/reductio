@@ -18,22 +18,23 @@ _grouper = function(path, prior){
 };
 
 reductio_cap = function (prior, f, p) {
-    if(!p.cap) return prior;
     var obj = f.reduceInitial();
     // we want to support values so we'll need to know what those are
     var values = p.values ? Object.keys(p.values) : [];
     var _othersGrouper = _grouper();
-    if(values.length){
-        for(var i = 0; i < values.length; ++i){
+    if (values.length) {
+        for (var i = 0; i < values.length; ++i) {
             _othersGrouper = _grouper(pluck(values[i]), _othersGrouper);
         }
     }
-    return function () {
-        var slice_idx = p.cap-1;
+    return function (cap, othersName) {
+        if (!arguments.length) return prior();
+        if( cap === Infinity || !cap ) return prior;
+        var slice_idx = cap-1;
         var all = prior();
-        if(all.length <= p.cap) return all;
+        if(all.length <= cap) return all;
         var data = all.slice(0, slice_idx);
-        var others = {key: p.othersName};
+        var others = {key: othersName || 'Others'};
         others.value = f.reduceInitial();
         for (var i = slice_idx; i < all.length; ++i) {
             _othersGrouper(others.value, all[i].value);

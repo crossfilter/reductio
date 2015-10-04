@@ -230,17 +230,6 @@ function accessor_build(obj, p) {
 		return obj;
 	};
 
-	obj.cap = function(cap) {
-		if(!arguments.length) return p.cap;
-		p.cap = cap;
-		return obj;
-	};
-
-	obj.othersName = function(othersName) {
-		if(!arguments.length) return p.othersName;
-		p.othersName = othersName;
-		return obj;
-	};
 }
 
 var reductio_accessors = {
