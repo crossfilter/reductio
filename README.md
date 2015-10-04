@@ -399,7 +399,7 @@ reductio().count(true)
 ```
 
 <h1 id="postprocess">Post-processing</h1>
-Post processing allows reductio to modify what comes out of the group.all function
+Reductio adds a `post` object to your group which allows you to post process your data in many useful ways.
 
 <h2 id="cap">Cap</h1>
 Cap the output of your group so that it never exceeds `cap` elements.
@@ -410,9 +410,8 @@ The last element will be an aggregation of the rest of the elements. It might be
 reductio()
     .count(true)
     .sum('foo')
-    .avg(true)
-    .cap(4)(group);
-console.log(group.all().length) // 4
+    .avg(true)(group);
+console.log(group.post.cap(4).length) // 4
 ```
 
 <h1 id="example">Example</h1>
