@@ -24,12 +24,12 @@ describe('Reductio cap', function () {
     });
 
     it('has three groups', function () {
-        expect(group.post.cap(3).length).toEqual(3);
+        expect(group.post().cap(3)().length).toEqual(3);
     });
 
     it('groups have the right sums', function(){
         var values = {};
-        group.post.cap(3).forEach(function(d){
+        group.post().cap(3)().forEach(function(d){
             values[d.key] = d.value;
         });
 
@@ -39,25 +39,27 @@ describe('Reductio cap', function () {
     });
 
     it('plays nicely with count', function(){
-        expect(group.post.cap(3).pop().value.count).toBe(4);
+        expect(group.post().cap(3)().pop().value.count).toBe(4);
     });
 
     it('plays nicely with avg', function(){
-        expect(group.post.cap(3).pop().value.avg).toBe(1);
+        expect(group.post().cap(3)().pop().value.avg).toBe(1);
     });
 
-    it('can be changed after grouping', function(){
-        expect(group.post.cap(3).length).toBe(3);
-        expect(group.post.cap(4).length).toBe(4);
+    it('seperate instances can be created', function(){
+        var post1 = group.post().cap(3);
+        var post2 = group.post().cap(4);
+        expect(post1().length).toBe(3);
+        expect(post2().length).toBe(4);
     });
 
     it('returns the whole array when it\'s length equals the cap', function(){
-        var val = group.post.cap(6).pop();
+        var val = group.post().cap(6)().pop();
         expect(val.key).not.toEqual('Others');
     });
 
     it('can rename the others grouping key', function(){
-        var val = group.post.cap(3, 'Hot damn that woman is a man').pop();
+        var val = group.post().cap(3, 'Hot damn that woman is a man')().pop();
         expect(val.key).toBe('Hot damn that woman is a man');
     });
 
@@ -88,11 +90,11 @@ describe('Reductio cap with values', function(){
     });
 
     it('has the correct number of groups', function(){
-        expect(group.post.cap(3).length).toBe(3);
+        expect(group.post().cap(3)().length).toBe(3);
     });
 
     it('has the correct sum', function(){
-        var val = group.post.cap(3).pop().value;
+        var val = group.post().cap(3)().pop().value;
         var x = val.x;
         var y = val.y;
         expect(val.sum).toBe(12);
@@ -101,7 +103,7 @@ describe('Reductio cap with values', function(){
     });
 
     it('has the correct average', function(){
-        var val = group.post.cap(3).pop().value;
+        var val = group.post().cap(3)().pop().value;
         var avg = val.avg;
         var avgY = val.y.avg;
 

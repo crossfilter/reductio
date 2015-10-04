@@ -29,9 +29,9 @@ reductio_cap = function (prior, f, p) {
     }
     return function (cap, othersName) {
         if (!arguments.length) return prior();
-        if( cap === Infinity || !cap ) return prior;
-        var slice_idx = cap-1;
+        if( cap === Infinity || !cap ) return prior();
         var all = prior();
+        var slice_idx = cap-1;
         if(all.length <= cap) return all;
         var data = all.slice(0, slice_idx);
         var others = {key: othersName || 'Others'};

@@ -75,4 +75,7 @@ function reductio() {
 	return my;
 }
 
+require('./postprocessors')(reductio);
+reductio_postprocess = reductio_postprocess(reductio);
+
 module.exports = reductio;
