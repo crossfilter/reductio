@@ -1,8 +1,9 @@
 reductio_cap = require('./cap');
 
 function postProcess(group, p, f) {
+    group.post = {};
     if (p.cap) {
-        group.all = reductio_cap.all(group.all, f, p);
+        group.post.cap = reductio_cap(group.all, f, p);
     }
 }
 
