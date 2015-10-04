@@ -39,6 +39,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
     * [groupAll aggregations](#aggregations-groupall-aggregations)
         * [reductio.<b>groupAll</b>(<i>groupingFunction</i>)](#aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
+* [Post-processing](#postprocess)
+    * [Cap](#cap)
 * [Example](#example)
 
 
@@ -394,6 +396,23 @@ As seen above, aggregations can be chained on a given instance of reductio. For 
 reductio().count(true)
     .sum(function(d) { return d.bar; })
     .avg(true)(group);
+```
+
+<h1 id="postprocess">Post-processing</h1>
+Post processing allows reductio to modify what comes out of the group.all function
+
+<h2 id="cap">Cap</h1>
+Cap the output of your group so that it never exceeds `cap` elements.
+
+The last element will be an aggregation of the rest of the elements. It might be wise to set your groups `order` method before using this.
+
+```javascript
+reductio()
+    .count(true)
+    .sum('foo')
+    .avg(true)
+    .cap(4)(group);
+console.log(group.all().length) // 4
 ```
 
 <h1 id="example">Example</h1>

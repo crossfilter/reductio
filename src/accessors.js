@@ -39,7 +39,7 @@ function accessor_build(obj, p) {
 
 	obj.sum = function(value) {
 		if (!arguments.length) return p.sum;
-		
+
 		value = accessorifyNumeric(value);
 
 		p.sum = value;
@@ -227,6 +227,18 @@ function accessor_build(obj, p) {
 	obj.groupAll = function(groupTest) {
 		if(!arguments.length) return p.groupAll;
 		p.groupAll = groupTest;
+		return obj;
+	};
+
+	obj.cap = function(cap) {
+		if(!arguments.length) return p.cap;
+		p.cap = cap;
+		return obj;
+	};
+
+	obj.othersName = function(othersName) {
+		if(!arguments.length) return p.othersName;
+		p.othersName = othersName;
 		return obj;
 	};
 }

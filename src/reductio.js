@@ -1,6 +1,7 @@
 var reductio_build = require('./build.js');
 var reductio_accessors = require('./accessors.js');
 var reductio_parameters = require('./parameters.js');
+var reductio_postprocess = require('./postprocess');
 var crossfilter = require('crossfilter');
 
 function reductio() {
@@ -63,6 +64,8 @@ function reductio() {
 		} else {
 			group.reduce(funcs.reduceAdd, funcs.reduceRemove, funcs.reduceInitial);
 		}
+
+		reductio_postprocess(group, parameters, funcs);
 
 		return group;
 	}
