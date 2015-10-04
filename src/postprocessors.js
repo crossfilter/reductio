@@ -5,4 +5,5 @@ module.exports = function(reductio){
     };
 
     reductio.registerPostProcessor('cap', require('./cap'));
+    reductio.registerPostProcessor('sortBy', require('./sortBy'));
 };

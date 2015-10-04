@@ -570,7 +570,7 @@ var reductio_build = {
 
 module.exports = reductio_build;
 
-},{"./alias.js":3,"./aliasProp.js":4,"./avg.js":5,"./count.js":8,"./exception-count.js":9,"./exception-sum.js":10,"./filter.js":11,"./histogram.js":12,"./max.js":13,"./median.js":14,"./min.js":15,"./nest.js":16,"./std.js":20,"./sum-of-squares.js":21,"./sum.js":22,"./value-count.js":23,"./value-list.js":24}],7:[function(require,module,exports){
+},{"./alias.js":3,"./aliasProp.js":4,"./avg.js":5,"./count.js":8,"./exception-count.js":9,"./exception-sum.js":10,"./filter.js":11,"./histogram.js":12,"./max.js":13,"./median.js":14,"./min.js":15,"./nest.js":16,"./std.js":21,"./sum-of-squares.js":22,"./sum.js":23,"./value-count.js":24,"./value-list.js":25}],7:[function(require,module,exports){
 var pluck = function(n){
     return function(d){
         return d[n];
@@ -1050,9 +1050,51 @@ module.exports = function(reductio){
     };
 
     reductio.registerPostProcessor('cap', require('./cap'));
+    reductio.registerPostProcessor('sortBy', require('./sortBy'));
 };
 
-},{"./cap":7}],20:[function(require,module,exports){
+},{"./cap":7,"./sortBy":20}],20:[function(require,module,exports){
+var pluck_n = function (n) {
+    if (typeof n === 'function') {
+        return n;
+    }
+    if (~n.indexOf('.')) {
+        var split = n.split('.');
+        return function (d) {
+            return split.reduce(function (p, v) {
+                return p[v];
+            }, d);
+        };
+    }
+    return function (d) {
+        return d[n];
+    };
+};
+
+var comparer = function (accessor, ordering) {
+    return function (a, b) {
+        var aVal = accessor(a);
+        var bVal = accessor(b);
+        if(aVal > bVal) return ordering == 'asc' ? 1 : -1;
+        if(aVal < bVal) return ordering == 'asc' ? -1 : 1;
+        return 0;
+    };
+};
+
+var type = {}.toString;
+
+module.exports = function (prior) {
+    return function (value) {
+        var ordering = 'asc';
+        if(type.call(value) === '[object String]' && value.indexOf('-') === 0){
+            value = value.substr(1);
+            ordering = 'desc';
+        }
+        return prior().sort(comparer(pluck_n(value), ordering));
+    };
+};
+
+},{}],21:[function(require,module,exports){
 var reductio_std = {
 	add: function (prior, path) {
 		return function (p, v, nf) {
@@ -1090,7 +1132,7 @@ var reductio_std = {
 };
 
 module.exports = reductio_std;
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var reductio_sum_of_sq = {
 	add: function (a, prior, path) {
 		return function (p, v, nf) {
@@ -1116,7 +1158,7 @@ var reductio_sum_of_sq = {
 };
 
 module.exports = reductio_sum_of_sq;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var reductio_sum = {
 	add: function (a, prior, path) {
 		return function (p, v, nf) {
@@ -1142,7 +1184,7 @@ var reductio_sum = {
 };
 
 module.exports = reductio_sum;
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
@@ -1187,7 +1229,7 @@ var reductio_value_count = {
 
 module.exports = reductio_value_count;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global){
 var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
