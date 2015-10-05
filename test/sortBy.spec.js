@@ -1,3 +1,7 @@
+function descending(a, b) {
+    return a < b ? 1 : a > b ? -1 : a >= b ? 0 : NaN;
+}
+
 describe('Reductio sortBy', function () {
     var group, reducer;
 
@@ -28,7 +32,7 @@ describe('Reductio sortBy', function () {
     });
 
     it('orders correctly', function () {
-        var all = group.post().sortBy('-value.sum')();
+        var all = group.post().sortBy('value.sum', descending)();
         for(var i = 0; i < all.length; ++i){
             expect(all[i].value.sum).toBe(6-i);
         }
@@ -54,7 +58,7 @@ describe('Reductio sortBy', function () {
     });
 
     it('works with cap', function(){
-        var all = group.post().sortBy('-value.sum').cap(3)();
+        var all = group.post().sortBy('value.sum', descending).cap(3)();
         expect(all[0].value.sum).toBe(6);
         expect(all[1].value.sum).toBe(5);
         expect(all[2].value.sum).toBe(10);

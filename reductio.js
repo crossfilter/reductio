@@ -1071,26 +1071,24 @@ var pluck_n = function (n) {
     };
 };
 
+function ascending(a, b) {
+    return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+}
+
 var comparer = function (accessor, ordering) {
     return function (a, b) {
-        var aVal = accessor(a);
-        var bVal = accessor(b);
-        if(aVal > bVal) return ordering == 'asc' ? 1 : -1;
-        if(aVal < bVal) return ordering == 'asc' ? -1 : 1;
-        return 0;
+        return ordering(accessor(a), accessor(b));
     };
 };
 
 var type = {}.toString;
 
 module.exports = function (prior) {
-    return function (value) {
-        var ordering = 'asc';
-        if(type.call(value) === '[object String]' && value.indexOf('-') === 0){
-            value = value.substr(1);
-            ordering = 'desc';
+    return function (value, order) {
+        if (arguments.length === 1) {
+            order = ascending;
         }
-        return prior().sort(comparer(pluck_n(value), ordering));
+        return prior().sort(comparer(pluck_n(value), order));
     };
 };
 
