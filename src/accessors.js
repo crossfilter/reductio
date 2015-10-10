@@ -39,7 +39,7 @@ function accessor_build(obj, p) {
 
 	obj.sum = function(value) {
 		if (!arguments.length) return p.sum;
-		
+
 		value = accessorifyNumeric(value);
 
 		p.sum = value;
@@ -229,6 +229,7 @@ function accessor_build(obj, p) {
 		p.groupAll = groupTest;
 		return obj;
 	};
+
 }
 
 var reductio_accessors = {
