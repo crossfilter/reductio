@@ -42,7 +42,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>groupAll</b>(<i>groupingFunction</i>)](#aggregations-groupall-aggregations-reductio-b-groupall-b-i-groupingfunction-i-)
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Post-processing](#postprocess)
-    * [Cap](#cap)
+    * [group.post().<b>cap</b>(<i>length</i>)](#cap)
 * [Example](#example)
 
 
@@ -403,8 +403,8 @@ reductio().count(true)
 <h1 id="postprocess">Post-processing</h1>
 Reductio adds a `post` function to your group. Calling this function returns an object on which you can make settings to allow you to post-process your data in useful ways.
 
-<h2 id="cap">Cap</h1>
-Cap the output of your group so that it never exceeds `cap` elements.
+<h2 id="cap">group.post().<b>cap</b>(<i>length</i>)</h1>
+Cap the output of your group so that it never exceeds `length` elements.
 
 The last element will be an aggregation of the rest of the elements. It might be wise to set your groups `order` method before using this.
 
