@@ -401,7 +401,7 @@ reductio().count(true)
 ```
 
 <h1 id="postprocess">Post-processing</h1>
-Reductio adds a `post` object to your group which allows you to post process your data in many useful ways.
+Reductio adds a `post` function to your group. Calling this function returns an object on which you can make settings to allow you to post-process your data in useful ways.
 
 <h2 id="cap">Cap</h1>
 Cap the output of your group so that it never exceeds `cap` elements.
@@ -413,7 +413,7 @@ reductio()
     .count(true)
     .sum('foo')
     .avg(true)(group);
-console.log(group.post.cap(4).length) // 4
+group.post().cap(4)().length // 4 or less
 ```
 
 <h1 id="example">Example</h1>
