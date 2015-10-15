@@ -29,8 +29,8 @@ API definition:
 			groupAll
 				...
 			accessor (returns the accessor)
-			groups - array of current groups
-		dimensions - array of current dimensions (for checking <32)
+			groups - array of current groups on the dimension
+		dimensions - array of current dimensions
 ```
 
 Checks on dimension accessors for basic natural-ordered-ness. More less just checking if it always returns values of the same type for different types of edge-case inputs (text, number, 0, Infinity, "", [], {}, undefined, null, NaN)
