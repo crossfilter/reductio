@@ -5,7 +5,7 @@ API definition:
 	reductio <-- crossfilter (optional?)
 		dimension(accessor | property, type)
 			group(accessor | property, type)
-				accessor
+				accessor (returns the accessor)
 				count
 				sum
 				avg <-- change to 'average'?
@@ -22,8 +22,8 @@ API definition:
 				filter
 				nest
 				alias
-				aliasProp <-- name change?
-				exception
+				aliasProp <-- name change? Or just get rid of it - efficiency issues
+				uniqueBy
 					count
 					sum
 			groupAll
