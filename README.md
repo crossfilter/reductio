@@ -34,6 +34,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>nest</b>(<i>keyAccessorArray</i>)](#aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-)
         * [reductio.<b>alias</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-)
         * [reductio.<b>aliasProp</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-aliasprop-b-i-mapping-i-)
+        * [reductio.<b>valueList</b>(<i>accessor</i>)](#aggregations-standard-aggregations-reductio-value-list)
+        * [reductio.<b>dataList</b>(<i>boolean</i>)](#aggregations-standard-aggregations-reductio-data-list)
         * [Exception aggregation](#aggregations-standard-aggregations-exception-aggregation)
             * [reductio.<b>exception</b>(<i>accessor</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-)
             * [reductio.<b>exceptionCount</b>(<i>boolean</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-)
@@ -306,6 +308,24 @@ group.top(1)[0].description;
 ```
 
 It is *very* important that the functions in the _mapping_ don't modify the group directly. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
+
+<h3 id="aggregations-standard-aggregations-reductio-value-list">reductio.<b>valueList</b>(<i>accessor</i>)</h3>
+```javascript
+var reducer = reductio()
+   .sum(function (d) { return d.bar; })
+   .valueList(function (d) { return d.bar; });
+```
+
+Maintains a `valueList` property on the group containing an array of values returned by `accessor` for every record added to the group. This property is used internally by other aggregations like `min`, `max`, and `median`, so watch for warning messages on the console.
+
+<h3 id="aggregations-standard-aggregations-reductio-data-list">reductio.<b>dataList</b>(<i>boolean</i>)</h3>
+```javascript
+var reducer = reductio()
+   .sum(function (d) { return d.bar; })
+   .dataList(true);
+```
+
+Maintains a `dataList` property on the group containing an array of records included in the group. This is similar to `valueList` used with the identity function as the accessor, but is slightly more efficient.
 
 <h3 id="aggregations-standard-aggregations-exception-aggregation">Exception aggregation</h3>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
