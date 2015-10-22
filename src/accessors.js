@@ -230,6 +230,12 @@ function accessor_build(obj, p) {
 		return obj;
 	};
 
+	obj.dataList = function(value) {
+		if (!arguments.length) return p.dataList;
+		p.dataList = value;
+		return obj;
+	};
+
 }
 
 var reductio_accessors = {

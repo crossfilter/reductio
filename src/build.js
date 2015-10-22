@@ -15,6 +15,7 @@ var reductio_std = require('./std.js');
 var reductio_nest = require('./nest.js');
 var reductio_alias = require('./alias.js');
 var reductio_alias_prop = require('./aliasProp.js');
+var reductio_data_list = require('./data-list.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -80,6 +81,13 @@ function build_function(p, f, path) {
 		f.reduceAdd = reductio_value_list.add(p.valueList, f.reduceAdd, path);
 		f.reduceRemove = reductio_value_list.remove(p.valueList, f.reduceRemove, path);
 		f.reduceInitial = reductio_value_list.initial(f.reduceInitial, path);
+	}
+
+	// Maintain the data array.
+	if(p.dataList) {
+		f.reduceAdd = reductio_data_list.add(p.dataList, f.reduceAdd, path);
+		f.reduceRemove = reductio_data_list.remove(p.dataList, f.reduceRemove, path);
+		f.reduceInitial = reductio_data_list.initial(f.reduceInitial, path);
 	}
 
 	if(p.median) {
