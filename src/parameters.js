@@ -20,7 +20,8 @@ var reductio_parameters = function() {
 		nestKeys: false,
 		aliasKeys: false,
 		aliasPropKeys: false,
-		groupAll: false
+		groupAll: false,
+		data: false
 	};
 };
 
