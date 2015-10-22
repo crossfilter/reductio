@@ -21,7 +21,7 @@ var reductio_parameters = function() {
 		aliasKeys: false,
 		aliasPropKeys: false,
 		groupAll: false,
-		data: false
+		dataList: false
 	};
 };
 
