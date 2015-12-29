@@ -25,31 +25,34 @@ function reductio() {
 				console.warn("'groupAll' is defined but attempting to run on a standard dimension.group(). Must run on dimension.groupAll().");
 			} else {
 				var bisect = crossfilter.bisect.by(function(d) { return d.key; }).left;
-				var i;
+				var i, j;
 				var keys;
+        var keysLength;
 				group.reduce(
 					function(p, v, nf) {
 						keys = parameters.groupAll(v);
-						keys.forEach(function(k) {
-							i = bisect(p, k, 0, p.length);
-							if(!p[i] || p[i].key !== k) {
+            keysLength = keys.length;
+            for(j=0;j<keysLength;j++) {
+              i = bisect(p, keys[j], 0, p.length);
+							if(!p[i] || p[i].key !== keys[j]) {
 								// If the group doesn't yet exist, create it first.
-								p.splice(i, 0, { key: k, value: funcs.reduceInitial() });
+								p.splice(i, 0, { key: keys[j], value: funcs.reduceInitial() });
 							}
 
 							// Then pass the record and the group value to the reducers
 							funcs.reduceAdd(p[i].value, v, nf);
-						});
+            }
 						return p;
 					},
 					function(p, v, nf) {
 						keys = parameters.groupAll(v);
-						keys.forEach(function(k) {
-							i = bisect(p, k, 0, p.length);
+            keysLength = keys.length;
+            for(j=0;j<keysLength;j++) {
+              i = bisect(p, keys[j], 0, p.length);
 							// The group should exist or we're in trouble!
 							// Then pass the record and the group value to the reducers
 							funcs.reduceRemove(p[i].value, v, nf);
-						});
+            }
 						return p;
 					},
 					function() {
