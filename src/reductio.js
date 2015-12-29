@@ -28,15 +28,17 @@ function reductio() {
 				var i, j;
 				var keys;
         var keysLength;
+        var k; // Key
 				group.reduce(
 					function(p, v, nf) {
 						keys = parameters.groupAll(v);
             keysLength = keys.length;
             for(j=0;j<keysLength;j++) {
-              i = bisect(p, keys[j], 0, p.length);
-							if(!p[i] || p[i].key !== keys[j]) {
+              k = keys[j];
+              i = bisect(p, k, 0, p.length);
+							if(!p[i] || p[i].key !== k) {
 								// If the group doesn't yet exist, create it first.
-								p.splice(i, 0, { key: keys[j], value: funcs.reduceInitial() });
+								p.splice(i, 0, { key: k, value: funcs.reduceInitial() });
 							}
 
 							// Then pass the record and the group value to the reducers
