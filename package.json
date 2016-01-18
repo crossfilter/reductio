@@ -43,6 +43,9 @@
     "url": "https://github.com/esjewett/reductio/issues"
   },
   "homepage": "https://github.com/esjewett/reductio",
+  "browser": {
+    "crossfilter": "crossfilter2"
+  },
   "browserify-shim": {
     "crossfilter": "global:crossfilter"
   }
