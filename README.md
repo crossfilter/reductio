@@ -46,6 +46,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 * [Post-processing](#postprocess)
     * [group.post().<b>cap</b>(<i>length</i>)](#cap)
 * [Utilities](#utilities)
+    * [reductio().<b>fromObject</b>(<i>paremeters</i>)](#utilities-fromObject)
 * [Example](#example)
 
 
@@ -439,7 +440,7 @@ group.post().cap(4)().length // 4 or less
 
 <h1 id="utilities">Utilities</h1>
 
-<h2 id="utilities-fromObject">reudctio().<b>fromObject</b>(<i>b</i>)</h2>
+<h2 id="utilities-fromObject">reudctio().<b>fromObject</b>(<i>parameters</i>)</h2>
 
 A utility that will allow you to replace the inner object from which reductio creates its groupings
 
