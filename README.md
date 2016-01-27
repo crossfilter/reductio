@@ -45,6 +45,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
     * [Chaining aggregations](#aggregations-chaining-aggregations)
 * [Post-processing](#postprocess)
     * [group.post().<b>cap</b>(<i>length</i>)](#cap)
+* [Utilities](#utilities)
 * [Example](#example)
 
 
@@ -434,6 +435,22 @@ reductio()
     .sum('foo')
     .avg(true)(group);
 group.post().cap(4)().length // 4 or less
+```
+
+<h1 id="utilities">Utilities</h1>
+
+<h2 id="utilities-fromObject">reudctio().<b>fromObject</b>(<i>b</i>)</h2>
+
+A utility that will allow you to replace the inner object from which reductio creates its groupings
+
+Basic use:
+```js
+reductio()
+  .fromObject({
+    sum: function(d){
+      return d.foo;
+    }
+  })(group);
 ```
 
 <h1 id="example">Example</h1>
