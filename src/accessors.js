@@ -31,6 +31,12 @@ function accessor_build(obj, p) {
 		}
 	}
 
+	obj.fromObject = function(value) {
+		if(!arguments.length) return p;
+		Object.assign(p, value);
+		return obj;
+	};
+
 	obj.count = function(value) {
 		if (!arguments.length) return p.count;
 		p.count = value;
