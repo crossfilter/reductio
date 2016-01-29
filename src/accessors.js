@@ -1,5 +1,24 @@
 var reductio_parameters = require('./parameters.js');
 
+_assign = function assign(target) {
+	if (target == null) {
+		throw new TypeError('Cannot convert undefined or null to object');
+	}
+
+	var output = Object(target);
+	for (var index = 1; index < arguments.length; ++index) {
+		var source = arguments[index];
+		if (source != null) {
+			for (var nextKey in source) {
+				if(source.hasOwnProperty(nextKey)) {
+					output[nextKey] = source[nextKey];
+				}
+			}
+		}
+	}
+	return output;
+};
+
 function accessor_build(obj, p) {
 	// obj.order = function(value) {
 	// 	if (!arguments.length) return p.order;
@@ -33,8 +52,12 @@ function accessor_build(obj, p) {
 
 	obj.fromObject = function(value) {
 		if(!arguments.length) return p;
-		Object.assign(p, value);
+		_assign(p, value);
 		return obj;
+	};
+
+	obj.toObject = function() {
+		return p;
 	};
 
 	obj.count = function(value) {
