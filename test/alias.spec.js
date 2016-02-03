@@ -39,9 +39,9 @@ describe('Alias function', function () {
     });
 
     it('groupings for second alias have the right values', function(){
-        expect(values['one'].theCount()).toMatch(6);
-        expect(values['two'].theCount()).toMatch(4);
-        expect(values['three'].theCount()).toMatch(2);
+        expect(values['one'].twoCount()).toMatch(6);
+        expect(values['two'].twoCount()).toMatch(4);
+        expect(values['three'].twoCount()).toMatch(2);
     });
 
 });
