@@ -23,7 +23,7 @@ API definition:
 				nest
 				alias
 				aliasProp <-- name change? Or just get rid of it - efficiency issues
-				uniqueBy (formerly exception)
+				uniqueBy (formerly exception) / distinct?
 					count
 					sum
 			groupAll

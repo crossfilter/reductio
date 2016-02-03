@@ -1,6 +1,6 @@
 {
   "name": "reductio",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Reductio: Crossfilter groupings",
   "main": "src/reductio.js",
   "directories": {
@@ -43,6 +43,9 @@
     "url": "https://github.com/esjewett/reductio/issues"
   },
   "homepage": "https://github.com/esjewett/reductio",
+  "browser": {
+    "crossfilter": "crossfilter2"
+  },
   "browserify-shim": {
     "crossfilter": "global:crossfilter"
   }
