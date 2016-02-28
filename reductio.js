@@ -151,9 +151,12 @@ function accessor_build(obj, p) {
 		return p;
 	};
 
-	obj.count = function(value) {
+	obj.count = function(value, propName) {
 		if (!arguments.length) return p.count;
-		p.count = value;
+    if (!propName) {
+      propName = p.count.length === 0 ? 'count' : ('count' + (p.count.length+1));
+    }
+		p.count.push([value, propName]);
 		return obj;
 	};
 
@@ -176,7 +179,7 @@ function accessor_build(obj, p) {
 			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			p.sum = value;
 			p.avg = true;
-			p.count = true;
+			if(p.count.length === 0) p.count.push([true,'count']);
 		} else {
 			p.avg = value;
 		}
@@ -293,7 +296,7 @@ function accessor_build(obj, p) {
 		if(typeof(value) === 'function') {
 			p.sumOfSquares = value;
 			p.sum = value;
-			p.count = true;
+			if(p.count.length === 0) p.count.push([true, 'count']);
 			p.std = true;
 		} else {
 			p.std = value;
@@ -466,9 +469,11 @@ function build_function(p, f, path) {
 	};
 
 	if(p.count || p.std) {
-		f.reduceAdd = reductio_count.add(f.reduceAdd, path);
-		f.reduceRemove = reductio_count.remove(f.reduceRemove, path);
-		f.reduceInitial = reductio_count.initial(f.reduceInitial, path);
+    p.count.forEach(function(c) {
+      f.reduceAdd = reductio_count.add(f.reduceAdd, path, c[1]);
+      f.reduceRemove = reductio_count.remove(f.reduceRemove, path, c[1]);
+      f.reduceInitial = reductio_count.initial(f.reduceInitial, path, c[1]);
+    });
 	}
 
 	if(p.sum) {
@@ -674,25 +679,25 @@ module.exports = reductio_cap;
 
 },{}],8:[function(require,module,exports){
 var reductio_count = {
-	add: function(prior, path) {
+	add: function(prior, path, propName) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
-			path(p).count++;
+			path(p)[propName]++;
 			return p;
 		};
 	},
-	remove: function(prior, path) {
+	remove: function(prior, path, propName) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
-			path(p).count--;
+			path(p)[propName]--;
 			return p;
 		};
 	},
-	initial: function(prior, path) {
+	initial: function(prior, path, propName) {
 		return function (p) {
 			if(prior) p = prior(p);
 			// if(p === undefined) p = {};
-			path(p).count = 0;
+			path(p)[propName] = 0;
 			return p;
 		};
 	}
@@ -1070,7 +1075,7 @@ var reductio_parameters = function() {
 	return {
 		order: false,
 		avg: false,
-		count: false,
+		count: [],
 		sum: false,
 		exceptionAccessor: false,
 		exceptionCount: false,

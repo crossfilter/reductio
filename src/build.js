@@ -32,9 +32,11 @@ function build_function(p, f, path) {
 	};
 
 	if(p.count || p.std) {
-		f.reduceAdd = reductio_count.add(f.reduceAdd, path);
-		f.reduceRemove = reductio_count.remove(f.reduceRemove, path);
-		f.reduceInitial = reductio_count.initial(f.reduceInitial, path);
+    p.count.forEach(function(c) {
+      f.reduceAdd = reductio_count.add(f.reduceAdd, path, c[1]);
+      f.reduceRemove = reductio_count.remove(f.reduceRemove, path, c[1]);
+      f.reduceInitial = reductio_count.initial(f.reduceInitial, path, c[1]);
+    });
 	}
 
 	if(p.sum) {
