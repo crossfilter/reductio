@@ -4,7 +4,7 @@ var reductio_build = require('./build.js');
 var reductio_accessors = require('./accessors.js');
 var reductio_parameters = require('./parameters.js');
 var reductio_postprocess = require('./postprocess');
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 function reductio() {
 	var parameters = reductio_parameters();
@@ -369,8 +369,13 @@ var reductio_alias = {
 	initial: function(prior, path, obj) {
 		return function (p) {
 			if(prior) p = prior(p);
+			function buildAliasFunction(key){
+				return function(){
+					return obj[key](path(p));
+				};
+			}
 			for(var prop in obj) {
-				path(p)[prop] = function() { return obj[prop](path(p)); };
+				path(p)[prop] = buildAliasFunction(prop);
 			}
 			return p;
 		};
@@ -830,7 +835,7 @@ module.exports = reductio_filter;
 
 },{}],13:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_histogram = {
 	add: function (a, prior, path) {
@@ -1000,7 +1005,7 @@ var reductio_min = {
 module.exports = reductio_min;
 },{}],17:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_nest = {
 	add: function (keyAccessors, prior, path) {
@@ -1260,7 +1265,7 @@ var reductio_sum = {
 module.exports = reductio_sum;
 },{}],25:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_count = {
 	add: function (a, prior, path) {
@@ -1305,7 +1310,7 @@ module.exports = reductio_value_count;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],26:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_list = {
 	add: function (a, prior, path) {
