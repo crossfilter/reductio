@@ -16,8 +16,7 @@ describe('Reductio count', function () {
         group = dim.group();
 
         var reducer = reductio()
-                .count(true)
-                .count(true, 'otherCount');
+                .count(true);
 
         reducer(group);
     });
@@ -38,6 +37,8 @@ describe('Reductio count', function () {
     });
     
     it('has a user-defined property name', function() {
+      reductio().count(true, 'otherCount')(group);
       expect(group.top(1)[0].value.otherCount).toEqual(3);
+      expect(group.top(1)[0].value.count).toEqual(undefined);
     })
 });

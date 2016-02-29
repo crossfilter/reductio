@@ -154,9 +154,9 @@ function accessor_build(obj, p) {
 	obj.count = function(value, propName) {
 		if (!arguments.length) return p.count;
     if (!propName) {
-      propName = p.count.length === 0 ? 'count' : ('count' + (p.count.length+1));
+      propName = 'count';
     }
-		p.count.push([value, propName]);
+		p.count = propName;
 		return obj;
 	};
 
@@ -179,7 +179,7 @@ function accessor_build(obj, p) {
 			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			p.sum = value;
 			p.avg = true;
-			if(p.count.length === 0) p.count.push([true,'count']);
+			p.count = 'count';
 		} else {
 			p.avg = value;
 		}
@@ -296,7 +296,7 @@ function accessor_build(obj, p) {
 		if(typeof(value) === 'function') {
 			p.sumOfSquares = value;
 			p.sum = value;
-			if(p.count.length === 0) p.count.push([true, 'count']);
+			p.count = 'count';
 			p.std = true;
 		} else {
 			p.std = value;
@@ -469,11 +469,9 @@ function build_function(p, f, path) {
 	};
 
 	if(p.count || p.std) {
-    p.count.forEach(function(c) {
-      f.reduceAdd = reductio_count.add(f.reduceAdd, path, c[1]);
-      f.reduceRemove = reductio_count.remove(f.reduceRemove, path, c[1]);
-      f.reduceInitial = reductio_count.initial(f.reduceInitial, path, c[1]);
-    });
+    f.reduceAdd = reductio_count.add(f.reduceAdd, path, p.count);
+    f.reduceRemove = reductio_count.remove(f.reduceRemove, path, p.count);
+    f.reduceInitial = reductio_count.initial(f.reduceInitial, path, p.count);
 	}
 
 	if(p.sum) {
