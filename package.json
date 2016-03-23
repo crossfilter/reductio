@@ -47,6 +47,6 @@
     "crossfilter": "crossfilter2"
   },
   "browserify-shim": {
-    "crossfilter": "global:crossfilter"
+    "crossfilter2": "global:crossfilter"
   }
 }

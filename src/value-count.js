@@ -1,4 +1,4 @@
-var crossfilter = require('crossfilter');
+var crossfilter = require('crossfilter2');
 
 var reductio_value_count = {
 	add: function (a, prior, path) {
