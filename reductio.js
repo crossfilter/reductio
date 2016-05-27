@@ -4,7 +4,7 @@ var reductio_build = require('./build.js');
 var reductio_accessors = require('./accessors.js');
 var reductio_parameters = require('./parameters.js');
 var reductio_postprocess = require('./postprocess');
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 function reductio() {
 	var parameters = reductio_parameters();
@@ -875,7 +875,7 @@ module.exports = reductio_filter;
 
 },{}],14:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_histogram = {
 	add: function (a, prior, path) {
@@ -1045,7 +1045,7 @@ var reductio_min = {
 module.exports = reductio_min;
 },{}],18:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_nest = {
 	add: function (keyAccessors, prior, path) {
@@ -1306,7 +1306,7 @@ var reductio_sum = {
 module.exports = reductio_sum;
 },{}],26:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_count = {
 	add: function (a, prior, path) {
@@ -1351,7 +1351,7 @@ module.exports = reductio_value_count;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],27:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
+var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
 
 var reductio_value_list = {
 	add: function (a, prior, path) {

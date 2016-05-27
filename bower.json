@@ -1,7 +1,7 @@
 {
   "name": "reductio",
   "main": "reductio.js",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "homepage": "https://github.com/esjewett/reductio",
   "authors": [
     "Ethan Jewett"
@@ -18,6 +18,6 @@
     "test"
   ],
   "dependencies": {
-    "crossfilter2": "v2.0.0-alpha.03"
+    "crossfilter2": "1.4.0-alpha.05"
   }
 }
