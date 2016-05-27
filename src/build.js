@@ -16,6 +16,7 @@ var reductio_nest = require('./nest.js');
 var reductio_alias = require('./alias.js');
 var reductio_alias_prop = require('./aliasProp.js');
 var reductio_data_list = require('./data-list.js');
+var reductio_custom = require('./custom.js');
 
 function build_function(p, f, path) {
 	// We have to build these functions in order. Eventually we can include dependency
@@ -138,6 +139,13 @@ function build_function(p, f, path) {
 			f.reduceRemove = reductio_std.remove(f.reduceRemove, path);
 			f.reduceInitial = reductio_std.initial(f.reduceInitial, path);
 		}
+	}
+
+	// Custom reducer defined by 3 functions : add, remove, initial
+	if (p.custom) {
+		f.reduceAdd = reductio_custom.add(f.reduceAdd, path, p.custom.add);
+		f.reduceRemove = reductio_custom.remove(f.reduceRemove, path, p.custom.remove);
+		f.reduceInitial = reductio_custom.initial(f.reduceInitial, path, p.custom.initial);
 	}
 
 	// Nesting

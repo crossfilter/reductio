@@ -268,6 +268,12 @@ function accessor_build(obj, p) {
 		return obj;
 	};
 
+	obj.custom = function(addRemoveInitialObj) {
+		if (!arguments.length) return p.custom;
+		p.custom = addRemoveInitialObj;
+		return obj;
+	};
+
 }
 
 var reductio_accessors = {

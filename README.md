@@ -36,6 +36,7 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
         * [reductio.<b>aliasProp</b>(<i>mapping</i>)](#aggregations-standard-aggregations-reductio-b-aliasprop-b-i-mapping-i-)
         * [reductio.<b>valueList</b>(<i>accessor</i>)](#aggregations-standard-aggregations-reductio-value-list)
         * [reductio.<b>dataList</b>(<i>boolean</i>)](#aggregations-standard-aggregations-reductio-data-list)
+        * [reductio.<b>custom</b>(<i>initial,add,remove</i>)](#aggregations-standard-aggregations-reductio-custom)
         * [Exception aggregation](#aggregations-standard-aggregations-exception-aggregation)
             * [reductio.<b>exception</b>(<i>accessor</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exception-b-i-accessor-i-)
             * [reductio.<b>exceptionCount</b>(<i>boolean</i>)](#aggregations-standard-aggregations-exception-aggregation-reductio-b-exceptioncount-b-i-boolean-i-)
@@ -329,6 +330,28 @@ var reducer = reductio()
 ```
 
 Maintains a `dataList` property on the group containing an array of records included in the group. This is similar to `valueList` used with the identity function as the accessor, but is slightly more efficient.
+
+<h3 id="aggregations-standard-aggregations-reductio-custom">reductio.<b>custom</b>(<i>initial,add,remove</i>)</h3>
+```javascript
+var reducer = reductio()
+  .custom({
+    add: function(p, v) {
+      p.myProp += v.foo.length;
+      return p;
+    },
+    remove: function(p, v) {
+      p.myProp -= v.foo.length;
+      return p;
+    },
+    initial: function(p) {
+      p.myProp = 0;
+      return p;
+    }
+  });
+```
+
+Applies specified custom reducer to every record of every group.
+This property allows to plug any custom extension in Reductio's API.
 
 <h3 id="aggregations-standard-aggregations-exception-aggregation">Exception aggregation</h3>
 We also support exception aggregation. For our purposes, this means only aggregating once for each unique value that the exception accessor returns. So:
