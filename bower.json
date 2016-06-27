@@ -1,7 +1,6 @@
 {
   "name": "reductio",
   "main": "reductio.js",
-  "version": "0.6.0",
   "homepage": "https://github.com/esjewett/reductio",
   "authors": [
     "Ethan Jewett"
