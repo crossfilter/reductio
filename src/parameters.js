@@ -2,7 +2,7 @@ var reductio_parameters = function() {
 	return {
 		order: false,
 		avg: false,
-		count: [],
+		count: false,
 		sum: false,
 		exceptionAccessor: false,
 		exceptionCount: false,
