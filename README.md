@@ -10,6 +10,39 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 [![Travis build status](http://img.shields.io/travis/crossfilter/reductio/master.svg?style=flat)](https://travis-ci.org/esjewett/reductio)
 [![Dependency Status](https://david-dm.org/crossfilter/reductio.svg?style=flat)](https://david-dm.org/crossfilter/reductio)
 
+<h1 id="example">Example</h1>
+
+Basic use:
+
+```javascript
+var data = crossfilter([
+  { foo: 'one', bar: 1 },
+  { foo: 'two', bar: 2 },
+  { foo: 'three', bar: 3 },
+  { foo: 'one', bar: 4 },
+  { foo: 'one', bar: 5 },
+  { foo: 'two', bar: 6 },
+]);
+
+var dim = data.dimension(function(d) { return d.foo; });
+var group = dim.group();
+
+// Equivalent to reductio().avg(function(d) { return d.bar; }), which sets the .sum() and .count() values.
+var reducer = reductio()
+    .count(true)
+    .sum(function(d) { return d.bar; })
+    .avg(true);
+
+// Now it should track count, sum, and avg.
+reducer(group);
+
+group.top(Infinity);
+// [ { key: 'one', value: { count: 3, sum: 10, avg: 3.3333333 },
+//   { key: 'two', value: { count: 2, sum: 8, avg: 4 },
+//   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
+```
+
+* [Example](#example)
 * [Installation](#installation)
     * [NPM](#installation-npm)
     * [Bower](#installation-bower)
@@ -50,7 +83,6 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
 * [Utilities](#utilities)
     * [reductio().<b>fromObject</b>(<i>parameters</i>)](#utilities-fromObject)
     * [reductio().<b>toObject</b>()](#utilities-toObject)
-* [Example](#example)
 
 
 <h1 id="installation">Installation</h1>
@@ -488,35 +520,3 @@ reductio()
 
 <h2 id="utilities-toObject">reductio().<b>toObject</b>()</h2>
 Returns the current state of the reductio instance.
-
-<h1 id="example">Example</h1>
-
-Basic use:
-
-```javascript
-var data = crossfilter([
-  { foo: 'one', bar: 1 },
-  { foo: 'two', bar: 2 },
-  { foo: 'three', bar: 3 },
-  { foo: 'one', bar: 4 },
-  { foo: 'one', bar: 5 },
-  { foo: 'two', bar: 6 },
-]);
-
-var dim = data.dimension(function(d) { return d.foo; });
-var group = dim.group();
-
-// Equivalent to reductio().avg(function(d) { return d.bar; }), which sets the .sum() and .count() values.
-var reducer = reductio()
-    .count(true)
-    .sum(function(d) { return d.bar; })
-    .avg(true);
-
-// Now it should track count, sum, and avg.
-reducer(group);
-
-group.top(Infinity);
-// [ { key: 'one', value: { count: 3, sum: 10, avg: 3.3333333 },
-//   { key: 'two', value: { count: 2, sum: 8, avg: 4 },
-//   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
-```
