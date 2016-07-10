@@ -42,7 +42,10 @@ group.top(Infinity);
 //   { key: 'three', value: { count: 1, sum: 3, avg: 3 } ]
 ```
 
+<h1 id="toc">Table of Contents</h1>
+
 * [Example](#example)
+* [Table of Contents](#toc)
 * [Installation](#installation)
     * [NPM](#installation-npm)
     * [Bower](#installation-bower)
