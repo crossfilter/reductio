@@ -14,6 +14,8 @@ Reductio is a library for generating Crossfilter reduce functions and applying t
     * [NPM](#installation-npm)
     * [Bower](#installation-bower)
     * [Download](#installation-download)
+    * [CDN](#installation-cdn)
+* [Getting Help](#getting-help)
 * [Accessor Functions](#accessor-functions)
 * [Aggregations](#aggregations)
     * [Standard aggregations](#aggregations-standard-aggregations)
@@ -65,6 +67,13 @@ bower install --save-dev reductio
 
 <h2 id="installation-download">Download</h2>
 Download from the [releases](https://github.com/esjewett/reductio/releases) page. Serve the reductio.js or reductio.min.js file in the top-level directory as part of your application.
+
+<h2 id="installation-cdn">CDN</h2>
+Reductio is available via cdnjs. You can generate links to different versions of Reductio at: https://cdnjs.com/libraries/reductio
+
+<h1 id="getting-help">Getting help</h1>
+
+If something doesn't appear to be working or you're having trouble with implementing something, it will usually be best to ask a question on Stackoverflow and tag the question with the [reductio tag](http://stackoverflow.com/questions/tagged/reductio). When you ask your question, it is best to put together a working example showing the problem you are having. A [JSFiddle template](https://jsfiddle.net/esjewett/jusjkm8j/) is available that already includes the Reductio and Crossfilter libraries, as well as dc.js. Use that template to make an example showing what you are seeing. In your question, reference the example, explain what you are seeing, and explain what you expect or want to see instead.
 
 <h1 id="accessor-functions">Accessor functions</h1>
 
