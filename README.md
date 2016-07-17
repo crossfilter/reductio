@@ -110,6 +110,8 @@ Reductio is available via cdnjs. You can generate links to different versions of
 
 If something doesn't appear to be working or you're having trouble with implementing something, it will usually be best to ask a question on Stackoverflow and tag the question with the [reductio tag](http://stackoverflow.com/questions/tagged/reductio). When you ask your question, it is best to put together a working example showing the problem you are having. A [JSFiddle template](https://jsfiddle.net/esjewett/jusjkm8j/) is available that already includes the Reductio and Crossfilter libraries, as well as dc.js. Use that template to make an example showing what you are seeing. In your question, reference the example, explain what you are seeing, and explain what you expect or want to see instead.
 
+There is also a [Reductio Gitter](https://gitter.im/crossfilter/reductio), which is a good place to check in for help if you have a quick question that doesn't fit into the Stackoverflow format, or if you are looking for a more conceptual discussion.
+
 <h1 id="accessor-functions">Accessor functions</h1>
 
 In most cases when an accessor function is required, Reductio supports the use of the property name to be accessed in the form or a string instead. When appropriate, Reductio will even cast the value of a property to a number for you, though be aware that this will convert nulls and undefined values into 0s.
