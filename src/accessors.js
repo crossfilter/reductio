@@ -85,7 +85,7 @@ function accessor_build(obj, p) {
 
 		// We can take an accessor function, a boolean, or a string
 		if( typeof value === 'function' ) {
-			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
+			if(p.sum && p.sum !== value) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			p.sum = value;
 			p.avg = true;
 			p.count = 'count';
@@ -125,7 +125,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 			p.valueList = value;
 		}
 		p.median = value;
@@ -138,7 +138,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by min aggregation');
 			p.valueList = value;
 		}
 		p.min = value;
@@ -151,7 +151,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by max aggregation');
 			p.valueList = value;
 		}
 		p.max = value;
@@ -164,7 +164,7 @@ function accessor_build(obj, p) {
 		value = accessorify(value);
 
 		if( typeof value === 'function' ) {
-			if(p.sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
+			if(p.exceptionAccessor && p.exceptionAccessor !== value) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
 			p.exceptionAccessor = value;
 			p.exceptionCount = true;
 		} else {
