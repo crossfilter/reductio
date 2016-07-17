@@ -1,13 +1,13 @@
 {
   "name": "reductio",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Reductio: Crossfilter groupings",
   "main": "src/reductio.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "crossfilter2": "^1.4.0-alpha.05"
+    "crossfilter2": "^1.4.0-alpha.6"
   },
   "devDependencies": {
     "browserify": "^8.1.1",

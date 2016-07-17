@@ -4,7 +4,7 @@ var reductio_build = require('./build.js');
 var reductio_accessors = require('./accessors.js');
 var reductio_parameters = require('./parameters.js');
 var reductio_postprocess = require('./postprocess');
-var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
 function reductio() {
 	var parameters = reductio_parameters();
@@ -176,7 +176,7 @@ function accessor_build(obj, p) {
 
 		// We can take an accessor function, a boolean, or a string
 		if( typeof value === 'function' ) {
-			if(p.sum) console.warn('SUM aggregation is being overwritten by AVG aggregation');
+			if(p.sum && p.sum !== value) console.warn('SUM aggregation is being overwritten by AVG aggregation');
 			p.sum = value;
 			p.avg = true;
 			p.count = 'count';
@@ -216,7 +216,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by median aggregation');
 			p.valueList = value;
 		}
 		p.median = value;
@@ -229,7 +229,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by min aggregation');
 			p.valueList = value;
 		}
 		p.min = value;
@@ -242,7 +242,7 @@ function accessor_build(obj, p) {
 		value = accessorifyNumeric(value);
 
 		if(typeof value === 'function') {
-			if(p.valueList) console.warn('VALUELIST accessor is being overwritten by median aggregation');
+			if(p.valueList && p.valueList !== value) console.warn('VALUELIST accessor is being overwritten by max aggregation');
 			p.valueList = value;
 		}
 		p.max = value;
@@ -255,7 +255,7 @@ function accessor_build(obj, p) {
 		value = accessorify(value);
 
 		if( typeof value === 'function' ) {
-			if(p.sum) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
+			if(p.exceptionAccessor && p.exceptionAccessor !== value) console.warn('EXCEPTION accessor is being overwritten by exception count aggregation');
 			p.exceptionAccessor = value;
 			p.exceptionCount = true;
 		} else {
@@ -875,7 +875,7 @@ module.exports = reductio_filter;
 
 },{}],14:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
 var reductio_histogram = {
 	add: function (a, prior, path) {
@@ -1045,7 +1045,7 @@ var reductio_min = {
 module.exports = reductio_min;
 },{}],18:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
 var reductio_nest = {
 	add: function (keyAccessors, prior, path) {
@@ -1306,7 +1306,7 @@ var reductio_sum = {
 module.exports = reductio_sum;
 },{}],26:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
 var reductio_value_count = {
 	add: function (a, prior, path) {
@@ -1351,7 +1351,7 @@ module.exports = reductio_value_count;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],27:[function(require,module,exports){
 (function (global){
-var crossfilter = (typeof window !== "undefined" ? window.crossfilter : typeof global !== "undefined" ? global.crossfilter : null);
+var crossfilter = (typeof window !== "undefined" ? window['crossfilter'] : typeof global !== "undefined" ? global['crossfilter'] : null);
 
 var reductio_value_list = {
 	add: function (a, prior, path) {

@@ -17,6 +17,6 @@
     "test"
   ],
   "dependencies": {
-    "crossfilter2": "1.4.0-alpha.05"
+    "crossfilter2": "1.4.0-alpha.06"
   }
 }
