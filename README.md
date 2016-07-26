@@ -494,10 +494,10 @@ reductio().count(true)
 <h1 id="postprocess">Post-processing</h1>
 Reductio adds a `post` function to your group. Calling this function returns an object on which you can make settings to allow you to post-process your data in useful ways.
 
-<h2 id="cap">group.post().<b>cap</b>(<i>length</i>)</h1>
+<h2 id="cap">group.post().<b>cap</b>(<i>length</i>)</h2>
 Cap the output of your group so that it never exceeds `length` elements.
 
-The last element will be an aggregation of the rest of the elements. It might be wise to set your groups `order` method before using this.
+The last element will be an aggregation of the rest of the elements. It might be wise to set your groups `order` method on the Crossfilter group before using this.
 
 ```javascript
 reductio()
