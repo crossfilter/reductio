@@ -272,16 +272,17 @@ Will result in groups that look like
 ```javascript
 reductio().filter(filterFn)(group)
 ```
-Filters values from being added/removed from groups.  Works well with ```value```
+Limit the values that can be added to / removed from groups.  Works well with ```value```
 chains, and is also very useful if you need to aggregate sparsely-populated fields.
 
 ```javascript
 var reducer = reductio();
-reducer.value("evens").count(true)
-  .filter(function(d) { return d.bar % 2 === 0}; });
+reducer.value("evens")
+	.count(true)
+	.filter(function(d) { return d.num % 2 === 0; });
 reducer.value("rare")
-  .filter(function(d) { return typeof d.rareVal === 'undefined' ; })
-  .sum(function(d) return d.rareVal; );
+	.filter(function(d) { return typeof d.rareVal !== 'undefined'; })
+	.sum(function(d) { return d.rareVal; });
 reducer(group);
 ```
 
@@ -290,19 +291,19 @@ For example:
 ```javascript
 // Given:
 [
-  { foo: 'one', num: 1 },
-  { foo: 'two', num: 2 },
+  { foo: 'one',   num: 1 },
+  { foo: 'two',   num: 2 },
   { foo: 'three', num: 3, rareVal: 98 },
-  { foo: 'one', num: 3, rareVal: 99 },
-  { foo: 'one', num: 4, rareVal: 100 },
-  { foo: 'two', num: 6 }
+  { foo: 'one',   num: 3, rareVal: 99 },
+  { foo: 'one',   num: 4, rareVal: 100 },
+  { foo: 'two',   num: 6 }
 ]
 
 // The groups will look like:
 [
-  { key: 'one', value: { evens: { count: 1 }, rare: { sum: 199 } }
-  { key: 'two', value: { evens: { count: 2 }, rare: { sum: 98 } }
-  { key: 'three', value: { evens: { count: 0 }, rare: { sum: 0 } }
+  {key: "one",   value: {evens: {count: 1}, rare: {sum: 199}}},
+  {key: "two",   value: {evens: {count: 2}, rare: {sum: 0  }}},
+  {key: "three", value: {evens: {count: 0}, rare: {sum: 98 }}}
 ]
 ```
 
