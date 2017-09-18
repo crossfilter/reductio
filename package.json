@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "crossfilter2": "^1.4.0-alpha.6"
+    "crossfilter2": "^1.4.0"
   },
   "devDependencies": {
     "browserify": "^8.1.1",
