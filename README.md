@@ -91,11 +91,13 @@ group.top(Infinity);
 <h1 id="installation">Installation</h1>
 
 <h2 id="installation-npm">NPM</h2>
+
 ```shell
 npm install --save-dev reductio
 ```
 
 <h2 id="installation-bower">Bower</h2>
+
 ```shell
 bower install --save-dev reductio
 ```
@@ -169,30 +171,37 @@ reducer(group);
 Stored under the 'sum' property of groups. The value is a sum of ```accessor(d)``` for every record ```d``` that matches the group accessor. The accessor function must return a number.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-avg-b-i-boolean-i-i-value-i-">reductio.<b>avg</b>(<i>boolean</i>|<i>value</i>)</h3>
+
 ```javascript
 reductio().avg(function(d) { return +d.number; })(group);
 ```
+
 Stored under the 'avg' property of groups. Boolean variation depends on *count* and *sum* aggregations being specified. If an accessor function is provided, that function will be used to create a sum aggregation on the group, and a count aggregation will be created as well. The value on the 'avg' property is equal to sum/count for the group.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-min-b-i-boolean-i-i-value-i-">reductio.<b>min</b>(<i>boolean</i>|<i>value</i>)</h3>
 <h3 id="aggregations-standard-aggregations-reductio-b-max-b-i-boolean-i-i-value-i-">reductio.<b>max</b>(<i>boolean</i>|<i>value</i>)</h3>
 <h3 id="aggregations-standard-aggregations-reductio-b-median-b-i-boolean-i-i-value-i-">reductio.<b>median</b>(<i>boolean</i>|<i>value</i>)</h3>
+
 ```javascript
 reductio().min(function(d) { return +d.number; })
   .max(true)
   .median(true)(group);
 ```
+
 Stored under the 'median', 'min', and 'max' property of groups.
 
 Once you've defined one accessor function for min, max, or median (or if you have explicitly defined a ```redectio.valueList(value)```) it will be used by the others. This avoids warning messages about overwriting the valueList.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-sumofsq-b-i-value-i-">reductio.<b>sumOfSq</b>(<i>value</i>)</h3>
+
 ```javascript
 reductio().sumOfSq(function(d) { return d.number; })(group);
 ```
+
 Stored under the 'sumOfSq' property of the group. Defined as the square of the value returned by the accessor function summed over all records in the group. This is used in the standard deviation aggregation, but can be used on its own as well.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-std-b-i-boolean-i-i-value-i-">reductio.<b>std</b>(<i>boolean</i>|<i>value</i>)</h3>
+
 ```javascript
 reductio().sumOfSq(function(d) { return d.number; })
     .sum(function(d) { return d.number; })
@@ -201,11 +210,13 @@ reductio().sumOfSq(function(d) { return d.number; })
 reductio()
     .std(function(d) { return d.number; })(group);
 ```
+
 Stored under the 'std' property of the group. Defined as the sum-of-squares minus the average of the square of sums for all records in the group. In other words, for group 'g', ```g.sumOfSq - g.sum*g.sum/g.count```.
 
 If ```sumOfSq```, ```sum```, and ```count``` are already defined, takes a boolean. Otherwise pass in an accessor function directly.
 
 <h3 id="aggregations-standard-aggregations-histogram">Histogram</h3>
+
 ```javascript
 reductio().histogramBins([0,2,6,10])
         .histogramValue(function(d) { return +d.number; })(group)
@@ -224,6 +235,7 @@ Defines the bin thresholds for the histogram. Will result in ```thresholdArray.l
 Accessor for the value to be binned.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-value-b-i-propertyname-i-">reductio.<b>value</b>(<i>propertyName</i>)</h3>
+
 ```javascript
 var reducer = reductio();
 reducer.value("x").sum(xSumAccessor);
@@ -269,9 +281,11 @@ Will result in groups that look like
 ```
 
 <h3 id="aggregations-standard-aggregations-reductio-b-filter-b-i-filterfn-i-">reductio.<b>filter</b>(<i>filterFn</i>)</h3>
+
 ```javascript
 reductio().filter(filterFn)(group)
 ```
+
 Limit the values that can be added to / removed from groups.  Works well with ```value```
 chains, and is also very useful if you need to aggregate sparsely-populated fields.
 
@@ -309,6 +323,7 @@ For example:
 
 
 <h3 id="aggregations-standard-aggregations-reductio-b-nest-b-i-keyaccessorarray-i-">reductio.<b>nest</b>(<i>keyAccessorArray</i>)</h3>
+
 ```javascript
 reductio().nest([keyAccessor1, keyAccessor2])(group)
 ```
@@ -322,13 +337,15 @@ Usually you'll want to use the group key as the first level of nesting, then use
 Note that leaves will not be created when there is no record with that value in the branch. However, once a leaf is created it is not removed, so there is the possibility of leaves with empty 'values' arrays.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-alias-b-i-mapping-i-">reductio.<b>alias</b>(<i>mapping</i>)</h3>
+
 ```javascript
 reductio().count(true).alias({ newCount: function(g) { return g.count; } });
 ```
 
-Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the accessor functions that get the required values from the group.
+Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping``` is an object where keys are the new properties that will be added to the group and values are the accessor functions that get the required values from the group.
 
 On the group, we can then call the following function to retrieve the new count value.
+
 ```javascript
 group.top(1)[0].newCount();
 ```
@@ -336,6 +353,7 @@ group.top(1)[0].newCount();
 This approach to aliases is more efficient than the aliasProp approach below because it executes no logic at the time off aggregation.
 
 <h3 id="aggregations-standard-aggregations-reductio-b-aliasprop-b-i-mapping-i-">reductio.<b>aliasProp</b>(<i>mapping</i>)</h3>
+
 ```javascript
 reductio().count(true)
   .sum(function(d) { return +d.num; })
@@ -346,11 +364,12 @@ reductio().count(true)
   });
 ```
 
-Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping`` is an object where keys are the new properties that will be added to the group and values are the values returned by the accessor function.
+Allows definition of an accessor function of any name on the group that returns a value from the group. ```mapping``` is an object where keys are the new properties that will be added to the group and values are the values returned by the accessor function.
 
 Accessors also have access to the record, so you can use this function to do things like assigning additional descriptive information to the group property based on the records seen.
 
 On the group, we can then call the following to retrieve the count value.
+
 ```javascript
 group.top(1)[0].newCount;
 group.top(1)[0].average;
@@ -360,6 +379,7 @@ group.top(1)[0].description;
 It is *very* important that the functions in the _mapping_ don't modify the group directly. The functions are run after all aggregations are calculated and the same function is run for adding and removing records. Because the accessor functions are run on the group every time a record is added or removed, this is less efficient than the function-based approach in reductio.alias above.
 
 <h3 id="aggregations-standard-aggregations-reductio-value-list">reductio.<b>valueList</b>(<i>accessor</i>)</h3>
+
 ```javascript
 var reducer = reductio()
    .sum(function (d) { return d.bar; })
@@ -369,6 +389,7 @@ var reducer = reductio()
 Maintains a `valueList` property on the group containing an array of values returned by `accessor` for every record added to the group. This property is used internally by other aggregations like `min`, `max`, and `median`, so watch for warning messages on the console.
 
 <h3 id="aggregations-standard-aggregations-reductio-data-list">reductio.<b>dataList</b>(<i>boolean</i>)</h3>
+
 ```javascript
 var reducer = reductio()
    .sum(function (d) { return d.bar; })
@@ -378,6 +399,7 @@ var reducer = reductio()
 Maintains a `dataList` property on the group containing an array of records included in the group. This is similar to `valueList` used with the identity function as the accessor, but is slightly more efficient.
 
 <h3 id="aggregations-standard-aggregations-reductio-custom">reductio.<b>custom</b>(<i>initial,add,remove</i>)</h3>
+
 ```javascript
 var reducer = reductio()
   .custom({
@@ -515,6 +537,7 @@ group.post().cap(4)().length // 4 or less
 A utility that will allow you to assign directly to the inner object from which reductio creates its groupings.
 
 Basic use:
+
 ```js
 reductio()
   .fromObject({
