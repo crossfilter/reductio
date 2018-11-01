@@ -1,6 +1,6 @@
 var reductio_parameters = require('./parameters.js');
 
-_assign = function assign(target) {
+function assign(target) {
 	if (target == null) {
 		throw new TypeError('Cannot convert undefined or null to object');
 	}
@@ -52,7 +52,7 @@ function accessor_build(obj, p) {
 
 	obj.fromObject = function(value) {
 		if(!arguments.length) return p;
-		_assign(p, value);
+		assign(p, value);
 		return obj;
 	};
 

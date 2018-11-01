@@ -5,7 +5,7 @@ var pluck = function(n){
 };
 
 // supported operators are sum, avg, and count
-_grouper = function(path, prior){
+const _grouper = function(path, prior){
     if(!path) path = function(d){return d;};
     return function(p, v){
         if(prior) prior(p, v);
@@ -17,7 +17,7 @@ _grouper = function(path, prior){
     };
 };
 
-reductio_cap = function (prior, f, p) {
+const reductio_cap = function (prior, f, p) {
     var obj = f.reduceInitial();
     // we want to support values so we'll need to know what those are
     var values = p.values ? Object.keys(p.values) : [];

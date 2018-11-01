@@ -25,8 +25,6 @@ var comparer = function (accessor, ordering) {
     };
 };
 
-var type = {}.toString;
-
 module.exports = function (prior) {
     return function (value, order) {
         if (arguments.length === 1) {

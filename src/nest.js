@@ -29,7 +29,6 @@ var reductio_nest = {
 	},
 	remove: function (keyAccessors, prior, path) {
 		var arrRef;
-		var nextRef;
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
 
