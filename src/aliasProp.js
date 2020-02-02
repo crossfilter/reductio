@@ -1,4 +1,4 @@
-var reductio_alias_prop = {
+var alias_prop = {
 	add: function (obj, prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -10,4 +10,4 @@ var reductio_alias_prop = {
 	}
 };
 
-module.exports = reductio_alias_prop;
+export default alias_prop;

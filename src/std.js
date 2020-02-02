@@ -1,4 +1,4 @@
-var reductio_std = {
+var std = {
 	add: function (prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -34,4 +34,4 @@ var reductio_std = {
 	}
 };
 
-module.exports = reductio_std;
+export default std;

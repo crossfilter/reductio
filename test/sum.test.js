@@ -1,6 +1,6 @@
 // Counting tests
 describe('Reductio sum', function () {
-    var group;
+    var group, groupString;
 
     beforeEach(function () {
         var data = crossfilter([

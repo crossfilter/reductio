@@ -1,4 +1,4 @@
-var reductio_exception_sum = {
+var exception_sum = {
 	add: function (a, sum, prior, path) {
 		var i, curr;
 		return function (p, v, nf) {
@@ -34,4 +34,4 @@ var reductio_exception_sum = {
 	}
 };
 
-module.exports = reductio_exception_sum;
+export default exception_sum;

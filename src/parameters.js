@@ -1,4 +1,4 @@
-var reductio_parameters = function() {
+var parameters = function() {
 	return {
 		order: false,
 		avg: false,
@@ -26,4 +26,4 @@ var reductio_parameters = function() {
 	};
 };
 
-module.exports = reductio_parameters;
+export default parameters;

@@ -1,4 +1,5 @@
 // Alias tests
+ 
 describe('Alias function', function () {
     var group;
     var values = {};
@@ -39,9 +40,9 @@ describe('Alias function', function () {
     });
 
     it('groupings for second alias have the right values', function(){
-        expect(values['one'].twoCount()).toMatch(6);
-        expect(values['two'].twoCount()).toMatch(4);
-        expect(values['three'].twoCount()).toMatch(2);
+        expect(values['one'].twoCount()).toEqual(6);
+        expect(values['two'].twoCount()).toEqual(4);
+        expect(values['three'].twoCount()).toEqual(2);
     });
 
 });

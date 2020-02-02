@@ -24,11 +24,12 @@ describe('Reductio maximum', function () {
         max = group;
     });
 
-    it('has three groups', function (topic) {
+    it('has three groups', function (done) {
         expect(max.top(Infinity).length).toEqual(3);
+        done();
     });
 
-    it('grouping have the right maximums', function (topic) {
+    it('grouping have the right maximums', function (done) {
         var values = {};
         max.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -49,6 +50,8 @@ describe('Reductio maximum', function () {
         expect(Math.round(values['one'].max)).toEqual(Math.round(5));
         expect(Math.round(values['two'].max)).toEqual(Math.round(6));
         expect(Math.round(values['three'].max)).toEqual(Math.round(3));
+
+        done();
 
     });
 });

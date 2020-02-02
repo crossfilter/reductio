@@ -25,11 +25,11 @@ var comparer = function (accessor, ordering) {
     };
 };
 
-module.exports = function (prior) {
+export default function (prior) {
     return function (value, order) {
         if (arguments.length === 1) {
             order = ascending;
         }
         return prior().sort(comparer(pluck_n(value), order));
     };
-};
+}

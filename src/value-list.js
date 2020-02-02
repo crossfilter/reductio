@@ -1,6 +1,6 @@
-var crossfilter = require('crossfilter2');
+import crossfilter from 'crossfilter2';
 
-var reductio_value_list = {
+var value_list = {
 	add: function (a, prior, path) {
 		var i;
 		var bisect = crossfilter.bisect.by(function(d) { return d; }).left;
@@ -32,4 +32,4 @@ var reductio_value_list = {
 	}
 };
 
-module.exports = reductio_value_list;
+export default value_list;

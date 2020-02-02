@@ -1,4 +1,4 @@
-var reductio_sum = {
+var sum = {
 	add: function (a, prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -22,4 +22,4 @@ var reductio_sum = {
 	}
 };
 
-module.exports = reductio_sum;
+export default sum;

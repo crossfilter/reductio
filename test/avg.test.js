@@ -45,11 +45,12 @@ describe('Reductio avg', function () {
         accAvg = groupAccAvg;
     });
 
-    it('has three groups', function (topic) {
+    it('has three groups', function (done) {
         expect(avg.top(Infinity).length).toEqual(3);
+        done();
     });
 
-    it('grouping have the right averages', function (topic) {
+    it('grouping have the right averages', function (done) {
         var values = {};
         avg.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -58,9 +59,10 @@ describe('Reductio avg', function () {
         expect(Math.round(values['one'].avg)).toEqual(Math.round(10/3));
         expect(Math.round(values['two'].avg)).toEqual(Math.round(8/2));
         expect(Math.round(values['three'].avg)).toEqual(Math.round(3/1));
+        done();
     });
 
-    it('grouping with .avg() but no .sum() doesn\'t work', function (topic) {
+    it('grouping with .avg() but no .sum() doesn\'t work', function (done) {
         var values = {};
         noAvg.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -75,10 +77,12 @@ describe('Reductio avg', function () {
         // And no avg.
         expect(values['one'].avg).toBeUndefined();
 
+        done();
+
         // Also throws an error on the console, but that's more difficult to test.
     });
 
-    it('grouping with .avg(accessor) works', function (topic) {
+    it('grouping with .avg(accessor) works', function (done) {
         var values = {};
         accAvg.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -87,5 +91,6 @@ describe('Reductio avg', function () {
         expect(Math.round(values['one'].avg)).toEqual(Math.round(10/3));
         expect(Math.round(values['two'].avg)).toEqual(Math.round(8/2));
         expect(Math.round(values['three'].avg)).toEqual(Math.round(3/1));
+        done();
     });
 });

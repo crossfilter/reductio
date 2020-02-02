@@ -32,9 +32,9 @@ describe('Reductio custom', function () {
             }
         };
 
-        spyOn(customReducer, 'add').andCallThrough();
-        spyOn(customReducer, 'remove').andCallThrough();
-        spyOn(customReducer, 'initial').andCallThrough();
+        spyOn(customReducer, 'add').and.callThrough();
+        spyOn(customReducer, 'remove').and.callThrough();
+        spyOn(customReducer, 'initial').and.callThrough();
 
         var reducer = reductio()
             .count(true)
@@ -48,24 +48,28 @@ describe('Reductio custom', function () {
         expect(group.all()[0].value.count).toBeDefined();
     });
 
-    it('calls intial function once for each group', function() {
-        expect(customReducer.initial.calls.length).toEqual(3);
+    it('calls intial function once for each group', function(done) {
+        expect(customReducer.initial.calls.count()).toEqual(3);
+        done();
     });
 
-    it('calls add function once for each element', function() {
-        expect(customReducer.add.calls.length).toEqual(6);
+    it('calls add function once for each element', function(done) {
+        expect(customReducer.add.calls.count()).toEqual(6);
+        done();
     });
 
-    it('computes custom prop correctly', function() {
+    it('computes custom prop correctly', function(done) {
         var data = group.top(Infinity);
         expect(data[0].value.myProp).toEqual(5); // three
         expect(data[1].value.myProp).toEqual(6); // two
         expect(data[2].value.myProp).toEqual(9); // one
+        done();
     });
 
-    it('calls remove function once for each filtered element', function() {
+    it('calls remove function once for each filtered element', function(done) {
         dimFilter.filter('three');
-        expect(customReducer.remove.calls.length).toEqual(5);
+        expect(customReducer.remove.calls.count()).toEqual(5);
+        done();
     });
 
     it('computes custom prop correctly when remove', function() {

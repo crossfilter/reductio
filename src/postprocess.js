@@ -23,4 +23,4 @@ function postProcess(reductio) {
     };
 }
 
-module.exports = postProcess;
+export default postProcess;

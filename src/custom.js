@@ -1,4 +1,4 @@
-var reductio_custom = {
+var custom = {
 	add: function(prior, path, addFn) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -19,4 +19,4 @@ var reductio_custom = {
 	}
 };
 
-module.exports = reductio_custom;
+export default custom;

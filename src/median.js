@@ -1,4 +1,4 @@
-var reductio_median = {
+var median = {
 	add: function (prior, path) {
 		var half;
 		return function (p, v, nf) {
@@ -46,4 +46,4 @@ var reductio_median = {
 	}
 };
 
-module.exports = reductio_median;
+export default median;

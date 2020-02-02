@@ -1,4 +1,4 @@
-var reductio_exception_count = {
+var exception_count = {
 	add: function (a, prior, path) {
 		var i, curr;
 		return function (p, v, nf) {
@@ -34,4 +34,4 @@ var reductio_exception_count = {
 	}
 };
 
-module.exports = reductio_exception_count;
+export default exception_count;

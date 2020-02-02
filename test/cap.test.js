@@ -1,5 +1,5 @@
 describe('Reductio cap', function () {
-    var group, reducer;
+    let group, groupString, reducer;
 
     beforeEach(function () {
         var data = crossfilter([

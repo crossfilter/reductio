@@ -1,4 +1,4 @@
-var reductio_data_list = {
+var data_list = {
 	add: function(a, prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -22,4 +22,4 @@ var reductio_data_list = {
 	}
 };
 
-module.exports = reductio_data_list;
+export default data_list;

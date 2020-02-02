@@ -1,4 +1,4 @@
-var reductio_min = {
+var min = {
 	add: function (prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -32,4 +32,4 @@ var reductio_min = {
 	}
 };
 
-module.exports = reductio_min;
+export default min;

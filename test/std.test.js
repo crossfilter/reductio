@@ -45,11 +45,12 @@ describe('Reductio std', function () {
         accStd = groupAccStd;
     });
 
-    it('has three groups', function (topic) {
+    it('has three groups', function (done) {
         expect(std.top(Infinity).length).toEqual(3);
+        done();
     });
 
-    it('grouping have the right averages', function (topic) {
+    it('grouping have the right averages', function (done) {
         var values = {};
         std.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -58,9 +59,10 @@ describe('Reductio std', function () {
         expect(Math.round(values['one'].std)).toEqual(Math.round(2.08167));
         expect(Math.round(values['two'].std)).toEqual(Math.round(2.82843));
         expect(Math.round(values['three'].std)).toEqual(Math.round(0));
+        done();
     });
 
-    it('grouping with .std() but no .sumOfSq() doesn\'t work', function (topic) {
+    it('grouping with .std() but no .sumOfSq() doesn\'t work', function (done) {
         var values = {};
         noSumOfSq.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -74,11 +76,11 @@ describe('Reductio std', function () {
 
         // And no std.
         expect(values['one'].std).toBeUndefined();
-
         // Also throws an error on the console, but that's more difficult to test.
+        done();
     });
 
-    it('grouping with .std(accessor) works', function (topic) {
+    it('grouping with .std(accessor) works', function (done) {
         var values = {};
         accStd.top(Infinity).forEach(function (d) {
             values[d.key] = d.value;
@@ -87,5 +89,6 @@ describe('Reductio std', function () {
         expect(Math.round(values['one'].std)).toEqual(Math.round(2.08167));
         expect(Math.round(values['two'].std)).toEqual(Math.round(2.82843));
         expect(Math.round(values['three'].std)).toEqual(Math.round(0));
+        done();
     });
 });

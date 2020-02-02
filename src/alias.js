@@ -1,4 +1,4 @@
-var reductio_alias = {
+var alias = {
 	initial: function(prior, path, obj) {
 		return function (p) {
 			if(prior) p = prior(p);
@@ -15,4 +15,4 @@ var reductio_alias = {
 	}
 };
 
-module.exports = reductio_alias;
+export default alias;

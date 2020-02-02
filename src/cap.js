@@ -17,7 +17,7 @@ const _grouper = function(path, prior){
     };
 };
 
-const reductio_cap = function (prior, f, p) {
+const cap = function (prior, f, p) {
     var obj = f.reduceInitial();
     // we want to support values so we'll need to know what those are
     var values = p.values ? Object.keys(p.values) : [];
@@ -44,4 +44,4 @@ const reductio_cap = function (prior, f, p) {
     };
 };
 
-module.exports = reductio_cap;
+export default cap;

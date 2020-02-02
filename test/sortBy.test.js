@@ -3,7 +3,7 @@ function descending(a, b) {
 }
 
 describe('Reductio sortBy', function () {
-    var group, reducer;
+    var group, reducer, groupString;
 
     beforeEach(function () {
         var data = crossfilter([

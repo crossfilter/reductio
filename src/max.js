@@ -1,4 +1,4 @@
-var reductio_max = {
+var max = {
 	add: function (prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -32,4 +32,4 @@ var reductio_max = {
 	}
 };
 
-module.exports = reductio_max;
+export default max;

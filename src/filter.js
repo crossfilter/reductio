@@ -1,4 +1,4 @@
-var reductio_filter = {
+var filter = {
 	// The big idea here is that you give us a filter function to run on values,
 	// a 'prior' reducer to run (just like the rest of the standard reducers),
 	// and a reference to the last reducer (called 'skip' below) defined before
@@ -26,4 +26,4 @@ var reductio_filter = {
 	}
 };
 
-module.exports = reductio_filter;
+export default filter;

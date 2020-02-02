@@ -1,4 +1,4 @@
-var reductio_count = {
+var count = {
 	add: function(prior, path, propName) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -23,4 +23,4 @@ var reductio_count = {
 	}
 };
 
-module.exports = reductio_count;
+export default count;

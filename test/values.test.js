@@ -28,7 +28,7 @@ describe('Multiple values', function () {
         values = group;
     });
 
-    it('has three groups with proper counts', function (topic) {
+    it('has three groups with proper counts', function (done) {
         expect(values.top(Infinity).length).toEqual(3);
 
         var vals = {};
@@ -47,9 +47,10 @@ describe('Multiple values', function () {
         expect(vals['one'].count).toEqual(3);
         expect(vals['two'].count).toEqual(2);
         expect(vals['three'].count).toEqual(1);
+        done();
     });
 
-    it('has sums as expected', function (topic) {
+    it('has sums as expected', function (done) {
         expect(values.top(Infinity).length).toEqual(3);
 
         var vals = {};
@@ -68,9 +69,10 @@ describe('Multiple values', function () {
         expect(vals['one'].sum).toEqual(5);
         expect(vals['two'].sum).toEqual(4);
         expect(vals['three'].sum).toEqual(4);
+        done();
     });
 
-    it('has averages as expected', function (topic) {
+    it('has averages as expected', function (done) {
         expect(values.top(Infinity).length).toEqual(3);
 
         var vals = {};
@@ -89,5 +91,6 @@ describe('Multiple values', function () {
         expect(Math.round(vals['one'].avg)).toEqual(Math.round(5/3));
         expect(Math.round(vals['two'].avg)).toEqual(Math.round(4/2));
         expect(Math.round(vals['three'].avg)).toEqual(Math.round(4/1));
+        done();
     });
 });

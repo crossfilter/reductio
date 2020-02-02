@@ -1,4 +1,4 @@
-var reductio_sum_of_sq = {
+var sum_of_sq = {
 	add: function (a, prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -22,4 +22,4 @@ var reductio_sum_of_sq = {
 	}
 };
 
-module.exports = reductio_sum_of_sq;
+export default sum_of_sq;

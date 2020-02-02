@@ -41,11 +41,12 @@ describe('Reductio data list', function() {
 
     });
 
-    it('has three groups', function(topic) {
+    it('has three groups', function(done) {
         expect(max.top(Infinity).length).toEqual(3);
+        done();
     });
 
-    it('grouping have the right maximums', function(topic) {
+    it('grouping have the right maximums', function(done) {
 
         var rows = {};
         max.top(Infinity).forEach(function(d) {
@@ -67,6 +68,6 @@ describe('Reductio data list', function() {
         expect(Math.round(rows['one'].dataList.length)).toEqual(Math.round(3));
         expect(Math.round(rows['two'].dataList.length)).toEqual(Math.round(2));
         expect(Math.round(rows['three'].dataList.length)).toEqual(Math.round(1));
-
+        done();
     });
 });

@@ -20,7 +20,7 @@ describe('Reductio filter', function () {
       var reducer = reductio().count(true)
         .filter(function(d) { return d.bar > 3; });
 
-      var map = _.indexBy(reducer(dim.group()).top(Infinity), 'key');
+      var map = _.keyBy(reducer(dim.group()).top(Infinity), 'key');
       expect(map.one.value.count).toEqual(2);
       expect(map.two.value.count).toEqual(1);
       expect(map.three.value.count).toEqual(0);
@@ -31,7 +31,7 @@ describe('Reductio filter', function () {
         .filter(function(d) { return d.bar > 3; })
         .avg(function (d) { return d.bar; });
 
-      var map = _.indexBy(reducer(dim.group()).top(Infinity), 'key');
+      var map = _.keyBy(reducer(dim.group()).top(Infinity), 'key');
       expect(map.one.value.avg).toBeCloseTo(4.5);
       expect(map.two.value.avg).toEqual(6);
       expect(map.three.value.avg).toEqual(0);
@@ -42,7 +42,7 @@ describe('Reductio filter', function () {
       reducer.value("gt3").filter(function(d) { return d.bar > 3; }).count(true);
       reducer.value("even").filter(function(d) { return d.bar % 2 === 0; }).count(true);
 
-      var map = _.indexBy(reducer(dim.group()).top(Infinity), 'key');
+      var map = _.keyBy(reducer(dim.group()).top(Infinity), 'key');
       expect(map.one.value.gt3.count).toEqual(2);
       expect(map.one.value.even.count).toEqual(1);
       expect(map.two.value.gt3.count).toEqual(1);
@@ -56,7 +56,7 @@ describe('Reductio filter', function () {
         .filter(function(d) { return typeof d.sparseVal !== "undefined"; })
         .avg(function(d) { return d.sparseVal; });
 
-      var map = _.indexBy(reducer(dim.group()).top(Infinity), 'key');
+      var map = _.keyBy(reducer(dim.group()).top(Infinity), 'key');
       expect(map.one.value.count).toEqual(2);
       expect(map.one.value.avg).toBeCloseTo(10);
       expect(map.two.value.count).toEqual(0);
@@ -73,7 +73,7 @@ describe('Reductio filter', function () {
 
       var group = reducer(dim.group());
 
-      var map = _.indexBy(group.top(Infinity), 'key');
+      var map = _.keyBy(group.top(Infinity), 'key');
       expect(map.one.value.addOnly.count).toEqual(2);
       expect(map.two.value.addOnly.count).toEqual(1);
       expect(map.three.value.addOnly.count).toEqual(0);
@@ -83,7 +83,7 @@ describe('Reductio filter', function () {
 
       dim2.filter('one');
 
-      map = _.indexBy(group.top(Infinity), 'key');
+      map = _.keyBy(group.top(Infinity), 'key');
       expect(map.one.value.addOnly.count).toEqual(2);
       expect(map.two.value.addOnly.count).toEqual(1);
       expect(map.three.value.addOnly.count).toEqual(0);

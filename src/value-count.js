@@ -1,6 +1,6 @@
-var crossfilter = require('crossfilter2');
+import crossfilter from 'crossfilter2';
 
-var reductio_value_count = {
+var value_count = {
 	add: function (a, prior, path) {
 		var i, curr;
 		return function (p, v, nf) {
@@ -39,4 +39,4 @@ var reductio_value_count = {
 	}
 };
 
-module.exports = reductio_value_count;
+export default value_count;

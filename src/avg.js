@@ -1,4 +1,4 @@
-var reductio_avg = {
+var avg = {
 	add: function (a, prior, path) {
 		return function (p, v, nf) {
 			if(prior) prior(p, v, nf);
@@ -30,4 +30,4 @@ var reductio_avg = {
 	}
 };
 
-module.exports = reductio_avg;
+export default avg;
