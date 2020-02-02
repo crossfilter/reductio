@@ -1,9 +1,9 @@
-// https://github.com/esjewett/reductio v0.6.3 Copyright 2019 Ethan Jewett
+// https://github.com/esjewett/reductio v1.0.0 Copyright 2020 Ethan Jewett
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('crossfilter2')) :
 	typeof define === 'function' && define.amd ? define(['crossfilter2'], factory) :
 	(global = global || self, global.reductio = factory(global.crossfilter));
-}(this, function (crossfilter) { 'use strict';
+}(this, (function (crossfilter) { 'use strict';
 
 	crossfilter = crossfilter && crossfilter.hasOwnProperty('default') ? crossfilter['default'] : crossfilter;
 
@@ -1288,4 +1288,4 @@
 
 	return reductio;
 
-}));
+})));
